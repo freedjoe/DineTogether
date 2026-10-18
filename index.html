@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="DineTogether — Find your perfect dining companion. Connect over great food.">
+    <meta name="theme-color" content="#0d0008">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="DineTogether">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta property="og:title" content="DineTogether — Find Your Perfect Dining Companion">
+    <meta property="og:description" content="Connect with fascinating people over exquisite food.">
+    <meta property="og:type" content="website">
+
+    <title>DineTogether — Find Your Perfect Dining Companion</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-512.png">
+    <link rel="icon" type="image/png" href="icons/icon-512.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- sql.js WASM SQLite (must load before db.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Aurora Canvas -->
+    <canvas id="aurora-canvas" aria-hidden="true"></canvas>
+
+    <!-- Floating Orbs -->
+    <div class="orb orb-1" aria-hidden="true"></div>
+    <div class="orb orb-2" aria-hidden="true"></div>
+    <div class="orb orb-3" aria-hidden="true"></div>
+
+    <!-- PWA Install Banner -->
+    <div id="install-banner" class="install-banner" hidden>
+        <div class="install-banner-inner">
+            <img src="icons/icon-512.png" width="40" height="40" alt="DineTogether">
+            <div class="install-text">
+                <strong>Install DineTogether</strong>
+                <span>Add to your home screen</span>
+            </div>
+            <button class="btn-install" id="btn-install" type="button">Install</button>
+            <button class="btn-install-close" id="btn-install-close" type="button" aria-label="Dismiss">✕</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════ CLIENT VIEW ══════════════════ -->
+    <div id="client-view" class="page active" role="tabpanel">
+        <section class="hero">
+            <div class="hero-bg" aria-hidden="true"></div>
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    Premium Dining Experiences
+                </div>
+                <h1>Find Your Perfect <span class="highlight">Dining Companion</span></h1>
+                <p>Connect with fascinating people over exquisite food. Make lasting friendships, meaningful
+                    connections, or simply savour great company.</p>
+            </div>
+        </section>
+
+        <section class="filters-section" aria-label="Filter companions">
+            <div class="filters-inner">
+                <div class="filter-group">
+                    <label for="filter-age">Age</label>
+                    <div class="select-wrap">
+                        <select id="filter-age">
+                            <option value="">All Ages</option>
+                            <option value="18-24">18 – 24 years</option>
+                            <option value="25-29">25 – 29 years</option>
+                            <option value="30-34">30 – 34 years</option>
+                            <option value="35+">35+ years</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-interest">Interest</label>
+                    <div class="select-wrap">
+                        <select id="filter-interest">
+                            <option value="">All Interests</option>
+                            <option value="art">🎨 Art &amp; Culture</option>
+                            <option value="music">🎵 Music</option>
+                            <option value="travel">✈️ Travel</option>
+                            <option value="fitness">💪 Fitness</option>
+                            <option value="tech">💻 Technology</option>
+                            <option value="food">🍷 Food &amp; Wine</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-group filter-search-group">
+                    <label for="filter-search">Search</label>
+                    <div class="search-input-wrap">
+                        <input type="search" id="filter-search" placeholder="Search by name, bio, or location…"
+                            autocomplete="off" enterkeyhint="search">
+                        <button class="search-clear" id="search-clear" type="button" aria-label="Clear search"
+                            hidden>✕</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="profiles-section">
+            <div class="profiles-section-header">
+                <h2>Discover Companions</h2>
+            </div>
+            <div id="profiles-grid" class="profiles-grid" role="list"></div>
+        </section>
+    </div>
+
+    <!-- ══════════════════ ADMIN VIEW (hidden route /_/admin) ══════════════════ -->
+    <div id="admin-view" class="page" role="tabpanel" hidden>
+
+        <!-- Admin header branding with app logo -->
+        <div class="admin-header-strip">
+            <div class="admin-brand-badge">
+                <img src="icons/icon-512.png" alt="DineTogether" width="28" height="28" class="admin-brand-icon">
+                <span class="admin-brand-title">DineTogether Admin</span>
+            </div>
+            <div class="admin-quick-stats" id="admin-quick-stats">
+                <span class="quick-stat"><span class="quick-stat-num" id="qs-profiles">0</span><span
+                        class="quick-stat-lbl">Profiles</span></span>
+                <span class="quick-stat"><span class="quick-stat-num" id="qs-pending">0</span><span
+                        class="quick-stat-lbl">Pending</span></span>
+                <span class="quick-stat"><span class="quick-stat-num" id="qs-clients">0</span><span
+                        class="quick-stat-lbl">Clients</span></span>
+            </div>
+        </div>
+
+        <div class="admin-tabs" role="tablist">
+            <button class="admin-tab admin-exit-tab" type="button" data-page="client" title="Back to site">
+                ← Back to Site
+            </button>
+            <button class="admin-tab active" type="button" data-tab="profiles" id="tab-profiles" role="tab"
+                aria-selected="true">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                        d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                </svg>
+                Profiles
+            </button>
+            <button class="admin-tab" type="button" data-tab="requests" id="tab-requests" role="tab"
+                aria-selected="false">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                        d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z" />
+                </svg>
+                Bookings <span id="request-badge" class="badge" hidden>0</span>
+            </button>
+            <button class="admin-tab" type="button" data-tab="clients" id="tab-clients" role="tab"
+                aria-selected="false">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                        d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                </svg>
+                Clients
+            </button>
+            <button class="admin-tab" type="button" data-tab="database" id="tab-database" role="tab"
+                aria-selected="false">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                        d="M12 2C6.48 2 2 4.02 2 6.5v11C2 20 6.48 22 12 22s10-2.02 10-4.5v-11C22 4.02 17.52 2 12 2zm0 2.2c3.98 0 7.8 1.14 8 2.3-.2 1.16-4.02 2.3-8 2.3s-7.8-1.14-8-2.3c.2-1.16 4.02-2.3 8-2.3zm8 6.3c-.56.55-2.22 1.25-4.47 1.63-.97.16-2.22.27-3.53.27s-2.56-.11-3.53-.27C6.22 11.75 4.56 11.05 4 10.5V8.53c1.94 1.12 5.02 1.67 8 1.67s6.06-.55 8-1.67v1.97zm0 5.5c-.56.55-2.22 1.25-4.47 1.63-.97.16-2.22.27-3.53.27s-2.56-.11-3.53-.27C6.22 17.25 4.56 16.55 4 16v-1.97c1.94 1.12 5.02 1.67 8 1.67s6.06-.55 8-1.67v1.97z" />
+                </svg>
+                SQLite DB
+            </button>
+        </div>
+
+        <div id="admin-profiles" class="admin-panel active" role="tabpanel">
+            <div class="panel-header">
+                <h2>Manage Profiles</h2>
+                <button class="btn btn-primary btn-icon" type="button" id="btn-add-profile">
+                    <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                    </svg>
+                    Add Profile
+                </button>
+            </div>
+            <div id="admin-profiles-list" class="admin-profiles-list"></div>
+        </div>
+
+        <div id="admin-requests" class="admin-panel" role="tabpanel" hidden>
+            <div class="panel-header" style="flex-direction:column;align-items:flex-start;gap:0.75rem">
+                <h2>Manage Bookings</h2>
+                <div class="requests-filter-pills" id="requests-filter-pills" role="tablist">
+                    <button class="req-filter-pill active" type="button" data-filter="all">All Bookings (<span
+                            id="cnt-all">0</span>)</button>
+                    <button class="req-filter-pill" type="button" data-filter="pending">⏳ Pending (<span
+                            id="cnt-pending">0</span>)</button>
+                    <button class="req-filter-pill" type="button" data-filter="accepted">✅ Accepted (<span
+                            id="cnt-accepted">0</span>)</button>
+                    <button class="req-filter-pill" type="button" data-filter="declined">❌ Cancelled (<span
+                            id="cnt-declined">0</span>)</button>
+                </div>
+            </div>
+            <div id="admin-requests-list" class="admin-requests-list"></div>
+        </div>
+
+        <div id="admin-clients" class="admin-panel" role="tabpanel" hidden>
+            <div class="panel-header">
+                <h2>Registered Clients</h2>
+            </div>
+            <div id="admin-clients-list" class="admin-clients-list"></div>
+        </div>
+
+        <div id="admin-database" class="admin-panel" role="tabpanel" hidden>
+            <div class="panel-header">
+                <h2>SQLite Database Manager</h2>
+                <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+                    <button class="btn btn-primary btn-icon" type="button" id="btn-download-sqlite"
+                        title="Download real binary .sqlite file">
+                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+                        </svg>
+                        Export .sqlite File
+                    </button>
+                    <button class="btn btn-secondary btn-icon" type="button" id="btn-export-json">
+                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+                        </svg>
+                        Export JSON
+                    </button>
+                </div>
+            </div>
+            <div class="db-manager-grid">
+                <div class="db-card">
+                    <div class="db-card-title">Engine &amp; Persistence Status</div>
+                    <div class="db-stat-row"><span>Engine:</span><strong style="color:var(--rose-soft)">sql.js SQLite 3
+                            (WebAssembly)</strong></div>
+                    <div class="db-stat-row"><span>Storage:</span><strong style="color:var(--success)">IndexedDB Binary
+                            Store (DineTogetherV3)</strong></div>
+                    <div class="db-stat-row"><span>Sync Mode:</span><strong>Real-time flush on every query</strong>
+                    </div>
+                </div>
+                <div class="db-card">
+                    <div class="db-card-title">Live SQLite Tables &amp; Rows</div>
+                    <div class="db-stat-row"><span>profiles:</span><strong id="db-stat-profiles" class="badge">0
+                            rows</strong></div>
+                    <div class="db-stat-row"><span>clients:</span><strong id="db-stat-clients" class="badge">0
+                            rows</strong></div>
+                    <div class="db-stat-row"><span>requests:</span><strong id="db-stat-requests" class="badge">0
+                            rows</strong></div>
+                    <div class="db-stat-row"><span>photos (IDB store):</span><strong id="db-stat-photos" class="badge">0
+                            files</strong></div>
+                </div>
+            </div>
+
+            <!-- SQL Query Runner -->
+            <div class="db-query-section" style="margin-top:1.5rem">
+                <h3
+                    style="font-size:1.05rem;margin-bottom:0.6rem;color:var(--text);font-family:'Playfair Display',serif">
+                    Execute SQL Query (Direct to SQLite)</h3>
+                <div style="display:flex;gap:0.75rem;margin-bottom:0.75rem">
+                    <input type="text" id="sql-query-input"
+                        value="SELECT id, name, age, likes, location, available FROM profiles"
+                        style="flex:1;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-xs);padding:0.6rem 0.9rem;color:var(--text);font-family:monospace;font-size:0.85rem">
+                    <button class="btn btn-primary" id="btn-run-query" type="button">Run SQL</button>
+                </div>
+                <div id="sql-query-result"
+                    style="overflow-x:auto;max-height:300px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-xs);padding:0.75rem;font-size:0.8rem;font-family:monospace">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════ MODALS ══════════════════ -->
+
+    <!-- Profile Detail -->
+    <div id="profile-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-profile-title"
+        hidden>
+        <div class="modal modal-large">
+            <div class="modal-handle" aria-hidden="true"></div>
+            <button class="modal-close" type="button" data-close="profile" aria-label="Close">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                </svg>
+            </button>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <!-- Booking -->
+    <div id="booking-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="booking-title"
+        hidden>
+        <div class="modal modal-booking">
+            <div class="modal-handle" aria-hidden="true"></div>
+            <button class="modal-close" type="button" data-close="booking" aria-label="Close">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                </svg>
+            </button>
+            <div id="booking-content"></div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Profile + Photo Manager -->
+    <div id="profile-form-modal" class="modal-overlay" role="dialog" aria-modal="true"
+        aria-labelledby="profile-form-title" hidden>
+        <div class="modal modal-form">
+            <div class="modal-handle" aria-hidden="true"></div>
+            <button class="modal-close" type="button" data-close="form" aria-label="Close">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                </svg>
+            </button>
+            <div id="profile-form-content"></div>
+        </div>
+    </div>
+
+    <!-- Full Picture Lightbox Modal -->
+    <div id="lightbox-modal" class="modal-overlay lightbox-overlay" role="dialog" aria-modal="true" hidden>
+        <button class="lightbox-close" type="button" id="btn-lightbox-close" aria-label="Close full view">✕</button>
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="Complete photo" class="lightbox-img">
+            <div id="lightbox-caption" class="lightbox-caption"></div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toast-container" class="toast-container" aria-live="polite" role="status"></div>
+
+    <!-- Loading screen -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-inner">
+            <div class="loading-logo" aria-hidden="true">
+                <img src="icons/icon-512.png" alt="DineTogether" width="68" height="68" class="loading-logo-img">
+            </div>
+            <div class="loading-text">DineTogether</div>
+            <div class="loading-bar">
+                <div class="loading-bar-fill"></div>
+            </div>
+            <div class="loading-sub" id="loading-sub">Initialising SQLite database…</div>
+        </div>
+    </div>
+
+    <!-- DB module (must come before app.js) -->
+    <script src="db.js"></script>
+    <script src="app.js" defer></script>
+</body>
+
+</html>
