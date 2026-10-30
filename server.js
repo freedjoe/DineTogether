@@ -32,12 +32,18 @@ const server = http.createServer((req, res) => {
     }
 
     fs.stat(filePath, (err, stats) => {
-        if (err || !stats.isFile()) {
-            res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-            return res.end(`404 Not Found: ${cleanUrl}`);
+        let finalPath = filePath;
+        if (!err && stats.isDirectory()) {
+            finalPath = path.join(filePath, 'index.html');
         }
 
-        const ext = path.extname(filePath).toLowerCase();
+        fs.stat(finalPath, (err2, stats2) => {
+            if (err2 || !stats2.isFile()) {
+                res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+                return res.end(`404 Not Found: ${cleanUrl}`);
+            }
+
+            const ext = path.extname(finalPath).toLowerCase();
         const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
         res.writeHead(200, {
@@ -46,7 +52,8 @@ const server = http.createServer((req, res) => {
             'Service-Worker-Allowed': '/'
         });
 
-        fs.createReadStream(filePath).pipe(res);
+        fs.createReadStream(finalPath).pipe(res);
+        });
     });
 });
 

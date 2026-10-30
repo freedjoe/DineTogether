@@ -474,6 +474,11 @@ const DB = (() => {
 
         // ── Utils ─────────────────────────────────────────────────
 
+        /** Check whether SQLite WASM is initialized */
+        isReady() {
+            return !!_db;
+        },
+
         /** Export the binary SQLite file as Uint8Array */
         exportSQLite() {
             if (!_db) return null;
@@ -482,17 +487,20 @@ const DB = (() => {
 
         /** Execute a raw SQL query and return rows */
         queryRaw(sql, params = []) {
+            if (!_db) return [];
             return query(sql, params);
         },
 
         /** Execute a raw SQL statement (UPDATE, INSERT, CREATE, etc.) */
         async runRaw(sql, params = []) {
+            if (!_db) throw new Error('Database not initialized');
             _db.run(sql, params);
             await persist();
         },
 
         /** Get stats for all tables */
         getTableStats() {
+            if (!_db) return { profiles: 0, clients: 0, requests: 0 };
             const pCount = queryOne('SELECT COUNT(*) as c FROM profiles')?.c ?? 0;
             const cCount = queryOne('SELECT COUNT(*) as c FROM clients')?.c ?? 0;
             const rCount = queryOne('SELECT COUNT(*) as c FROM requests')?.c ?? 0;

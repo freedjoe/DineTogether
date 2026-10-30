@@ -152,6 +152,32 @@ let currentGalleryIndex = 0, currentGalleryPhotos = [], selectedProfileId = null
 let currentFormPhotos = [];
 let currentBookingFilter = 'all';
 
+// Location Localization Map (EN / FR / AR)
+const LOCATION_I18N = {
+    ar: {
+        'Paris, France': 'باريس، فرنسا',
+        'Milan, Italy': 'ميلانو، إيطاليا',
+        'Tokyo, Japan': 'طوكيو، اليابان',
+        'Barcelona, Spain': 'برشلونة، إسبانيا',
+        'London, UK': 'لندن، المملكة المتحدة',
+        'New York, USA': 'نيويورك، الولايات المتحدة'
+    },
+    fr: {
+        'Paris, France': 'Paris, France',
+        'Milan, Italy': 'Milan, Italie',
+        'Tokyo, Japan': 'Tokyo, Japon',
+        'Barcelona, Spain': 'Barcelone, Espagne',
+        'London, UK': 'Londres, Royaume-Uni',
+        'New York, USA': 'New York, États-Unis'
+    }
+};
+
+function formatLocation(loc) {
+    if (!loc) return '';
+    const lang = (typeof currentLang !== 'undefined' && currentLang) ? currentLang : 'en';
+    return LOCATION_I18N[lang]?.[loc] || loc;
+}
+
 // ===== Device & IP Identification (Single Like per Device/IP) =====
 let cachedUserKey = null;
 
@@ -324,7 +350,97 @@ const I18N = {
         namePlaceholder: 'e.g. Alexander Vance',
         phonePlaceholder: 'e.g. +1 234 567 8900',
         returnBtn: 'Return',
-        returnToCompanions: 'Return to Companions'
+        returnToCompanions: 'Return to Companions',
+        adminBrandTitle: 'DineTogether Admin',
+        adminStatProfiles: 'Profiles',
+        adminStatPending: 'Pending',
+        adminStatClients: 'Clients',
+        adminBackToSite: 'Back to Site',
+        adminProfilesTab: 'Profiles',
+        adminBookingsTab: 'Bookings',
+        adminClientsTab: 'Clients',
+        adminDatabaseTab: 'SQLite DB',
+        adminManageProfiles: 'Manage Profiles',
+        adminAddProfile: 'Add Profile',
+        adminNoProfilesTitle: 'No profiles in SQLite yet',
+        adminNoProfilesSub: 'Add your first companion profile',
+        adminEditPhotos: 'Edit & Photos',
+        adminDelete: 'Delete',
+        adminManageBookings: 'Manage Bookings',
+        adminFilterAll: 'All Bookings',
+        adminFilterPending: '⏳ Pending',
+        adminFilterAccepted: '✅ Accepted',
+        adminFilterCancelled: '❌ Cancelled',
+        adminNoBookingsTitle: (f) => f === 'all' ? 'No bookings' : `No ${f} bookings`,
+        adminNoBookingsSub: 'New reservations and booking requests will appear here',
+        adminPhoneNotProvided: 'Phone not provided',
+        adminAt: 'at',
+        adminAccept: 'Accept',
+        adminDecline: 'Decline',
+        adminProposeAlt: 'Propose Alternative',
+        adminCancelBooking: 'Cancel Booking',
+        adminMoveToPending: 'Move to Pending',
+        adminReaccept: 'Re-accept',
+        adminStatusPending: 'Pending',
+        adminStatusAccepted: 'Accepted',
+        adminStatusCancelled: 'Cancelled',
+        adminRegisteredClients: 'Registered Clients',
+        adminNoClientsTitle: 'No clients yet',
+        adminNoClientsSub: 'Registered clients will appear here after a booking is made',
+        adminDinnersCount: (n) => `${n} dinner${n !== 1 ? 's' : ''}`,
+        adminPendingCount: (n) => `${n} pending`,
+        adminSqliteDbManager: 'SQLite Database Manager',
+        adminExportSqlite: 'Export .sqlite File',
+        adminExportJson: 'Export JSON',
+        adminEngineStatus: 'Engine & Persistence Status',
+        adminStorageVal: 'IndexedDB Binary Store (DineTogetherV3)',
+        adminTableProfiles: 'profiles (Companions):',
+        adminTableClients: 'clients (Registered):',
+        adminTableRequests: 'requests (Bookings):',
+        adminTablePhotos: 'photos (IDB Gallery):',
+        adminSqlPlaceholder: 'Enter SQL query (e.g. SELECT * FROM profiles)...',
+        adminEngine: 'Engine:',
+        adminStorage: 'Storage:',
+        adminSyncMode: 'Sync Mode:',
+        adminRealtimeFlush: 'Real-time flush on every write',
+        adminLiveTables: 'Live SQLite Tables & Rows',
+        adminRowsUnit: 'rows',
+        adminFilesUnit: 'files',
+        adminExecuteSql: 'Execute SQL Query (Direct to SQLite)',
+        adminRunSql: 'Run SQL',
+        adminSqlSuccess: 'Statement executed successfully & database persisted!',
+        adminSqlError: 'SQL syntax error',
+        adminEditProfileTitle: '✏️ Edit Profile',
+        adminAddProfileTitle: '✨ Add New Companion',
+        adminBasicInfo: 'Basic Information',
+        adminFullName: 'Full Name',
+        adminAge: 'Age',
+        adminLocation: 'Location / City',
+        adminBio: 'Bio',
+        adminBioPlaceholder: 'Write a charming, engaging bio...',
+        adminPreferences: 'Preferences',
+        adminInterests: 'Interests',
+        adminInterestsHelp: 'comma separated',
+        adminPhotoStudio: 'Photo Gallery & Optimization Studio',
+        adminPhotoStudioDesc: 'Uploaded photos are auto-optimized to 800×1000 portrait ratio with JPEG compression for peak quality and speed.',
+        adminPhotoDropText: 'Click or drag photos here to upload',
+        adminPhotoDropSub: 'Auto-downscales & compresses image file size for crisp portrait display',
+        adminPhotoUrlPlaceholder: 'Or add photo from URL (https://...)',
+        adminAddUrlBtn: 'Add URL',
+        adminLikesStatus: 'Likes & Status',
+        adminLikesCount: 'Likes Count ❤️',
+        adminAvailability: 'Availability',
+        adminSaveProfileEdit: '💾 Save Changes to SQLite',
+        adminSaveProfileAdd: '✨ Save New Profile to SQLite',
+        adminCoverBadge: 'Cover',
+        adminMakeMain: '★ Main',
+        adminNoPhotosYet: 'No photos uploaded yet. Drop image files or paste an image URL below.',
+        adminProposeTitle: 'Propose Alternative',
+        adminProposeBody: (orig, client) => `Instead of <strong style="color:var(--text)">${orig}</strong>, suggest another companion for <strong style="color:var(--text)">${client}</strong>:`,
+        adminSuggestCompanion: (name) => `Suggest ${name}`,
+        adminConfirmDeleteProfile: 'Delete this companion? This cannot be undone.',
+        adminConfirmDeleteBooking: 'Delete this booking request? This cannot be undone.',
+        adminConfirmDeleteClient: 'Delete this client from SQLite? Any linked booking history will remain.'
     },
     fr: {
         code: 'FR',
@@ -407,7 +523,97 @@ const I18N = {
         namePlaceholder: 'ex. Alexandre Vance',
         phonePlaceholder: 'ex. +33 6 12 34 56 78',
         returnBtn: 'Retour',
-        returnToCompanions: 'Retour aux compagnons'
+        returnToCompanions: 'Retour aux compagnons',
+        adminBrandTitle: 'DineTogether Administration',
+        adminStatProfiles: 'Profils',
+        adminStatPending: 'En attente',
+        adminStatClients: 'Clients',
+        adminBackToSite: 'Retour au site',
+        adminProfilesTab: 'Profils',
+        adminBookingsTab: 'Réservations',
+        adminClientsTab: 'Clients',
+        adminDatabaseTab: 'Base SQLite',
+        adminManageProfiles: 'Gérer les Profils',
+        adminAddProfile: 'Ajouter un profil',
+        adminNoProfilesTitle: 'Aucun profil dans SQLite pour le moment',
+        adminNoProfilesSub: 'Ajoutez votre premier profil de compagnon',
+        adminEditPhotos: 'Modifier & Photos',
+        adminDelete: 'Supprimer',
+        adminManageBookings: 'Gérer les Réservations',
+        adminFilterAll: 'Toutes les réservations',
+        adminFilterPending: '⏳ En attente',
+        adminFilterAccepted: '✅ Confirmées',
+        adminFilterCancelled: '❌ Annulées',
+        adminNoBookingsTitle: (f) => f === 'all' ? 'Aucune réservation' : `Aucune réservation (${f})`,
+        adminNoBookingsSub: 'Les nouvelles réservations et demandes apparaîtront ici',
+        adminPhoneNotProvided: 'Téléphone non fourni',
+        adminAt: 'à',
+        adminAccept: 'Accepter',
+        adminDecline: 'Refuser',
+        adminProposeAlt: 'Proposer une alternative',
+        adminCancelBooking: 'Annuler la réservation',
+        adminMoveToPending: 'Marquer en attente',
+        adminReaccept: 'Réaccepter',
+        adminStatusPending: 'En attente',
+        adminStatusAccepted: 'Confirmée',
+        adminStatusCancelled: 'Annulée',
+        adminRegisteredClients: 'Clients Enregistrés',
+        adminNoClientsTitle: 'Aucun client pour le moment',
+        adminNoClientsSub: 'Les clients enregistrés apparaîtront ici après une réservation',
+        adminDinnersCount: (n) => `${n} dîner${n > 1 ? 's' : ''}`,
+        adminPendingCount: (n) => `${n} en attente`,
+        adminSqliteDbManager: 'Gestionnaire SQLite',
+        adminExportSqlite: 'Exporter le fichier .sqlite',
+        adminExportJson: 'Exporter en JSON',
+        adminEngineStatus: 'Moteur & État de Persistance',
+        adminStorageVal: 'Stockage Binaire IndexedDB (DineTogetherV3)',
+        adminTableProfiles: 'profiles (Compagnons) :',
+        adminTableClients: 'clients (Enregistrés) :',
+        adminTableRequests: 'requests (Réservations) :',
+        adminTablePhotos: 'photos (Galerie IDB) :',
+        adminSqlPlaceholder: 'Entrez une requête SQL (ex. SELECT * FROM profiles)...',
+        adminEngine: 'Moteur :',
+        adminStorage: 'Stockage :',
+        adminSyncMode: 'Mode de synchronisation :',
+        adminRealtimeFlush: 'Écriture instantanée à chaque modification',
+        adminLiveTables: 'Tables & Lignes SQLite en Direct',
+        adminRowsUnit: 'lignes',
+        adminFilesUnit: 'fichiers',
+        adminExecuteSql: 'Exécuter une Requête SQL (Direct SQLite)',
+        adminRunSql: 'Exécuter SQL',
+        adminSqlSuccess: 'Requête exécutée avec succès & base sauvegardée !',
+        adminSqlError: 'Erreur de syntaxe SQL',
+        adminEditProfileTitle: '✏️ Modifier le profil',
+        adminAddProfileTitle: '✨ Ajouter un compagnon',
+        adminBasicInfo: 'Informations générales',
+        adminFullName: 'Nom complet',
+        adminAge: 'Âge',
+        adminLocation: 'Ville / Emplacement',
+        adminBio: 'Biographie',
+        adminBioPlaceholder: 'Rédigez une biographie captivante et charmante...',
+        adminPreferences: 'Préférences',
+        adminInterests: 'Centres d\'intérêt',
+        adminInterestsHelp: 'séparés par une virgule',
+        adminPhotoStudio: 'Galerie Photos & Optimisation',
+        adminPhotoStudioDesc: 'Les photos téléchargées sont automatiquement optimisées au ratio portrait 800×1000 avec compression JPEG pour une qualité optimale.',
+        adminPhotoDropText: 'Cliquez ou déposez des photos ici pour les ajouter',
+        adminPhotoDropSub: 'Redimensionnement & compression automatiques pour un affichage net',
+        adminPhotoUrlPlaceholder: 'Ou ajouter une photo via URL (https://...)',
+        adminAddUrlBtn: 'Ajouter l\'URL',
+        adminLikesStatus: 'Coups de cœur & Disponibilité',
+        adminLikesCount: 'Nombre de J\'aime ❤️',
+        adminAvailability: 'Disponibilité',
+        adminSaveProfileEdit: '💾 Enregistrer les modifications',
+        adminSaveProfileAdd: '✨ Enregistrer le nouveau profil',
+        adminCoverBadge: 'Principale',
+        adminMakeMain: '★ Définir principale',
+        adminNoPhotosYet: 'Aucune photo pour le moment. Glissez des images ou collez une URL ci-dessous.',
+        adminProposeTitle: 'Proposer une alternative',
+        adminProposeBody: (orig, client) => `Au lieu de <strong style="color:var(--text)">${orig}</strong>, suggérer un autre compagnon pour <strong style="color:var(--text)">${client}</strong> :`,
+        adminSuggestCompanion: (name) => `Suggérer ${name}`,
+        adminConfirmDeleteProfile: 'Supprimer ce compagnon ? Cette action est irréversible.',
+        adminConfirmDeleteBooking: 'Supprimer cette demande de réservation ? Action irréversible.',
+        adminConfirmDeleteClient: 'Supprimer ce client de SQLite ? L\'historique des réservations sera conservé.'
     },
     ar: {
         code: 'العربية',
@@ -490,7 +696,97 @@ const I18N = {
         namePlaceholder: 'مثال: أحمد المنصوري',
         phonePlaceholder: 'مثال: 501234567 966+',
         returnBtn: 'عودة',
-        returnToCompanions: 'العودة إلى المرافقين'
+        returnToCompanions: 'العودة إلى المرافقين',
+        adminBrandTitle: 'لوحة تحكم DineTogether',
+        adminStatProfiles: 'المرافقين',
+        adminStatPending: 'قيد الانتظار',
+        adminStatClients: 'العملاء',
+        adminBackToSite: 'العودة إلى الموقع',
+        adminProfilesTab: 'المرافقين',
+        adminBookingsTab: 'الحجوزات',
+        adminClientsTab: 'العملاء',
+        adminDatabaseTab: 'قاعدة SQLite',
+        adminManageProfiles: 'إدارة المرافقين',
+        adminAddProfile: 'إضافة مرافق',
+        adminNoProfilesTitle: 'لا توجد ملفات تعريف في SQLite بعد',
+        adminNoProfilesSub: 'أضف أول ملف تعريف لمرافق جديد',
+        adminEditPhotos: 'تعديل والصور',
+        adminDelete: 'حذف',
+        adminManageBookings: 'إدارة الحجوزات',
+        adminFilterAll: 'جميع الحجوزات',
+        adminFilterPending: '⏳ قيد الانتظار',
+        adminFilterAccepted: '✅ المقبولة',
+        adminFilterCancelled: '❌ الملغاة',
+        adminNoBookingsTitle: (f) => f === 'all' ? 'لا توجد حجوزات' : `لا توجد حجوزات (${f})`,
+        adminNoBookingsSub: 'ستظهر طلبات الحجز والمواعيد الجديدة هنا فور استلامها',
+        adminPhoneNotProvided: 'لم يتم تقديم رقم هاتف',
+        adminAt: 'في تمام',
+        adminAccept: 'قبول',
+        adminDecline: 'رفض',
+        adminProposeAlt: 'اقتراح بديل',
+        adminCancelBooking: 'إلغاء الحجز',
+        adminMoveToPending: 'نقل إلى قيد الانتظار',
+        adminReaccept: 'إعادة القبول',
+        adminStatusPending: 'قيد الانتظار',
+        adminStatusAccepted: 'مؤكد',
+        adminStatusCancelled: 'ملغي',
+        adminRegisteredClients: 'العملاء المسجلون',
+        adminNoClientsTitle: 'لا يوجد عملاء بعد',
+        adminNoClientsSub: 'سيظهر العملاء المسجلون هنا فور إتمام أول حجز عشاء',
+        adminDinnersCount: (n) => `${n} عشاء`,
+        adminPendingCount: (n) => `${n} قيد الانتظار`,
+        adminSqliteDbManager: 'مدير قاعدة بيانات SQLite',
+        adminExportSqlite: 'تصدير ملف .sqlite',
+        adminExportJson: 'تصدير JSON',
+        adminEngineStatus: 'حالة المحرك والتخزين الدائم',
+        adminStorageVal: 'تخزين ثنائي IndexedDB (DineTogetherV3)',
+        adminTableProfiles: 'المرافقين (profiles):',
+        adminTableClients: 'العملاء (clients):',
+        adminTableRequests: 'الحجوزات (requests):',
+        adminTablePhotos: 'معرض الصور (photos IDB):',
+        adminSqlPlaceholder: 'أدخل استعلام SQL (مثال: SELECT * FROM profiles)...',
+        adminEngine: 'المحرك:',
+        adminStorage: 'التخزين:',
+        adminSyncMode: 'نمط المزامنة:',
+        adminRealtimeFlush: 'حفظ فوري في الوقت الفعلي مع كل عملية كتابة',
+        adminLiveTables: 'جداول وسجلات SQLite المباشرة',
+        adminRowsUnit: 'صفوف',
+        adminFilesUnit: 'ملفات',
+        adminExecuteSql: 'تنفيذ استعلام SQL (مباشر إلى SQLite)',
+        adminRunSql: 'تشغيل SQL',
+        adminSqlSuccess: 'تم تنفيذ الاستعلام بنجاح وحفظه في قاعدة البيانات!',
+        adminSqlError: 'خطأ في صياغة استعلام SQL',
+        adminEditProfileTitle: '✏️ تعديل الملف التعريفي',
+        adminAddProfileTitle: '✨ إضافة مرافق جديد',
+        adminBasicInfo: 'المعلومات الأساسية',
+        adminFullName: 'الاسم الكامل',
+        adminAge: 'العمر',
+        adminLocation: 'المدينة / الموقع',
+        adminBio: 'النبذة التعريفية',
+        adminBioPlaceholder: 'اكتب نبذة جذابة وراقية...',
+        adminPreferences: 'التفضيلات',
+        adminInterests: 'الاهتمامات والهوايات',
+        adminInterestsHelp: 'مفصولة بفواصل',
+        adminPhotoStudio: 'معرض الصور واستوديو التحسين',
+        adminPhotoStudioDesc: 'يتم تحسين الصور المرفوعة تلقائياً بنسبة 800×1000 وضغط JPEG لأعلى جودة وسرعة تصفح.',
+        adminPhotoDropText: 'انقر أو اسحب الصور هنا للرفع',
+        adminPhotoDropSub: 'تصغير وضغط ذكي لحجم الصور لعرض بورتريه نقي وفائق الدقة',
+        adminPhotoUrlPlaceholder: 'أو أضف رابط صورة مباشر (https://...)',
+        adminAddUrlBtn: 'إضافة الرابط',
+        adminLikesStatus: 'الإعجابات والحالة',
+        adminLikesCount: 'عدد الإعجابات ❤️',
+        adminAvailability: 'حالة التوفر',
+        adminSaveProfileEdit: '💾 حفظ التعديلات في SQLite',
+        adminSaveProfileAdd: '✨ حفظ المرافق الجديد في SQLite',
+        adminCoverBadge: 'الرئيسية',
+        adminMakeMain: '★ تعيين كرئيسية',
+        adminNoPhotosYet: 'لم يتم رفع صور بعد. اسحب ملفات الصور أو الصق رابطاً أدناه.',
+        adminProposeTitle: 'اقتراح بديل',
+        adminProposeBody: (orig, client) => `بدلاً من <strong style="color:var(--text)">${orig}</strong>، اقترح مرافقاً آخر لـ <strong style="color:var(--text)">${client}</strong>:`,
+        adminSuggestCompanion: (name) => `اقتراح ${name}`,
+        adminConfirmDeleteProfile: 'هل أنت متأكد من حذف هذا المرافق؟ لا يمكن التراجع عن هذا الإجراء.',
+        adminConfirmDeleteBooking: 'هل أنت متأكد من حذف طلب الحجز؟ لا يمكن التراجع عن هذا الإجراء.',
+        adminConfirmDeleteClient: 'هل أنت متأكد من حذف هذا العميل من SQLite؟ سيبقى سجل الحجوزات المرتبط به.'
     }
 };
 
@@ -514,6 +810,44 @@ function initLanguage() {
     setLanguage(lang, false);
 }
 
+
+// Universal Translation Applicator
+function applyTranslations(root = document) {
+    const lang = currentLang || 'en';
+    const t = I18N[lang] || I18N.en;
+
+    root.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (key && t[key]) {
+            el.textContent = t[key];
+        }
+    });
+    root.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const key = el.getAttribute('data-i18n-html');
+        if (key && t[key]) {
+            el.innerHTML = t[key];
+        }
+    });
+    root.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (key && t[key]) {
+            el.setAttribute('placeholder', t[key]);
+        }
+    });
+    root.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        if (key && t[key]) {
+            el.setAttribute('title', t[key]);
+        }
+    });
+    root.querySelectorAll('[data-i18n-aria]').forEach(el => {
+        const key = el.getAttribute('data-i18n-aria');
+        if (key && t[key]) {
+            el.setAttribute('aria-label', t[key]);
+        }
+    });
+}
+
 function setLanguage(lang, notify = true) {
     if (!I18N[lang]) lang = 'en';
     currentLang = lang;
@@ -534,25 +868,8 @@ function setLanguage(lang, notify = true) {
         langBtn.setAttribute('title', `Language: ${I18N[lang].name} (Click to switch)`);
     }
 
-    // Apply translations to static DOM elements with data-i18n
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (key && I18N[lang][key]) {
-            el.textContent = I18N[lang][key];
-        }
-    });
-    document.querySelectorAll('[data-i18n-html]').forEach(el => {
-        const key = el.getAttribute('data-i18n-html');
-        if (key && I18N[lang][key]) {
-            el.innerHTML = I18N[lang][key];
-        }
-    });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        const key = el.getAttribute('data-i18n-placeholder');
-        if (key && I18N[lang][key]) {
-            el.setAttribute('placeholder', I18N[lang][key]);
-        }
-    });
+    // Apply translations across all DOM elements
+    applyTranslations(document);
 
     // Update dynamic footer text
     const yearEl = document.getElementById('footer-year');
@@ -568,6 +885,27 @@ function setLanguage(lang, notify = true) {
 
     // Re-render profiles to reflect localized strings
     renderProfiles();
+
+    // Re-render admin sections if loaded
+    renderAdminProfiles();
+    renderAdminRequests();
+    renderAdminClients();
+    renderDatabaseStats();
+    updateQuickStats();
+
+    // If Add/Edit profile modal is open, re-render form in active language
+    const pfModal = document.getElementById('profile-form-modal');
+    if (pfModal && !pfModal.hidden && pfModal.classList.contains('active')) {
+        const form = document.getElementById('profile-form');
+        const editId = form?.dataset.editId ? Number(form.dataset.editId) : null;
+        const currentProfile = editId ? profiles.find(p => p.id === editId) : null;
+        const content = document.getElementById('profile-form-content');
+        if (content) {
+            content.innerHTML = profileFormHTML(currentProfile);
+            setupProfileFormHandlers();
+            renderFormPhotos();
+        }
+    }
 
     if (notify) {
         showToast(I18N[lang].langToast, 'info', 2000);
@@ -851,6 +1189,7 @@ function showPage(page, updateHash = true) {
         if (updateHash && window.location.hash.includes('admin')) {
             window.location.hash = '';
         }
+        applyTranslations(view);
         renderProfiles();
         updateHeroStats();
     } else {
@@ -859,6 +1198,7 @@ function showPage(page, updateHash = true) {
         if (updateHash && !window.location.hash.includes('admin')) {
             window.location.hash = '#/_/admin';
         }
+        applyTranslations(view);
         renderAdminProfiles();
         renderAdminRequests();
         renderAdminClients();
@@ -1408,8 +1748,9 @@ async function submitBooking(event) {
 function renderAdminProfiles() {
     const list = $('#admin-profiles-list');
     if (!list) return;
+    const t = I18N[currentLang] || I18N.en;
     if (profiles.length === 0) {
-        list.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><span class="empty-state-icon">👤</span><h3>No profiles in SQLite yet</h3><p>Add your first companion profile</p></div>`;
+        list.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><span class="empty-state-icon">👤</span><h3>${t.adminNoProfilesTitle}</h3><p>${t.adminNoProfilesSub}</p></div>`;
         return;
     }
     list.innerHTML = profiles.map(p => `
@@ -1417,13 +1758,13 @@ function renderAdminProfiles() {
             <img src="${escapeHtml(mainPhoto(p))}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" width="72" height="72">
             <div class="admin-profile-info">
                 <div class="admin-profile-name">${escapeHtml(p.name)}</div>
-                <div class="admin-profile-meta">${p.age} yrs · ❤️ ${p.likes || 0} likes · 📷 ${p.photos?.length || 1}<br>${escapeHtml(p.location)}</div>
+                <div class="admin-profile-meta">${p.age} ${t.yearsOldShort} · ❤️ ${p.likes || 0} ${t.likesLabel} · 📷 ${p.photos?.length || 1}<br>${escapeHtml(formatLocation(p.location))}</div>
                 <div class="admin-profile-status">
-                    <span class="avail-badge ${p.available ? 'avail-on' : 'avail-off'}">${p.available ? '● Available' : '○ Unavailable'}</span>
+                    <span class="avail-badge ${p.available ? 'avail-on' : 'avail-off'}">${p.available ? '● ' + t.available : '○ ' + t.unavailable}</span>
                 </div>
                 <div class="admin-profile-actions">
-                    <button class="btn-edit" type="button" data-action="edit-profile" data-id="${p.id}">✏️ Edit &amp; Photos</button>
-                    <button class="btn-delete" type="button" data-action="delete-profile" data-id="${p.id}">🗑️ Delete</button>
+                    <button class="btn-edit" type="button" data-action="edit-profile" data-id="${p.id}">✏️ ${t.adminEditPhotos}</button>
+                    <button class="btn-delete" type="button" data-action="delete-profile" data-id="${p.id}">🗑️ ${t.adminDelete}</button>
                 </div>
             </div>
         </div>`).join('');
@@ -1458,16 +1799,17 @@ function renderAdminRequests() {
         list.innerHTML = `
             <div class="empty-state">
                 <span class="empty-state-icon">📋</span>
-                <h3>No ${currentBookingFilter === 'all' ? '' : currentBookingFilter} bookings</h3>
-                <p>New reservations and booking requests will appear here</p>
+                <h3>${(I18N[currentLang] || I18N.en).adminNoBookingsTitle(currentBookingFilter)}</h3>
+                <p>${(I18N[currentLang] || I18N.en).adminNoBookingsSub}</p>
             </div>`;
         return;
     }
 
     list.innerHTML = filtered.map(r => {
-        const phone = r.clientPhone || r.phone || 'Phone not provided';
+        const t = I18N[currentLang] || I18N.en;
+        const phone = r.clientPhone || r.phone || t.adminPhoneNotProvided;
         const statusClass = r.status === 'accepted' ? 'accepted' : (r.status === 'declined' || r.status === 'cancelled' ? 'declined' : 'pending');
-        const statusLabel = r.status === 'accepted' ? '✅ Accepted' : (r.status === 'declined' || r.status === 'cancelled' ? '❌ Cancelled' : '⏳ Pending');
+        const statusLabel = r.status === 'accepted' ? '✅ ' + t.adminStatusAccepted : (r.status === 'declined' || r.status === 'cancelled' ? '❌ ' + t.adminStatusCancelled : '⏳ ' + t.adminStatusPending);
 
         return `
             <div class="request-card">
@@ -1487,7 +1829,7 @@ function renderAdminRequests() {
                     </div>
 
                     <div class="request-details">
-                        <span>📅 ${escapeHtml(r.date)} at ${escapeHtml(r.time)}</span>
+                        <span>📅 ${escapeHtml(r.date)} ${t.adminAt} ${escapeHtml(r.time)}</span>
                         <span>📍 ${escapeHtml(r.restaurant)}</span>
                     </div>
 
@@ -1495,19 +1837,19 @@ function renderAdminRequests() {
 
                     <div class="request-actions">
                         ${r.status === 'pending' ? `
-                            <button class="btn-success" type="button" data-action="set-booking-status" data-id="${r.id}" data-status="accepted">✅ Accept</button>
-                            <button class="btn-danger" type="button" data-action="set-booking-status" data-id="${r.id}" data-status="declined">❌ Decline</button>
-                            <button class="btn-warning" type="button" data-action="propose" data-id="${r.id}">🔄 Propose Alternative</button>
+                            <button class="btn-success" type="button" data-action="set-booking-status" data-id="${r.id}" data-status="accepted">✅ ${t.adminAccept}</button>
+                            <button class="btn-danger" type="button" data-action="set-booking-status" data-id="${r.id}" data-status="declined">❌ ${t.adminDecline}</button>
+                            <button class="btn-warning" type="button" data-action="propose" data-id="${r.id}">🔄 ${t.adminProposeAlt}</button>
                         ` : ''}
                         ${r.status === 'accepted' ? `
-                            <button class="btn-danger" type="button" data-action="set-booking-status" data-id="${r.id}" data-status="declined">❌ Cancel Booking</button>
-                            <button class="btn-pending" type="button" data-action="set-booking-status" data-id="${r.id}" data-status="pending">⏳ Move to Pending</button>
+                            <button class="btn-danger" type="button" data-action="set-booking-status" data-id="${r.id}" data-status="declined">❌ ${t.adminCancelBooking}</button>
+                            <button class="btn-pending" type="button" data-action="set-booking-status" data-id="${r.id}" data-status="pending">⏳ ${t.adminMoveToPending}</button>
                         ` : ''}
                         ${(r.status === 'declined' || r.status === 'cancelled') ? `
-                            <button class="btn-success" type="button" data-action="set-booking-status" data-id="${r.id}" data-status="accepted">✅ Re-accept</button>
-                            <button class="btn-pending" type="button" data-action="set-booking-status" data-id="${r.id}" data-status="pending">⏳ Move to Pending</button>
+                            <button class="btn-success" type="button" data-action="set-booking-status" data-id="${r.id}" data-status="accepted">✅ ${t.adminReaccept}</button>
+                            <button class="btn-pending" type="button" data-action="set-booking-status" data-id="${r.id}" data-status="pending">⏳ ${t.adminMoveToPending}</button>
                         ` : ''}
-                        <button class="btn-delete" type="button" data-action="delete-booking" data-id="${r.id}" style="margin-left:auto" title="Delete booking">🗑️ Delete</button>
+                        <button class="btn-delete" type="button" data-action="delete-booking" data-id="${r.id}" title="Delete booking">🗑️ ${t.adminDelete}</button>
                     </div>
                 </div>
             </div>`;
@@ -1536,7 +1878,7 @@ async function updateRequestStatus(requestId, status) {
 }
 
 async function deleteBookingRequest(requestId) {
-    if (!confirm('Delete this booking request? This cannot be undone.')) return;
+    const t = I18N[currentLang] || I18N.en; if (!confirm(t.adminConfirmDeleteBooking)) return;
     try {
         await DB.requests.delete(requestId);
         requests = await DB.requests.all();
@@ -1554,8 +1896,9 @@ async function deleteBookingRequest(requestId) {
 function renderAdminClients() {
     const list = $('#admin-clients-list');
     if (!list) return;
+    const t = I18N[currentLang] || I18N.en;
     if (clients.length === 0) {
-        list.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><span class="empty-state-icon">👥</span><h3>No clients yet</h3><p>Registered clients will appear here after a booking is made</p></div>`;
+        list.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><span class="empty-state-icon">👥</span><h3>${(I18N[currentLang] || I18N.en).adminNoClientsTitle}</h3><p>${(I18N[currentLang] || I18N.en).adminNoClientsSub}</p></div>`;
         return;
     }
     list.innerHTML = clients.map(c => {
@@ -1574,11 +1917,11 @@ function renderAdminClients() {
                 </div>
                 <div class="client-stats">
                     <span class="client-stat-item">📅 ${escapeHtml(c.joinDate)}</span>
-                    <span class="client-stat-item">✅ ${accepted} dinner${accepted !== 1 ? 's' : ''}</span>
-                    ${pending ? `<span class="client-stat-item">⏳ ${pending} pending</span>` : ''}
+                    <span class="client-stat-item">✅ ${t.adminDinnersCount(accepted)}</span>
+                    ${pending ? `<span class="client-stat-item">⏳ ${t.adminPendingCount(pending)}</span>` : ''}
                 </div>
                 <div class="client-actions" style="margin-top:0.85rem;display:flex;justify-content:center;">
-                    <button class="btn-delete" type="button" data-action="delete-client" data-id="${c.id}" title="Delete Client" aria-label="Delete ${escapeHtml(c.name)}">🗑️ Delete</button>
+                    <button class="btn-delete" type="button" data-action="delete-client" data-id="${c.id}" title="Delete Client" aria-label="Delete ${escapeHtml(c.name)}">🗑️ ${t.adminDelete}</button>
                 </div>
             </div>`;
     }).join('');
@@ -1586,7 +1929,7 @@ function renderAdminClients() {
 }
 
 async function deleteClient(clientId) {
-    if (!confirm('Delete this client from SQLite? Any linked booking history will remain.')) return;
+    const t = I18N[currentLang] || I18N.en; if (!confirm(t.adminConfirmDeleteClient)) return;
     try {
         await DB.clients.delete(clientId);
         clients = await DB.clients.all();
@@ -1608,6 +1951,7 @@ function updateRequestBadge() {
 }
 
 function updateQuickStats() {
+    const t = I18N[currentLang] || I18N.en;
     const qs = {
         'qs-profiles': profiles.length,
         'qs-pending': requests.filter(r => r.status === 'pending').length,
@@ -1617,23 +1961,34 @@ function updateQuickStats() {
         const el = document.getElementById(id);
         if (el) el.textContent = val;
     });
+
+    const lblProfiles = document.querySelector('#admin-quick-stats .quick-stat:nth-child(1) .quick-stat-lbl');
+    const lblPending = document.querySelector('#admin-quick-stats .quick-stat:nth-child(2) .quick-stat-lbl');
+    const lblClients = document.querySelector('#admin-quick-stats .quick-stat:nth-child(3) .quick-stat-lbl');
+    if (lblProfiles) lblProfiles.textContent = t.adminStatProfiles;
+    if (lblPending) lblPending.textContent = t.adminStatPending;
+    if (lblClients) lblClients.textContent = t.adminStatClients;
 }
 
 // ===== SQLite Database Manager Tab =====
 function renderDatabaseStats() {
     try {
+        if (!DB || typeof DB.getTableStats !== 'function') return;
         const stats = DB.getTableStats();
+        const t = I18N[currentLang] || I18N.en;
         const pEl = $('#db-stat-profiles');
         const cEl = $('#db-stat-clients');
         const rEl = $('#db-stat-requests');
         const phEl = $('#db-stat-photos');
-        if (pEl) pEl.textContent = `${stats.profiles} rows`;
-        if (cEl) cEl.textContent = `${stats.clients} rows`;
-        if (rEl) rEl.textContent = `${stats.requests} rows`;
+        if (pEl) pEl.textContent = `${stats.profiles} ${t.adminRowsUnit}`;
+        if (cEl) cEl.textContent = `${stats.clients} ${t.adminRowsUnit}`;
+        if (rEl) rEl.textContent = `${stats.requests} ${t.adminRowsUnit}`;
 
-        DB.photos.all().then(rows => {
-            if (phEl) phEl.textContent = `${rows.length} files`;
-        }).catch(() => {});
+        if (DB.photos && typeof DB.photos.all === 'function') {
+            DB.photos.all().then(rows => {
+                if (phEl) phEl.textContent = `${rows.length} ${(I18N[currentLang] || I18N.en).adminFilesUnit}`;
+            }).catch(() => {});
+        }
     } catch (e) {
         console.error('Error fetching database stats:', e);
     }
@@ -1724,17 +2079,17 @@ function renderFormPhotos() {
     const grid = $('#pf-photo-grid');
     if (!grid) return;
     if (currentFormPhotos.length === 0) {
-        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:1rem;color:var(--text-dim);font-size:0.8rem">No photos uploaded yet. Drop image files or paste an image URL below.</div>';
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:1rem;color:var(--text-dim);font-size:0.8rem">${(I18N[currentLang] || I18N.en).adminNoPhotosYet}</div>';
         return;
     }
     grid.innerHTML = currentFormPhotos.map((url, i) => `
         <div class="photo-thumb" data-index="${i}">
             <img src="${escapeHtml(url)}" alt="Photo ${i + 1}" loading="lazy">
             <div class="photo-thumb-overlay">
-                ${i > 0 ? `<button type="button" class="btn-make-cover" data-action="make-cover-photo" data-index="${i}" title="Make Cover Photo" style="background:var(--rose);color:#fff;border-radius:4px;padding:3px 6px;font-size:0.65rem;font-weight:600">★ Main</button>` : ''}
+                ${i > 0 ? `<button type="button" class="btn-make-cover" data-action="make-cover-photo" data-index="${i}" title="Make Cover Photo" style="background:var(--rose);color:#fff;border-radius:4px;padding:3px 6px;font-size:0.65rem;font-weight:600">${(I18N[currentLang] || I18N.en).adminMakeMain}</button>` : ''}
                 <button type="button" class="photo-thumb-del" data-action="delete-form-photo" data-index="${i}" title="Delete photo" aria-label="Delete photo ${i + 1}">✕</button>
             </div>
-            ${i === 0 ? '<span class="photo-thumb-main-badge">Cover</span>' : ''}
+            ${i === 0 ? `<span class="photo-thumb-main-badge">${(I18N[currentLang] || I18N.en).adminCoverBadge}</span>` : ''}
         </div>
     `).join('');
     grid.querySelectorAll('img').forEach(img => img.addEventListener('error', () => imgFallback(img), { once: true }));
@@ -1793,40 +2148,41 @@ function openEditProfileModal(id) {
 
 function profileFormHTML(profile = null) {
     const isEdit = !!profile;
+    const t = I18N[currentLang] || I18N.en;
 
     return `
         <form class="profile-form" id="profile-form" data-edit-id="${isEdit ? profile.id : ''}">
-            <h2 id="profile-form-title">${isEdit ? '✏️ Edit Profile' : '✨ Add New Companion'}</h2>
+            <h2 id="profile-form-title">${isEdit ? t.adminEditProfileTitle : t.adminAddProfileTitle}</h2>
 
-            <div class="form-section-label">Basic Information</div>
+            <div class="form-section-label">${t.adminBasicInfo}</div>
             <div class="form-group">
-                <label for="pf-name">Full Name <span aria-hidden="true">*</span></label>
-                <input type="text" id="pf-name" required placeholder="Enter full name" value="${escapeHtml(profile?.name || '')}" minlength="2">
+                <label for="pf-name">${t.adminFullName} <span aria-hidden="true">*</span></label>
+                <input type="text" id="pf-name" required placeholder="${t.namePlaceholder}" value="${escapeHtml(profile?.name || '')}" minlength="2">
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="pf-age">Age <span aria-hidden="true">*</span></label>
-                    <input type="number" id="pf-age" required min="18" max="99" placeholder="Age" value="${profile?.age ?? ''}">
+                    <label for="pf-age">${t.adminAge} <span aria-hidden="true">*</span></label>
+                    <input type="number" id="pf-age" required min="18" max="99" placeholder="${t.adminAge}" value="${profile?.age ?? ''}">
                 </div>
                 <div class="form-group">
-                    <label for="pf-location">Location <span aria-hidden="true">*</span></label>
-                    <input type="text" id="pf-location" required placeholder="City, Country" value="${escapeHtml(profile?.location || '')}">
+                    <label for="pf-location">${t.adminLocation} <span aria-hidden="true">*</span></label>
+                    <input type="text" id="pf-location" required placeholder="Paris, France" value="${escapeHtml(profile?.location || '')}">
                 </div>
             </div>
             <div class="form-group">
-                <label for="pf-bio">Bio <span aria-hidden="true">*</span></label>
-                <textarea id="pf-bio" required placeholder="Write a charming, engaging bio..." minlength="20">${escapeHtml(profile?.bio || '')}</textarea>
+                <label for="pf-bio">${t.adminBio} <span aria-hidden="true">*</span></label>
+                <textarea id="pf-bio" required placeholder="${t.adminBioPlaceholder}" minlength="20">${escapeHtml(profile?.bio || '')}</textarea>
             </div>
 
-            <div class="form-section-label">Preferences</div>
+            <div class="form-section-label">${t.adminPreferences}</div>
             <div class="form-group">
-                <label for="pf-interests">Interests <span class="optional-badge">comma separated</span></label>
+                <label for="pf-interests">${t.adminInterests} <span class="optional-badge">${t.adminInterestsHelp}</span></label>
                 <input type="text" id="pf-interests" placeholder="art, music, travel, wine, fitness" value="${escapeHtml((profile?.interests || []).join(', '))}">
             </div>
 
-            <div class="form-section-label">Photo Gallery &amp; Optimization Studio</div>
+            <div class="form-section-label">${t.adminPhotoStudio}</div>
             <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.5rem">
-                Uploaded photos are auto-optimized to 800×1000 portrait ratio with JPEG compression for peak quality and speed.
+                ${t.adminPhotoStudioDesc}
             </p>
             
             <div class="photo-grid" id="pf-photo-grid"></div>
@@ -1834,8 +2190,8 @@ function profileFormHTML(profile = null) {
             <div class="photo-upload-zone" id="pf-upload-zone" style="margin-top:0.75rem">
                 <input type="file" id="pf-file-input" accept="image/*" multiple aria-label="Upload photos">
                 <div class="photo-upload-icon" aria-hidden="true">📸</div>
-                <div class="photo-upload-text">Click or drag photos here to upload</div>
-                <div class="photo-upload-sub">Auto-downscales &amp; compresses image file size for crisp portrait display</div>
+                <div class="photo-upload-text">${t.adminPhotoDropText}</div>
+                <div class="photo-upload-sub">${t.adminPhotoDropSub}</div>
             </div>
 
             <div class="photo-upload-progress" id="pf-upload-progress" hidden>
@@ -1844,26 +2200,26 @@ function profileFormHTML(profile = null) {
             </div>
 
             <div style="display:flex;gap:0.5rem;margin-top:0.6rem;flex-wrap:wrap">
-                <input type="url" id="pf-add-url-input" placeholder="Or add photo from URL (https://...)" style="flex:1;min-width:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-xs);padding:0.5rem 0.8rem;font-size:0.82rem;color:var(--text)" aria-label="Photo URL">
-                <button type="button" class="btn btn-secondary" id="btn-add-photo-url" style="padding:0.5rem 0.9rem;font-size:0.8rem;flex-shrink:0">Add URL</button>
+                <input type="url" id="pf-add-url-input" placeholder="${t.adminPhotoUrlPlaceholder}" style="flex:1;min-width:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-xs);padding:0.5rem 0.8rem;font-size:0.82rem;color:var(--text)" aria-label="Photo URL">
+                <button type="button" class="btn btn-secondary" id="btn-add-photo-url" style="padding:0.5rem 0.9rem;font-size:0.8rem;flex-shrink:0">${t.adminAddUrlBtn}</button>
             </div>
 
-            <div class="form-section-label" style="margin-top:1rem">Likes &amp; Status</div>
+            <div class="form-section-label" style="margin-top:1rem">${t.adminLikesStatus}</div>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="pf-likes">Likes Count ❤️</label>
+                    <label for="pf-likes">${t.adminLikesCount}</label>
                     <input type="number" id="pf-likes" min="0" value="${profile?.likes ?? 120}">
                 </div>
                 <div class="form-group">
-                    <label for="pf-available">Availability</label>
+                    <label for="pf-available">${t.adminAvailability}</label>
                     <select id="pf-available">
-                        <option value="1" ${profile?.available !== false ? 'selected' : ''}>✅ Available</option>
-                        <option value="0" ${profile?.available === false ? 'selected' : ''}>⛔ Unavailable</option>
+                        <option value="1" ${profile?.available !== false ? 'selected' : ''}>✅ ${t.available}</option>
+                        <option value="0" ${profile?.available === false ? 'selected' : ''}>⛔ ${t.unavailable}</option>
                     </select>
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="margin-top:0.5rem">${isEdit ? '💾 Save Changes to SQLite' : '✨ Save New Profile to SQLite'}</button>
+            <button type="submit" class="btn btn-primary" style="margin-top:0.5rem">${isEdit ? t.adminSaveProfileEdit : t.adminSaveProfileAdd}</button>
         </form>`;
 }
 
@@ -2023,6 +2379,7 @@ async function deleteProfile(id) {
 function openProposeModal(requestId) {
     const request = requests.find(r => r.id === requestId);
     if (!request) return;
+    const t = I18N[currentLang] || I18N.en;
 
     const alternatives = profiles.filter(p => p.id !== request.profileId && p.available);
     if (alternatives.length === 0) { showToast('No alternative profiles available', 'error'); return; }
@@ -2030,24 +2387,24 @@ function openProposeModal(requestId) {
     const content = $('#booking-content');
     content.innerHTML = `
         <div class="booking-body">
-            <h2 class="booking-title">Propose Alternative</h2>
+            <h2 class="booking-title">${t.adminProposeTitle}</h2>
             <p style="color:var(--text-muted);margin-bottom:1.25rem;text-align:center;font-size:0.9rem">
-                Instead of <strong style="color:var(--text)">${escapeHtml(request.profileName)}</strong>, suggest another companion for <strong style="color:var(--text)">${escapeHtml(request.clientName)}</strong>:
+                ${t.adminProposeBody(escapeHtml(request.profileName), escapeHtml(request.clientName))}
             </p>
             <div class="alt-list" role="list">
                 ${alternatives.map(p => `
                     <div class="alt-option" data-action="select-alt" data-request="${requestId}" data-profile="${p.id}"
-                         role="button" tabindex="0" aria-label="Suggest ${escapeHtml(p.name)}">
+                         role="button" tabindex="0" aria-label="${t.adminSuggestCompanion(escapeHtml(p.name))}">
                         <img src="${escapeHtml(mainPhoto(p))}" alt="${escapeHtml(p.name)}" loading="lazy" width="50" height="50">
                         <div>
                             <div style="font-weight:700;margin-bottom:0.1rem">${escapeHtml(p.name)}</div>
-                            <div style="font-size:0.78rem;color:var(--text-muted)">${p.age} yrs · ❤️ ${p.likes || 0} likes</div>
+                            <div style="font-size:0.78rem;color:var(--text-muted)">${p.age} ${t.yearsOldShort} · ❤️ ${p.likes || 0} ${t.likesLabel}</div>
                         </div>
-                        <div style="margin-left:auto;color:var(--rose);font-size:1.2rem" aria-hidden="true">→</div>
+                        <div style="margin-inline-start:auto;color:var(--rose);font-size:1.2rem;display:inline-block" class="alt-arrow" aria-hidden="true">→</div>
                     </div>
                 `).join('')}
             </div>
-            <button class="btn btn-secondary" type="button" style="margin-top:1rem;width:100%" data-action="close-booking">Cancel</button>
+            <button class="btn btn-secondary" type="button" style="margin-top:1rem;width:100%" data-action="close-booking">${t.cancel}</button>
         </div>`;
 
     content.querySelectorAll('img').forEach(img => img.addEventListener('error', () => imgFallback(img), { once: true }));

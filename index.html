@@ -212,7 +212,7 @@
         <div class="admin-header-strip">
             <div class="admin-brand-badge">
                 <img src="icons/icon-512.png" alt="DineTogether" width="28" height="28" class="admin-brand-icon">
-                <span class="admin-brand-title">DineTogether Admin</span>
+                <span class="admin-brand-title" data-i18n="adminBrandTitle">DineTogether Admin</span>
             </div>
             <div class="admin-quick-stats" id="admin-quick-stats">
                 <span class="quick-stat"><span class="quick-stat-num" id="qs-profiles">0</span><span
@@ -227,7 +227,7 @@
         <div class="admin-tabs" role="tablist" aria-label="Admin sections">
             <button class="admin-tab admin-exit-tab" type="button" data-page="client" title="Back to site"
                 aria-label="Back to main site">
-                ← Back to Site
+                <span class="admin-exit-arrow" aria-hidden="true">←</span> <span data-i18n="adminBackToSite">Back to Site</span>
             </button>
             <button class="admin-tab active" type="button" data-tab="profiles" id="tab-profiles" role="tab"
                 aria-selected="true" aria-controls="admin-profiles">
@@ -235,7 +235,7 @@
                     <path
                         d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                 </svg>
-                Profiles
+                <span data-i18n="adminProfilesTab">Profiles</span>
             </button>
             <button class="admin-tab" type="button" data-tab="requests" id="tab-requests" role="tab"
                 aria-selected="false" aria-controls="admin-requests">
@@ -243,7 +243,7 @@
                     <path
                         d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z" />
                 </svg>
-                Bookings <span id="request-badge" class="badge" hidden>0</span>
+                <span data-i18n="adminBookingsTab">Bookings</span> <span id="request-badge" class="badge" hidden>0</span>
             </button>
             <button class="admin-tab" type="button" data-tab="clients" id="tab-clients" role="tab"
                 aria-selected="false" aria-controls="admin-clients">
@@ -251,7 +251,7 @@
                     <path
                         d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
                 </svg>
-                Clients
+                <span data-i18n="adminClientsTab">Clients</span>
             </button>
             <button class="admin-tab" type="button" data-tab="database" id="tab-database" role="tab"
                 aria-selected="false" aria-controls="admin-database">
@@ -259,18 +259,18 @@
                     <path
                         d="M12 2C6.48 2 2 4.02 2 6.5v11C2 20 6.48 22 12 22s10-2.02 10-4.5v-11C22 4.02 17.52 2 12 2zm0 2.2c3.98 0 7.8 1.14 8 2.3-.2 1.16-4.02 2.3-8 2.3s-7.8-1.14-8-2.3c.2-1.16 4.02-2.3 8-2.3zm8 6.3c-.56.55-2.22 1.25-4.47 1.63-.97.16-2.22.27-3.53.27s-2.56-.11-3.53-.27C6.22 11.75 4.56 11.05 4 10.5V8.53c1.94 1.12 5.02 1.67 8 1.67s6.06-.55 8-1.67v1.97zm0 5.5c-.56.55-2.22 1.25-4.47 1.63-.97.16-2.22.27-3.53.27s-2.56-.11-3.53-.27C6.22 17.25 4.56 16.55 4 16v-1.97c1.94 1.12 5.02 1.67 8 1.67s6.06-.55 8-1.67v1.97z" />
                 </svg>
-                SQLite DB
+                <span data-i18n="adminDatabaseTab">SQLite DB</span>
             </button>
         </div>
 
         <div id="admin-profiles" class="admin-panel active" role="tabpanel" aria-labelledby="tab-profiles">
             <div class="panel-header">
-                <h2>Manage Profiles</h2>
+                <h2 data-i18n="adminManageProfiles">Manage Profiles</h2>
                 <button class="btn btn-primary btn-icon" type="button" id="btn-add-profile">
                     <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
                     </svg>
-                    Add Profile
+                    <span data-i18n="adminAddProfile">Add Profile</span>
                 </button>
             </div>
             <div id="admin-profiles-list" class="admin-profiles-list"></div>
@@ -278,17 +278,17 @@
 
         <div id="admin-requests" class="admin-panel" role="tabpanel" aria-labelledby="tab-requests" hidden>
             <div class="panel-header" style="flex-direction:column;align-items:flex-start;gap:0.75rem">
-                <h2>Manage Bookings</h2>
+                <h2 data-i18n="adminManageBookings">Manage Bookings</h2>
                 <div class="requests-filter-pills" id="requests-filter-pills" role="tablist"
                     aria-label="Filter bookings">
                     <button class="req-filter-pill active" type="button" data-filter="all" role="tab"
-                        aria-selected="true">All Bookings (<span id="cnt-all">0</span>)</button>
+                        aria-selected="true"><span data-i18n="adminFilterAll">All Bookings</span> (<span id="cnt-all">0</span>)</button>
                     <button class="req-filter-pill" type="button" data-filter="pending" role="tab"
-                        aria-selected="false">⏳ Pending (<span id="cnt-pending">0</span>)</button>
+                        aria-selected="false"><span data-i18n="adminFilterPending">⏳ Pending</span> (<span id="cnt-pending">0</span>)</button>
                     <button class="req-filter-pill" type="button" data-filter="accepted" role="tab"
-                        aria-selected="false">✅ Accepted (<span id="cnt-accepted">0</span>)</button>
+                        aria-selected="false"><span data-i18n="adminFilterAccepted">✅ Accepted</span> (<span id="cnt-accepted">0</span>)</button>
                     <button class="req-filter-pill" type="button" data-filter="declined" role="tab"
-                        aria-selected="false">❌ Cancelled (<span id="cnt-declined">0</span>)</button>
+                        aria-selected="false"><span data-i18n="adminFilterCancelled">❌ Cancelled</span> (<span id="cnt-declined">0</span>)</button>
                 </div>
             </div>
             <div id="admin-requests-list" class="admin-requests-list"></div>
@@ -296,65 +296,62 @@
 
         <div id="admin-clients" class="admin-panel" role="tabpanel" aria-labelledby="tab-clients" hidden>
             <div class="panel-header">
-                <h2>Registered Clients</h2>
+                <h2 data-i18n="adminRegisteredClients">Registered Clients</h2>
             </div>
             <div id="admin-clients-list" class="admin-clients-list"></div>
         </div>
 
         <div id="admin-database" class="admin-panel" role="tabpanel" aria-labelledby="tab-database" hidden>
             <div class="panel-header">
-                <h2>SQLite Database Manager</h2>
+                <h2 data-i18n="adminSqliteDbManager">SQLite Database Manager</h2>
                 <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
                     <button class="btn btn-primary btn-icon" type="button" id="btn-download-sqlite"
                         title="Download real binary .sqlite file">
                         <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
                         </svg>
-                        Export .sqlite File
+                        <span data-i18n="adminExportSqlite">Export .sqlite File</span>
                     </button>
                     <button class="btn btn-secondary btn-icon" type="button" id="btn-export-json">
                         <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path
                                 d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
                         </svg>
-                        Export JSON
+                        <span data-i18n="adminExportJson">Export JSON</span>
                     </button>
                 </div>
             </div>
             <div class="db-manager-grid">
                 <div class="db-card">
-                    <div class="db-card-title">Engine &amp; Persistence Status</div>
-                    <div class="db-stat-row"><span>Engine:</span><strong style="color:var(--rose-soft)">sql.js SQLite 3
+                    <div class="db-card-title" data-i18n="adminEngineStatus">Engine &amp; Persistence Status</div>
+                    <div class="db-stat-row"><span data-i18n="adminEngine">Engine:</span><strong style="color:var(--rose-soft)">sql.js SQLite 3
                             (WebAssembly)</strong></div>
-                    <div class="db-stat-row"><span>Storage:</span><strong style="color:var(--success)">IndexedDB Binary
-                            Store (DineTogetherV3)</strong></div>
-                    <div class="db-stat-row"><span>Sync Mode:</span><strong>Real-time flush on every write</strong>
+                    <div class="db-stat-row"><span data-i18n="adminStorage">Storage:</span><strong style="color:var(--success)" data-i18n="adminStorageVal">IndexedDB Binary Store (DineTogetherV3)</strong></div>
+                    <div class="db-stat-row"><span data-i18n="adminSyncMode">Sync Mode:</span><strong data-i18n="adminRealtimeFlush">Real-time flush on every write</strong>
                     </div>
                 </div>
                 <div class="db-card">
-                    <div class="db-card-title">Live SQLite Tables &amp; Rows</div>
-                    <div class="db-stat-row"><span>profiles:</span><strong id="db-stat-profiles" class="badge">0
+                    <div class="db-card-title" data-i18n="adminLiveTables">Live SQLite Tables &amp; Rows</div>
+                    <div class="db-stat-row"><span data-i18n="adminTableProfiles">profiles (Companions):</span><strong id="db-stat-profiles" class="badge">0
                             rows</strong></div>
-                    <div class="db-stat-row"><span>clients:</span><strong id="db-stat-clients" class="badge">0
+                    <div class="db-stat-row"><span data-i18n="adminTableClients">clients (Registered):</span><strong id="db-stat-clients" class="badge">0
                             rows</strong></div>
-                    <div class="db-stat-row"><span>requests:</span><strong id="db-stat-requests" class="badge">0
+                    <div class="db-stat-row"><span data-i18n="adminTableRequests">requests (Bookings):</span><strong id="db-stat-requests" class="badge">0
                             rows</strong></div>
-                    <div class="db-stat-row"><span>photos (IDB store):</span><strong id="db-stat-photos"
+                    <div class="db-stat-row"><span data-i18n="adminTablePhotos">photos (IDB Gallery):</span><strong id="db-stat-photos"
                             class="badge">0 files</strong></div>
                 </div>
             </div>
 
             <!-- SQL Query Runner -->
             <div class="db-query-section" style="margin-top:1.5rem">
-                <h3
-                    style="font-size:1.05rem;margin-bottom:0.6rem;color:var(--text);font-family:'Playfair Display',serif">
-                    Execute SQL Query (Direct to SQLite)</h3>
+                <h3 style="font-size:1.05rem;margin-bottom:0.6rem;color:var(--text);font-family:'Playfair Display',serif" data-i18n="adminExecuteSql">Execute SQL Query (Direct to SQLite)</h3>
                 <div style="display:flex;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap">
-                    <input type="text" id="sql-query-input"
+                    <input type="text" id="sql-query-input" data-i18n-placeholder="adminSqlPlaceholder"
                         value="SELECT id, name, age, likes, location, available FROM profiles"
                         style="flex:1;min-width:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-xs);padding:0.6rem 0.9rem;color:var(--text);font-family:monospace;font-size:0.85rem"
                         aria-label="SQL query input">
-                    <button class="btn btn-primary" id="btn-run-query" type="button">Run SQL</button>
+                    <button class="btn btn-primary" id="btn-run-query" type="button" data-i18n="adminRunSql">Run SQL</button>
                 </div>
                 <div id="sql-query-result"
                     style="overflow-x:auto;max-height:300px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-xs);padding:0.75rem;font-size:0.8rem;font-family:monospace">
