@@ -211,7 +211,7 @@ npx pwa-asset-generator icons/icon-512.png icons/ --manifest manifest.json
 
 Requires: ES2022 (optional chaining, nullish coalescing), WebAssembly, IndexedDB, CSS custom properties.
 
----
+----
 
 *DineTogether v3.2 — Built with ❤️ and vanilla web technologies.*
 
