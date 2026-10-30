@@ -322,7 +322,9 @@ const I18N = {
         themeTitleLight: 'Switch to ☀️ Light mode',
         likesLabel: 'likes',
         namePlaceholder: 'e.g. Alexander Vance',
-        phonePlaceholder: 'e.g. +1 234 567 8900'
+        phonePlaceholder: 'e.g. +1 234 567 8900',
+        returnBtn: 'Return',
+        returnToCompanions: 'Return to Companions'
     },
     fr: {
         code: 'FR',
@@ -403,7 +405,9 @@ const I18N = {
         themeTitleLight: 'Passer au mode ☀️ Clair',
         likesLabel: 'j\'aime',
         namePlaceholder: 'ex. Alexandre Vance',
-        phonePlaceholder: 'ex. +33 6 12 34 56 78'
+        phonePlaceholder: 'ex. +33 6 12 34 56 78',
+        returnBtn: 'Retour',
+        returnToCompanions: 'Retour aux compagnons'
     },
     ar: {
         code: 'العربية',
@@ -484,7 +488,9 @@ const I18N = {
         themeTitleLight: 'التبديل إلى المظهر ☀️ الفاتح',
         likesLabel: 'إعجاب',
         namePlaceholder: 'مثال: أحمد المنصوري',
-        phonePlaceholder: 'مثال: 501234567 966+'
+        phonePlaceholder: 'مثال: 501234567 966+',
+        returnBtn: 'عودة',
+        returnToCompanions: 'العودة إلى المرافقين'
     }
 };
 
@@ -1000,68 +1006,97 @@ function openProfileModal(id) {
     const curPhoto = currentGalleryPhotos[0];
 
     content.innerHTML = `
-        <div class="photo-gallery">
-            <div class="gallery-blur-bg" id="gallery-blur-bg" style="background-image:url('${escapeHtml(curPhoto)}')"></div>
-            <img src="${escapeHtml(curPhoto)}" alt="${name}" class="gallery-main" id="gallery-main-img" width="700" height="460" data-action="open-lightbox" title="Click to view full photo">
-            <div class="gallery-overlay" aria-hidden="true"></div>
-            <button class="btn-full-photo" type="button" data-action="open-lightbox" title="View full photo">${t('fullPhoto')}</button>
-            ${multi ? `
-                <button class="gallery-nav gallery-prev" type="button" data-action="gallery-prev" aria-label="Previous photo">&#10094;</button>
-                <button class="gallery-nav gallery-next" type="button" data-action="gallery-next" aria-label="Next photo">&#10095;</button>
-                <span class="gallery-counter" id="gallery-counter" aria-live="polite" aria-atomic="true">1 / ${currentGalleryPhotos.length}</span>
-            ` : ''}
-        </div>
-        ${multi ? `
-            <div class="gallery-thumbnails" id="gallery-thumbnails" role="list" aria-label="Photo thumbnails">
-                ${currentGalleryPhotos.map((photo, i) => `
-                    <img src="${escapeHtml(photo)}" alt="Photo ${i + 1} of ${name}" class="${i === 0 ? 'active' : ''}"
-                         data-action="gallery-thumb" data-index="${i}" loading="lazy" decoding="async" width="62" height="62"
-                         role="listitem" tabindex="${i === 0 ? '0' : '-1'}">
-                `).join('')}
-            </div>
-        ` : ''}
-        <div class="modal-profile-body">
-            <h2 class="modal-profile-name" id="modal-profile-title">${name}</h2>
-            <div class="modal-profile-meta">
-                <span>🎂 ${profile.age} ${t('yearsOld')}</span>
-                <span class="meta-sep">·</span>
-                <span>📍 ${escapeHtml(profile.location)}</span>
-                <span class="meta-sep">·</span>
-                <span class="modal-meta-likes"><span class="heart-pulse" aria-hidden="true">${isLiked ? '❤️' : '🤍'}</span> <strong id="modal-likes-count">${profile.likes || 0}</strong> ${t('likesLabel')}</span>
-            </div>
-            <p class="modal-profile-bio">${escapeHtml(profile.bio)}</p>
-            <div class="modal-profile-details">
-                <div class="detail-item">
-                    <div class="detail-label">${t('ageLocation')}</div>
-                    <div class="detail-value">${profile.age} ${t('yearsOldShort')} · ${escapeHtml(profile.location)}</div>
+        <div class="profile-fullscreen-view">
+            <!-- Fullscreen Sticky Top Bar with Return Button -->
+            <header class="profile-top-bar">
+                <button class="btn-profile-return" type="button" data-action="close-profile" aria-label="${t('returnBtn')}" title="${t('returnBtn')}">
+                    <svg class="return-arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                    </svg>
+                    <span class="return-label">${t('returnBtn')}</span>
+                </button>
+                <div class="profile-top-meta">
+                    <span class="profile-top-name">${name}</span>
+                    <span class="profile-top-badge">${profile.available ? '★ ' + t('available') : '⛔ ' + t('unavailable')}</span>
                 </div>
-                <div class="detail-item">
-                    <div class="detail-label">${t('availability')}</div>
-                    <div class="detail-value" style="color:${profile.available ? 'var(--success)' : 'var(--danger)'}">
-                        ${profile.available ? '✅ ' + t('available') : '⛔ ' + t('unavailable')}
+                <button class="modal-close profile-top-close" type="button" data-close="profile" data-action="close-profile" aria-label="${t('close')}" title="${t('close')}">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </header>
+
+            <!-- Scrollable Content Body -->
+            <div class="profile-fullscreen-scroll">
+                <div class="profile-fullscreen-inner">
+                    <div class="photo-gallery">
+                        <div class="gallery-blur-bg" id="gallery-blur-bg" style="background-image:url('${escapeHtml(curPhoto)}')"></div>
+                        <img src="${escapeHtml(curPhoto)}" alt="${name}" class="gallery-main" id="gallery-main-img" width="700" height="460" data-action="open-lightbox" title="Click to view full photo">
+                        <div class="gallery-overlay" aria-hidden="true"></div>
+                        <button class="btn-full-photo" type="button" data-action="open-lightbox" title="View full photo">${t('fullPhoto')}</button>
+                        ${multi ? `
+                            <button class="gallery-nav gallery-prev" type="button" data-action="gallery-prev" aria-label="Previous photo">&#10094;</button>
+                            <button class="gallery-nav gallery-next" type="button" data-action="gallery-next" aria-label="Next photo">&#10095;</button>
+                            <span class="gallery-counter" id="gallery-counter" aria-live="polite" aria-atomic="true">1 / ${currentGalleryPhotos.length}</span>
+                        ` : ''}
+                    </div>
+                    ${multi ? `
+                        <div class="gallery-thumbnails" id="gallery-thumbnails" role="list" aria-label="Photo thumbnails">
+                            ${currentGalleryPhotos.map((photo, i) => `
+                                <img src="${escapeHtml(photo)}" alt="Photo ${i + 1} of ${name}" class="${i === 0 ? 'active' : ''}"
+                                     data-action="gallery-thumb" data-index="${i}" loading="lazy" decoding="async" width="62" height="62"
+                                     role="listitem" tabindex="${i === 0 ? '0' : '-1'}">
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    <div class="modal-profile-body">
+                        <h2 class="modal-profile-name" id="modal-profile-title">${name}</h2>
+                        <div class="modal-profile-meta">
+                            <span>🎂 ${profile.age} ${t('yearsOld')}</span>
+                            <span class="meta-sep">·</span>
+                            <span>📍 ${escapeHtml(profile.location)}</span>
+                            <span class="meta-sep">·</span>
+                            <span class="modal-meta-likes"><span class="heart-pulse" aria-hidden="true">${isLiked ? '❤️' : '🤍'}</span> <strong id="modal-likes-count">${profile.likes || 0}</strong> ${t('likesLabel')}</span>
+                        </div>
+                        <p class="modal-profile-bio">${escapeHtml(profile.bio)}</p>
+                        <div class="modal-profile-details">
+                            <div class="detail-item">
+                                <div class="detail-label">${t('ageLocation')}</div>
+                                <div class="detail-value">${profile.age} ${t('yearsOldShort')} · ${escapeHtml(profile.location)}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">${t('availability')}</div>
+                                <div class="detail-value" style="color:${profile.available ? 'var(--success)' : 'var(--danger)'}">
+                                    ${profile.available ? '✅ ' + t('available') : '⛔ ' + t('unavailable')}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-profile-tags">
+                            ${(profile.interests || []).map(i => `<span class="tag">${escapeHtml(i)}</span>`).join('')}
+                        </div>
+
+                        <div class="like-section">
+                            <div class="like-section-content">
+                                <div class="like-section-title">${isLiked ? t('youLikedTitle', name) : t('showLoveTitle', name)}</div>
+                                <p class="like-section-sub" id="modal-like-sub">${isLiked ? t('undoLikeSub') : t('showLoveSub', name)}</p>
+                            </div>
+                            <button class="btn-like-large ${isLiked ? 'liked' : ''}" type="button" data-action="like-profile-modal" data-id="${profile.id}" title="${isLiked ? 'Click to undo like' : 'Click to like'}" aria-pressed="${isLiked}">
+                                <span class="heart-bounce" aria-hidden="true">${isLiked ? '❤️' : '🤍'}</span>
+                                <span class="like-btn-label">${isLiked ? t('liked') : t('like')}</span>
+                                <span class="like-pill-count" id="modal-btn-likes">${profile.likes || 0}</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="modal-profile-tags">
-                ${(profile.interests || []).map(i => `<span class="tag">${escapeHtml(i)}</span>`).join('')}
-            </div>
 
-            <div class="like-section">
-                <div class="like-section-content">
-                    <div class="like-section-title">${isLiked ? t('youLikedTitle', name) : t('showLoveTitle', name)}</div>
-                    <p class="like-section-sub" id="modal-like-sub">${isLiked ? t('undoLikeSub') : t('showLoveSub', name)}</p>
+            <!-- Bottom Floating/Sticky Action Bar (Always Accessible) -->
+            <footer class="modal-profile-actions profile-fullscreen-actions">
+                <div class="profile-actions-inner">
+                    <button class="btn btn-primary" type="button" data-action="book-from-modal" data-id="${profile.id}">${t('bookDinner')}</button>
+                    <button class="btn btn-secondary" type="button" data-action="close-profile">${t('close')}</button>
                 </div>
-                <button class="btn-like-large ${isLiked ? 'liked' : ''}" type="button" data-action="like-profile-modal" data-id="${profile.id}" title="${isLiked ? 'Click to undo like' : 'Click to like'}" aria-pressed="${isLiked}">
-                    <span class="heart-bounce" aria-hidden="true">${isLiked ? '❤️' : '🤍'}</span>
-                    <span class="like-btn-label">${isLiked ? t('liked') : t('like')}</span>
-                    <span class="like-pill-count" id="modal-btn-likes">${profile.likes || 0}</span>
-                </button>
-            </div>
-
-            <div class="modal-profile-actions">
-                <button class="btn btn-primary" type="button" data-action="book-from-modal" data-id="${profile.id}">${t('bookDinner')}</button>
-                <button class="btn btn-secondary" type="button" data-action="close-profile">${t('close')}</button>
-            </div>
+            </footer>
         </div>`;
 
     content.querySelectorAll('img').forEach(img => img.addEventListener('error', () => imgFallback(img), { once: true }));
