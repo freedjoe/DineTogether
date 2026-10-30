@@ -1,5 +1,5 @@
-/* ===== DineTogether Service Worker v5 ===== */
-const CACHE_NAME = 'dinetogether-v5';
+/* ===== DineTogether Service Worker v7 ===== */
+const CACHE_NAME = 'dinetogether-v7';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

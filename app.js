@@ -240,6 +240,61 @@ async function optimizeImageFile(file, maxWidth = 800, maxHeight = 1000, quality
     });
 }
 
+// ===== Theme Management (Velvet Noir / Champagne Pearl) =====
+function initTheme() {
+    let savedTheme = null;
+    try {
+        savedTheme = localStorage.getItem('dinetogether-theme');
+    } catch (_) {}
+
+    const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    const currentTheme = savedTheme || (prefersLight ? 'light' : 'dark');
+    applyTheme(currentTheme, false);
+
+    try {
+        window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+            if (!localStorage.getItem('dinetogether-theme')) {
+                applyTheme(e.matches ? 'light' : 'dark', false);
+            }
+        });
+    } catch (_) {}
+}
+
+function applyTheme(theme, notify = true) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const toggleBtn = document.getElementById('theme-toggle');
+    const isLight = theme === 'light';
+
+    if (toggleBtn) {
+        toggleBtn.setAttribute('aria-pressed', isLight ? 'true' : 'false');
+        toggleBtn.setAttribute('title', isLight ? 'Switch to 🌙 Dark mode' : 'Switch to ☀️ Light mode');
+        toggleBtn.setAttribute('aria-label', isLight ? 'Switch to Dark mode' : 'Switch to Light mode');
+        const label = document.getElementById('theme-label');
+        if (label) label.textContent = isLight ? 'Light' : 'Dark';
+        const iconDark = toggleBtn.querySelector('.theme-icon-dark');
+        const iconLight = toggleBtn.querySelector('.theme-icon-light');
+        if (iconDark && iconLight) {
+            iconDark.hidden = isLight;
+            iconDark.style.display = isLight ? 'none' : 'inline-flex';
+            iconLight.hidden = !isLight;
+            iconLight.style.display = isLight ? 'inline-flex' : 'none';
+        }
+    }
+
+    if (notify) {
+        showToast(`Theme: ${isLight ? '☀️ Light' : '🌙 Dark'}`, 'info', 2000);
+    }
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = current === 'dark' ? 'light' : 'dark';
+    try {
+        localStorage.setItem('dinetogether-theme', next);
+    } catch (_) {}
+    applyTheme(next, true);
+}
+
 // ===== Aurora Canvas (Deep Rose / Magenta / Amber) =====
 function initAurora() {
     const canvas = $('#aurora-canvas');
@@ -1693,8 +1748,15 @@ function showToast(message, type = 'success', duration = 3200) {
 
 // ===== Event Delegation =====
 function handleClick(e) {
-    const target = e.target.closest('[data-action], [data-page], [data-tab], [data-close], [data-filter], .admin-tab, .hero-brand, .modal-overlay, #btn-lightbox-close, .req-filter-pill');
+    const target = e.target.closest('[data-action], [data-page], [data-tab], [data-close], [data-filter], .admin-tab, .hero-brand, .modal-overlay, #btn-lightbox-close, .req-filter-pill, #theme-toggle, .theme-toggle-btn');
     if (!target) return;
+
+    // Theme toggle
+    if (target.id === 'theme-toggle' || target.classList.contains('theme-toggle-btn') || target.closest('#theme-toggle')) {
+        e.preventDefault();
+        toggleTheme();
+        return;
+    }
 
     // Backdrop click
     if (target.classList.contains('modal-overlay') && e.target === target) {
@@ -1828,6 +1890,7 @@ function handleSubmit(e) {
 
 // ===== Init =====
 document.addEventListener('DOMContentLoaded', async () => {
+    initTheme();
     initAurora();
 
     document.addEventListener('click', handleClick);
