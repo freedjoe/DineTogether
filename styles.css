@@ -1804,6 +1804,74 @@ button:focus-visible { outline: 2px solid var(--rose); outline-offset: 3px; }
    Light / Dark Mode, Elevated Serif Hierarchy & Transitions
    ══════════════════════════════════════════ */
 
+
+/* ── Language Toggle Button (Luxury Floating Glass Pill on the Left) ── */
+.lang-toggle-btn {
+    position: fixed;
+    top: max(1.15rem, calc(env(safe-area-inset-top, 0px) + 0.65rem));
+    left: max(1.25rem, calc(env(safe-area-inset-left, 0px) + 0.85rem));
+    z-index: 1000;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.48rem 0.95rem;
+    background: var(--theme-toggle-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-glow);
+    border-radius: 999px;
+    color: var(--text);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: all var(--t);
+    user-select: none;
+}
+.lang-toggle-btn:hover {
+    border-color: var(--rose);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg), 0 0 24px var(--rose-glow);
+}
+.lang-toggle-btn:active {
+    transform: scale(0.96);
+}
+.lang-icon {
+    font-size: 1rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.4s var(--ease-bounce);
+}
+.lang-toggle-btn:hover .lang-icon {
+    transform: rotate(25deg) scale(1.15);
+}
+.lang-code {
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+}
+@media (max-width: 480px) {
+    .lang-toggle-btn {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.76rem;
+        top: max(0.6rem, env(safe-area-inset-top, 0px));
+        left: 0.75rem;
+    }
+}
+[dir="rtl"] .lang-toggle-btn {
+    left: max(1.25rem, calc(env(safe-area-inset-left, 0px) + 0.85rem)) !important;
+    right: auto !important;
+}
+@media (max-width: 480px) {
+    [dir="rtl"] .lang-toggle-btn {
+        left: 0.75rem !important;
+        right: auto !important;
+    }
+}
+
 /* ── Theme Toggle Button (Luxury Glass Floating Pill) ── */
 .theme-toggle-btn {
     position: fixed;
@@ -1859,14 +1927,15 @@ button:focus-visible { outline: 2px solid var(--rose); outline-offset: 3px; }
         right: 0.75rem;
     }
 }
+/* Keep Theme Toggle on the Right and Language Toggle on the Left in RTL */
 [dir="rtl"] .theme-toggle-btn {
-    right: auto;
-    left: max(1.25rem, calc(env(safe-area-inset-left, 0px) + 0.85rem));
+    right: max(1.25rem, calc(env(safe-area-inset-right, 0px) + 0.85rem)) !important;
+    left: auto !important;
 }
 @media (max-width: 480px) {
     [dir="rtl"] .theme-toggle-btn {
-        right: auto;
-        left: 0.75rem;
+        right: 0.75rem !important;
+        left: auto !important;
     }
 }
 
@@ -2098,4 +2167,140 @@ select option {
 }
 [data-theme="light"] .admin-tab.active {
     color: #ffffff;
+}
+
+
+/* ── Comprehensive RTL Language Support (Arabic in Dark & Light Mode) ── */
+[dir="rtl"] {
+    letter-spacing: normal !important;
+}
+[dir="rtl"] *,
+[dir="rtl"] *::before,
+[dir="rtl"] *::after {
+    letter-spacing: normal !important;
+}
+[dir="rtl"] body {
+    font-family: 'Cairo', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Arial, sans-serif;
+    line-height: 1.7;
+}
+[dir="rtl"] .hero-content h1,
+[dir="rtl"] .profiles-section-header h2,
+[dir="rtl"] .booking-title,
+[dir="rtl"] .modal-profile-name,
+[dir="rtl"] .empty-state h3 {
+    font-family: 'Cairo', 'Playfair Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, serif;
+    font-weight: 700;
+    line-height: 1.3;
+}
+[dir="rtl"] .hero-content h1 .highlight {
+    font-style: normal;
+}
+[dir="rtl"] .hero-content p {
+    font-weight: 400;
+    line-height: 1.8;
+}
+[dir="rtl"] .theme-toggle-btn,
+[dir="rtl"] .lang-toggle-btn {
+    font-family: 'Cairo', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, sans-serif;
+}
+[dir="rtl"] .profile-card-name {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+}
+[dir="rtl"] .profile-card-bio {
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.88rem;
+    line-height: 1.6;
+}
+[dir="rtl"] .profile-card-age {
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.82rem;
+}
+[dir="rtl"] .profile-card-book {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+}
+[dir="rtl"] .tag {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    font-size: 0.74rem;
+}
+[dir="rtl"] .select-wrap select {
+    padding-left: 2.5rem;
+    padding-right: 1.1rem;
+    text-align: right;
+    font-family: 'Cairo', sans-serif;
+}
+[dir="rtl"] .search-input-wrap input {
+    padding-left: 2.6rem;
+    padding-right: 1.2rem;
+    text-align: right;
+    font-family: 'Cairo', sans-serif;
+}
+[dir="rtl"] .form-group label {
+    text-align: right;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+}
+[dir="rtl"] .form-group input,
+[dir="rtl"] .form-group textarea {
+    text-align: right;
+    font-family: 'Cairo', sans-serif;
+}
+[dir="rtl"] .detail-item {
+    text-align: right;
+}
+[dir="rtl"] .detail-label {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+}
+[dir="rtl"] .detail-value {
+    font-family: 'Cairo', sans-serif;
+}
+[dir="rtl"] .like-section-title {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+}
+[dir="rtl"] .like-section-sub {
+    font-family: 'Cairo', sans-serif;
+}
+[dir="rtl"] .like-btn-label {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+}
+[dir="rtl"] .footer-copy {
+    font-family: 'Cairo', sans-serif;
+}
+[dir="rtl"] .toast-container {
+    left: 1.5rem;
+    right: auto;
+}
+[dir="rtl"] .search-clear {
+    left: 0.85rem;
+    right: auto;
+}
+[dir="rtl"] .select-wrap::after {
+    left: 1.1rem;
+    right: auto;
+}
+[dir="rtl"] .modal-close {
+    left: 1rem;
+    right: auto;
+}
+[dir="rtl"] .btn-full-photo {
+    right: 1rem;
+    left: auto;
+}
+[dir="rtl"] .gallery-counter {
+    left: 1rem;
+    right: auto;
+}
+[dir="rtl"] .availability-badge {
+    right: 0.85rem;
+    left: auto;
+}
+[dir="rtl"] .photo-count {
+    left: 0.85rem;
+    right: auto;
 }

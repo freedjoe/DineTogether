@@ -240,6 +240,341 @@ async function optimizeImageFile(file, maxWidth = 800, maxHeight = 1000, quality
     });
 }
 
+
+// ===== Complete Multi-Language & RTL Localization (EN, FR, AR) =====
+const I18N = {
+    en: {
+        code: 'EN',
+        dir: 'ltr',
+        name: 'English',
+        skipLink: 'Skip to companions',
+        heroTitle: 'Find Your Perfect <span class="highlight">Dining Companion</span>',
+        heroSub: 'Connect with fascinating people over exquisite food. Make lasting friendships, meaningful connections, or simply savour great company.',
+        filterAgeLabel: 'Age',
+        allAges: 'All Ages',
+        age18_24: '18 – 24 years',
+        age25_29: '25 – 29 years',
+        age30_34: '30 – 34 years',
+        age35Plus: '35+ years',
+        filterInterestLabel: 'Interest',
+        allInterests: 'All Interests',
+        intArt: '🎨 Art & Culture',
+        intMusic: '🎵 Music',
+        intTravel: '✈️ Travel',
+        intFitness: '💪 Fitness',
+        intTech: '💻 Technology',
+        intFood: '🍷 Food & Wine',
+        filterSearchLabel: 'Search',
+        searchPlaceholder: 'Search by name, bio, or location…',
+        clearSearch: 'Clear search',
+        discoverHeading: 'Discover Companions',
+        available: 'Available',
+        unavailable: 'Unavailable',
+        yearsOld: 'years old',
+        yearsOldShort: 'years',
+        bookNow: 'Book Now',
+        likeProfile: (name) => `Like ${name}`,
+        undoLikeProfile: (name) => `Undo like for ${name}`,
+        fullPhoto: '⛶ Full Photo',
+        close: 'Close',
+        ageLocation: 'Age & Location',
+        availability: 'Availability',
+        showLoveTitle: (name) => `Show Love for ${name}`,
+        youLikedTitle: (name) => `You Liked ${name}`,
+        showLoveSub: (name) => `Tap the heart if you'd love to dine with ${name}`,
+        undoLikeSub: 'Tap again if you want to undo your like',
+        like: 'Like',
+        liked: 'Liked',
+        bookDinner: '🍽️ Book for Dinner',
+        bookModalTitle: (name) => `Book ${name}`,
+        yourName: 'Your Full Name',
+        phoneNumber: 'Your Phone / WhatsApp',
+        phoneHint: 'Include country code (e.g. +1, +44, +33)',
+        preferredDate: 'Date',
+        preferredTime: 'Time',
+        venue: 'Restaurant / Venue',
+        venuePlaceholder: 'Where would you like to dine?',
+        notes: 'Personal Message',
+        notesPlaceholder: 'Add a note, special dietary requests, or table details…',
+        optional: 'optional',
+        submitBooking: '🍽️ Send Dining Request',
+        cancel: 'Cancel',
+        bookingSuccess: 'Booking request submitted successfully! We will confirm shortly.',
+        bookingPhoneInvalid: 'Please enter a valid phone number (at least 7 digits)',
+        bookingNameInvalid: 'Please enter your full name (at least 2 characters)',
+        bookingDateInvalid: 'Please select a valid future date',
+        footerCopy: '© {year} DineTogether. All rights reserved.',
+        installTitle: 'Install DineTogether',
+        installSub: 'Add to your home screen',
+        installBtn: 'Install',
+        noCompanionsTitle: 'No companions found',
+        noCompanionsDesc: 'Try adjusting your age or interest filters, or',
+        clearAllFilters: 'clear all filters',
+        companionsCount: (filtered, total) => filtered === total ? `${total} companion${total !== 1 ? 's' : ''}` : `${filtered} of ${total} companions`,
+        langToast: 'Language: English',
+        themeToastLight: 'Theme: ☀️ Light',
+        themeToastDark: 'Theme: 🌙 Dark',
+        themeBtnDark: 'Dark',
+        themeBtnLight: 'Light',
+        themeAriaDark: 'Switch to Dark mode',
+        themeAriaLight: 'Switch to Light mode',
+        themeTitleDark: 'Switch to 🌙 Dark mode',
+        themeTitleLight: 'Switch to ☀️ Light mode',
+        likesLabel: 'likes',
+        namePlaceholder: 'e.g. Alexander Vance',
+        phonePlaceholder: 'e.g. +1 234 567 8900'
+    },
+    fr: {
+        code: 'FR',
+        dir: 'ltr',
+        name: 'Français',
+        skipLink: 'Passer aux compagnons',
+        heroTitle: 'Trouvez Votre <span class="highlight">Compagnon Idéal</span>',
+        heroSub: 'Rencontrez des personnes passionnantes autour d\'une table d\'exception. Tissez des liens sincères ou savourez simplement une excellente compagnie.',
+        filterAgeLabel: 'Âge',
+        allAges: 'Tous les âges',
+        age18_24: '18 – 24 ans',
+        age25_29: '25 – 29 ans',
+        age30_34: '30 – 34 ans',
+        age35Plus: '35+ ans',
+        filterInterestLabel: 'Centres d\'intérêt',
+        allInterests: 'Tous les intérêts',
+        intArt: '🎨 Art & Culture',
+        intMusic: '🎵 Musique',
+        intTravel: '✈️ Voyage',
+        intFitness: '💪 Sport & Forme',
+        intTech: '💻 Technologie',
+        intFood: '🍷 Gastronomie & Vins',
+        filterSearchLabel: 'Recherche',
+        searchPlaceholder: 'Rechercher par nom, bio, ville…',
+        clearSearch: 'Effacer la recherche',
+        discoverHeading: 'Découvrir les compagnons',
+        available: 'Disponible',
+        unavailable: 'Indisponible',
+        yearsOld: 'ans',
+        yearsOldShort: 'ans',
+        bookNow: 'Réserver',
+        likeProfile: (name) => `Aimer ${name}`,
+        undoLikeProfile: (name) => `Ne plus aimer ${name}`,
+        fullPhoto: '⛶ Photo complète',
+        close: 'Fermer',
+        ageLocation: 'Âge & Ville',
+        availability: 'Disponibilité',
+        showLoveTitle: (name) => `Montrez votre coup de cœur pour ${name}`,
+        youLikedTitle: (name) => `Vous avez aimé ${name}`,
+        showLoveSub: (name) => `Appuyez sur le cœur si vous souhaitez dîner avec ${name}`,
+        undoLikeSub: 'Appuyez à nouveau pour annuler votre coup de cœur',
+        like: 'J\'aime',
+        liked: 'Aimé',
+        bookDinner: '🍽️ Réserver un dîner',
+        bookModalTitle: (name) => `Réserver avec ${name}`,
+        yourName: 'Votre nom complet',
+        phoneNumber: 'Téléphone / WhatsApp',
+        phoneHint: 'Inclure l\'indicatif pays (ex. +33, +1, +44)',
+        preferredDate: 'Date',
+        preferredTime: 'Heure',
+        venue: 'Restaurant / Lieu',
+        venuePlaceholder: 'Où souhaitez-vous dîner ?',
+        notes: 'Message personnel',
+        notesPlaceholder: 'Demandes particulières, régimes ou détails de table…',
+        optional: 'facultatif',
+        submitBooking: '🍽️ Envoyer la demande',
+        cancel: 'Annuler',
+        bookingSuccess: 'Demande de réservation envoyée avec succès ! Confirmation rapide.',
+        bookingPhoneInvalid: 'Veuillez saisir un numéro de téléphone valide (au moins 7 chiffres)',
+        bookingNameInvalid: 'Veuillez renseigner votre nom complet (au moins 2 caractères)',
+        bookingDateInvalid: 'Veuillez sélectionner une date future valide',
+        footerCopy: '© {year} DineTogether. Tous droits réservés.',
+        installTitle: 'Installer DineTogether',
+        installSub: 'Ajouter à l\'écran d\'accueil',
+        installBtn: 'Installer',
+        noCompanionsTitle: 'Aucun compagnon trouvé',
+        noCompanionsDesc: 'Modifiez vos filtres d\'âge ou d\'intérêt, ou',
+        clearAllFilters: 'réinitialiser les filtres',
+        companionsCount: (filtered, total) => filtered === total ? `${total} compagnon${total !== 1 ? 's' : ''}` : `${filtered} sur ${total} compagnons`,
+        langToast: 'Langue : Français',
+        themeToastLight: 'Thème : ☀️ Clair',
+        themeToastDark: 'Thème : 🌙 Sombre',
+        themeBtnDark: 'Sombre',
+        themeBtnLight: 'Clair',
+        themeAriaDark: 'Passer au mode sombre',
+        themeAriaLight: 'Passer au mode clair',
+        themeTitleDark: 'Passer au mode 🌙 Sombre',
+        themeTitleLight: 'Passer au mode ☀️ Clair',
+        likesLabel: 'j\'aime',
+        namePlaceholder: 'ex. Alexandre Vance',
+        phonePlaceholder: 'ex. +33 6 12 34 56 78'
+    },
+    ar: {
+        code: 'العربية',
+        dir: 'rtl',
+        name: 'العربية',
+        skipLink: 'الانتقال إلى المرافقين',
+        heroTitle: 'اعثر على <span class="highlight">شريك العشاء المثالي</span>',
+        heroSub: 'تواصل مع شخصيات راقية ومميزة حول مأدبة طعام استثنائية. اصنع ذكريات لا تُنسى واستمتع بأروع اللحظات.',
+        filterAgeLabel: 'العمر',
+        allAges: 'جميع الأعمار',
+        age18_24: '18 – 24 سنة',
+        age25_29: '25 – 29 سنة',
+        age30_34: '30 – 34 سنة',
+        age35Plus: '35+ سنة',
+        filterInterestLabel: 'الاهتمام',
+        allInterests: 'جميع الاهتمامات',
+        intArt: '🎨 فن وثقافة',
+        intMusic: '🎵 موسيقى',
+        intTravel: '✈️ سفر وسياحة',
+        intFitness: '💪 رياضة ولياقة',
+        intTech: '💻 تكنولوجيا',
+        intFood: '🍷 طعام وتذوق',
+        filterSearchLabel: 'بحث',
+        searchPlaceholder: 'ابحث بالاسم، النبذة، أو المدينة…',
+        clearSearch: 'مسح البحث',
+        discoverHeading: 'استكشف المرافقين',
+        available: 'متاح',
+        unavailable: 'غير متاح',
+        yearsOld: 'سنة',
+        yearsOldShort: 'سنة',
+        bookNow: 'احجز الآن',
+        likeProfile: (name) => `إعجاب بـ ${name}`,
+        undoLikeProfile: (name) => `إلغاء الإعجاب بـ ${name}`,
+        fullPhoto: '⛶ الصورة الكاملة',
+        close: 'إغلاق',
+        ageLocation: 'العمر والموقع',
+        availability: 'الحالة',
+        showLoveTitle: (name) => `أظهر إعجابك بـ ${name}`,
+        youLikedTitle: (name) => `أنت معجب بـ ${name}`,
+        showLoveSub: (name) => `اضغط على القلب إذا كنت ترغب في تناول العشاء برفقة ${name}`,
+        undoLikeSub: 'اضغط مرة أخرى لإلغاء الإعجاب',
+        like: 'إعجاب',
+        liked: 'تم الإعجاب',
+        bookDinner: '🍽️ حجز عشاء',
+        bookModalTitle: (name) => `حجز موعد مع ${name}`,
+        yourName: 'الاسم الكامل',
+        phoneNumber: 'رقم الهاتف / واتساب',
+        phoneHint: 'يرجى تضمين رمز الدولة (مثل +966، +971، +212)',
+        preferredDate: 'التاريخ',
+        preferredTime: 'الوقت',
+        venue: 'المطعم / المكان',
+        venuePlaceholder: 'أين ترغب في تناول العشاء؟',
+        notes: 'رسالة خاصة',
+        notesPlaceholder: 'أي متطلبات غذائية خاصة أو تفاصيل إضافية…',
+        optional: 'اختياري',
+        submitBooking: '🍽️ إرسال طلب العشاء',
+        cancel: 'إلغاء',
+        bookingSuccess: 'تم إرسال طلب الحجز بنجاح! سنتواصل معك قريباً لتأكيد الموعد.',
+        bookingPhoneInvalid: 'يرجى إدخال رقم هاتف صحيح (7 أرقام على الأقل)',
+        bookingNameInvalid: 'يرجى إدخال اسمك الكامل (حرفان على الأقل)',
+        bookingDateInvalid: 'يرجى اختيار تاريخ صالح في المستقبل',
+        footerCopy: '© {year} DineTogether. جميع الحقوق محفوظة.',
+        installTitle: 'تثبيت DineTogether',
+        installSub: 'أضف إلى الشاشة الرئيسية',
+        installBtn: 'تثبيت',
+        noCompanionsTitle: 'لم يتم العثور على مرافقين',
+        noCompanionsDesc: 'جرّب تعديل خيارات التصفية أو',
+        clearAllFilters: 'إعادة ضبط الفلاتر',
+        companionsCount: (filtered, total) => filtered === total ? `${total} مرافق متاح` : `${filtered} من أصل ${total} مرافقين`,
+        langToast: 'اللغة: العربية',
+        themeToastLight: 'المظهر: ☀️ فاتح',
+        themeToastDark: 'المظهر: 🌙 داكن',
+        themeBtnDark: 'داكن',
+        themeBtnLight: 'فاتح',
+        themeAriaDark: 'التبديل إلى المظهر الداكن',
+        themeAriaLight: 'التبديل إلى المظهر الفاتح',
+        themeTitleDark: 'التبديل إلى المظهر 🌙 الداكن',
+        themeTitleLight: 'التبديل إلى المظهر ☀️ الفاتح',
+        likesLabel: 'إعجاب',
+        namePlaceholder: 'مثال: أحمد المنصوري',
+        phonePlaceholder: 'مثال: 501234567 966+'
+    }
+};
+
+let currentLang = 'en';
+
+function t(key, ...args) {
+    const langObj = I18N[currentLang] || I18N.en;
+    const val = langObj[key] !== undefined ? langObj[key] : (I18N.en[key] !== undefined ? I18N.en[key] : key);
+    if (typeof val === 'function') {
+        return val(...args);
+    }
+    return val;
+}
+
+function initLanguage() {
+    let saved = null;
+    try {
+        saved = localStorage.getItem('dinetogether-lang');
+    } catch (_) {}
+    const lang = saved && I18N[saved] ? saved : 'en';
+    setLanguage(lang, false);
+}
+
+function setLanguage(lang, notify = true) {
+    if (!I18N[lang]) lang = 'en';
+    currentLang = lang;
+    try {
+        localStorage.setItem('dinetogether-lang', lang);
+    } catch (_) {}
+
+    const isRtl = I18N[lang].dir === 'rtl';
+    document.documentElement.setAttribute('dir', isRtl ? 'rtl' : 'ltr');
+    document.documentElement.setAttribute('lang', lang);
+
+    // Update Language Toggle Button
+    const codeEl = document.getElementById('lang-code');
+    if (codeEl) codeEl.textContent = I18N[lang].code;
+    const langBtn = document.getElementById('lang-toggle');
+    if (langBtn) {
+        langBtn.setAttribute('aria-label', `Language: ${I18N[lang].name}. Click to switch.`);
+        langBtn.setAttribute('title', `Language: ${I18N[lang].name} (Click to switch)`);
+    }
+
+    // Apply translations to static DOM elements with data-i18n
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (key && I18N[lang][key]) {
+            el.textContent = I18N[lang][key];
+        }
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const key = el.getAttribute('data-i18n-html');
+        if (key && I18N[lang][key]) {
+            el.innerHTML = I18N[lang][key];
+        }
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (key && I18N[lang][key]) {
+            el.setAttribute('placeholder', I18N[lang][key]);
+        }
+    });
+
+    // Update dynamic footer text
+    const yearEl = document.getElementById('footer-year');
+    const yr = yearEl ? yearEl.textContent : new Date().getFullYear();
+    const copyEl = document.getElementById('footer-copy');
+    if (copyEl) {
+        copyEl.innerHTML = I18N[lang].footerCopy.replace('{year}', `<span id="footer-year">${yr}</span>`);
+    }
+
+    // Update Theme Toggle Button to match active language
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    applyTheme(currentTheme, false);
+
+    // Re-render profiles to reflect localized strings
+    renderProfiles();
+
+    if (notify) {
+        showToast(I18N[lang].langToast, 'info', 2000);
+    }
+}
+
+function cycleLanguage() {
+    const order = ['en', 'fr', 'ar'];
+    const idx = order.indexOf(currentLang);
+    const next = order[(idx + 1) % order.length];
+    setLanguage(next, true);
+}
+
 // ===== Theme Management (Velvet Noir / Champagne Pearl) =====
 function initTheme() {
     let savedTheme = null;
@@ -247,8 +582,8 @@ function initTheme() {
         savedTheme = localStorage.getItem('dinetogether-theme');
     } catch (_) {}
 
-    const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-    const currentTheme = savedTheme || (prefersLight ? 'light' : 'dark');
+    // Default to Light Mode as requested
+    const currentTheme = savedTheme || 'light';
     applyTheme(currentTheme, false);
 
     try {
@@ -267,10 +602,10 @@ function applyTheme(theme, notify = true) {
 
     if (toggleBtn) {
         toggleBtn.setAttribute('aria-pressed', isLight ? 'true' : 'false');
-        toggleBtn.setAttribute('title', isLight ? 'Switch to 🌙 Dark mode' : 'Switch to ☀️ Light mode');
-        toggleBtn.setAttribute('aria-label', isLight ? 'Switch to Dark mode' : 'Switch to Light mode');
+        toggleBtn.setAttribute('title', isLight ? t('themeTitleDark') : t('themeTitleLight'));
+        toggleBtn.setAttribute('aria-label', isLight ? t('themeAriaDark') : t('themeAriaLight'));
         const label = document.getElementById('theme-label');
-        if (label) label.textContent = isLight ? 'Dark' : 'Light';
+        if (label) label.textContent = isLight ? t('themeBtnDark') : t('themeBtnLight');
         const iconDark = toggleBtn.querySelector('.theme-icon-dark');
         const iconLight = toggleBtn.querySelector('.theme-icon-light');
         if (iconDark && iconLight) {
@@ -282,7 +617,7 @@ function applyTheme(theme, notify = true) {
     }
 
     if (notify) {
-        showToast(`Theme: ${isLight ? '☀️ Light' : '🌙 Dark'}`, 'info', 2000);
+        showToast(isLight ? t('themeToastLight') : t('themeToastDark'), 'info', 2000);
     }
 }
 
@@ -584,19 +919,15 @@ function renderProfiles() {
     // Update results count
     const countEl = $('#results-count');
     if (countEl) {
-        if (ageFilter || interestFilter || searchQuery) {
-            countEl.textContent = `${filtered.length} of ${profiles.length} companions`;
-        } else {
-            countEl.textContent = `${profiles.length} companion${profiles.length !== 1 ? 's' : ''}`;
-        }
+        countEl.textContent = t('companionsCount', filtered.length, profiles.length);
     }
 
     if (filtered.length === 0) {
         grid.innerHTML = `
             <div class="empty-state" style="grid-column:1/-1">
                 <span class="empty-state-icon">🔍</span>
-                <h3>No companions found</h3>
-                <p>Try adjusting your age or interest filters, or <button type="button" class="link-btn" id="clear-filters-btn">clear all filters</button></p>
+                <h3>${t('noCompanionsTitle')}</h3>
+                <p>${t('noCompanionsDesc')} <button type="button" class="link-btn" id="clear-filters-btn">${t('clearAllFilters')}</button></p>
             </div>`;
         $('#clear-filters-btn')?.addEventListener('click', () => {
             const ageEl = $('#filter-age');
@@ -623,23 +954,23 @@ function renderProfiles() {
                 <div class="profile-card-media">
                     <img src="${escapeHtml(photo)}" alt="${name}" class="profile-card-image" loading="lazy" decoding="async" width="400" height="500">
                     <div class="profile-card-overlay" aria-hidden="true"></div>
-                    ${p.available ? '<span class="availability-badge">Available</span>' : ''}
+                    ${p.available ? `<span class="availability-badge">${t('available')}</span>` : ''}
                     ${photoCount > 1 ? `<span class="photo-count" aria-label="${photoCount} photos">📷 ${photoCount}</span>` : ''}
                 </div>
                 <div class="profile-card-body">
                     <div class="profile-card-name">${name}</div>
                     <div class="profile-card-age">
                         <svg width="11" height="11" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-                        ${p.age} years old · ${location}
+                        ${p.age} ${t('yearsOld')} · ${location}
                     </div>
                     <div class="profile-card-bio">${bio}</div>
                     <div class="profile-card-tags">${tags}</div>
                     <div class="profile-card-footer">
-                        <button class="profile-card-likes ${userLikedIds.has(p.id) ? 'liked' : ''}" type="button" data-action="like-profile" data-id="${p.id}" title="${userLikedIds.has(p.id) ? 'Undo like for ' + name : 'Like ' + name}" aria-pressed="${userLikedIds.has(p.id)}">
+                        <button class="profile-card-likes ${userLikedIds.has(p.id) ? 'liked' : ''}" type="button" data-action="like-profile" data-id="${p.id}" title="${userLikedIds.has(p.id) ? t('undoLikeProfile', name) : t('likeProfile', name)}" aria-pressed="${userLikedIds.has(p.id)}">
                             <span class="heart-icon" aria-hidden="true">${userLikedIds.has(p.id) ? '❤️' : '🤍'}</span>
                             <span class="likes-count" id="card-likes-${p.id}">${p.likes || 0}</span>
                         </button>
-                        <button class="profile-card-book" type="button" data-action="book" data-id="${p.id}">Book Now</button>
+                        <button class="profile-card-book" type="button" data-action="book" data-id="${p.id}">${t('bookNow')}</button>
                     </div>
                 </div>
             </article>`;
@@ -673,7 +1004,7 @@ function openProfileModal(id) {
             <div class="gallery-blur-bg" id="gallery-blur-bg" style="background-image:url('${escapeHtml(curPhoto)}')"></div>
             <img src="${escapeHtml(curPhoto)}" alt="${name}" class="gallery-main" id="gallery-main-img" width="700" height="460" data-action="open-lightbox" title="Click to view full photo">
             <div class="gallery-overlay" aria-hidden="true"></div>
-            <button class="btn-full-photo" type="button" data-action="open-lightbox" title="View full photo">⛶ Full Photo</button>
+            <button class="btn-full-photo" type="button" data-action="open-lightbox" title="View full photo">${t('fullPhoto')}</button>
             ${multi ? `
                 <button class="gallery-nav gallery-prev" type="button" data-action="gallery-prev" aria-label="Previous photo">&#10094;</button>
                 <button class="gallery-nav gallery-next" type="button" data-action="gallery-next" aria-label="Next photo">&#10095;</button>
@@ -692,22 +1023,22 @@ function openProfileModal(id) {
         <div class="modal-profile-body">
             <h2 class="modal-profile-name" id="modal-profile-title">${name}</h2>
             <div class="modal-profile-meta">
-                <span>🎂 ${profile.age} years old</span>
+                <span>🎂 ${profile.age} ${t('yearsOld')}</span>
                 <span class="meta-sep">·</span>
                 <span>📍 ${escapeHtml(profile.location)}</span>
                 <span class="meta-sep">·</span>
-                <span class="modal-meta-likes"><span class="heart-pulse" aria-hidden="true">${isLiked ? '❤️' : '🤍'}</span> <strong id="modal-likes-count">${profile.likes || 0}</strong> likes</span>
+                <span class="modal-meta-likes"><span class="heart-pulse" aria-hidden="true">${isLiked ? '❤️' : '🤍'}</span> <strong id="modal-likes-count">${profile.likes || 0}</strong> ${t('likesLabel')}</span>
             </div>
             <p class="modal-profile-bio">${escapeHtml(profile.bio)}</p>
             <div class="modal-profile-details">
                 <div class="detail-item">
-                    <div class="detail-label">Age &amp; Location</div>
-                    <div class="detail-value">${profile.age} years · ${escapeHtml(profile.location)}</div>
+                    <div class="detail-label">${t('ageLocation')}</div>
+                    <div class="detail-value">${profile.age} ${t('yearsOldShort')} · ${escapeHtml(profile.location)}</div>
                 </div>
                 <div class="detail-item">
-                    <div class="detail-label">Availability</div>
+                    <div class="detail-label">${t('availability')}</div>
                     <div class="detail-value" style="color:${profile.available ? 'var(--success)' : 'var(--danger)'}">
-                        ${profile.available ? '✅ Available' : '⛔ Unavailable'}
+                        ${profile.available ? '✅ ' + t('available') : '⛔ ' + t('unavailable')}
                     </div>
                 </div>
             </div>
@@ -717,19 +1048,19 @@ function openProfileModal(id) {
 
             <div class="like-section">
                 <div class="like-section-content">
-                    <div class="like-section-title">${isLiked ? 'You Liked ' + name : 'Show Love for ' + name}</div>
-                    <p class="like-section-sub" id="modal-like-sub">${isLiked ? 'Tap again if you want to undo your like' : 'Tap the heart if you\'d love to dine with ' + name}</p>
+                    <div class="like-section-title">${isLiked ? t('youLikedTitle', name) : t('showLoveTitle', name)}</div>
+                    <p class="like-section-sub" id="modal-like-sub">${isLiked ? t('undoLikeSub') : t('showLoveSub', name)}</p>
                 </div>
                 <button class="btn-like-large ${isLiked ? 'liked' : ''}" type="button" data-action="like-profile-modal" data-id="${profile.id}" title="${isLiked ? 'Click to undo like' : 'Click to like'}" aria-pressed="${isLiked}">
                     <span class="heart-bounce" aria-hidden="true">${isLiked ? '❤️' : '🤍'}</span>
-                    <span class="like-btn-label">${isLiked ? 'Liked' : 'Like'}</span>
+                    <span class="like-btn-label">${isLiked ? t('liked') : t('like')}</span>
                     <span class="like-pill-count" id="modal-btn-likes">${profile.likes || 0}</span>
                 </button>
             </div>
 
             <div class="modal-profile-actions">
-                <button class="btn btn-primary" type="button" data-action="book-from-modal" data-id="${profile.id}">🍽️ Book for Dinner</button>
-                <button class="btn btn-secondary" type="button" data-action="close-profile">Close</button>
+                <button class="btn btn-primary" type="button" data-action="book-from-modal" data-id="${profile.id}">${t('bookDinner')}</button>
+                <button class="btn btn-secondary" type="button" data-action="close-profile">${t('close')}</button>
             </div>
         </div>`;
 
@@ -882,7 +1213,7 @@ function updateModalLikeUI(id, liked, count) {
         const heart = btn.querySelector('.heart-bounce');
         if (heart) heart.textContent = liked ? '❤️' : '🤍';
         const label = btn.querySelector('.like-btn-label');
-        if (label) label.textContent = liked ? 'Liked' : 'Like';
+        if (label) label.textContent = liked ? t('liked') : t('like');
         if (liked) {
             btn.classList.add('pop');
             setTimeout(() => btn.classList.remove('pop'), 450);
@@ -890,9 +1221,9 @@ function updateModalLikeUI(id, liked, count) {
     }
 
     const title = $('.like-section-title');
-    if (title) title.textContent = liked ? `You Liked ${name}` : `Show Love for ${name}`;
+    if (title) title.textContent = liked ? t('youLikedTitle', name) : t('showLoveTitle', name);
     const sub = $('#modal-like-sub');
-    if (sub) sub.textContent = liked ? 'Tap again if you want to undo your like' : `Tap the heart if you'd love to dine with ${name}`;
+    if (sub) sub.textContent = liked ? t('undoLikeSub') : t('showLoveSub', name);
     const metaPulse = $('.modal-meta-likes .heart-pulse');
     if (metaPulse) metaPulse.textContent = liked ? '❤️' : '🤍';
 }
@@ -909,37 +1240,37 @@ function openBookingModal(profileId) {
     content.innerHTML = `
         <div class="booking-body">
             <h2 class="booking-title" id="booking-title">
-                Book <span style="background:var(--grad-rose);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">${escapeHtml(profile.name)}</span>
+                <span style="background:var(--grad-rose);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">${t('bookModalTitle', escapeHtml(profile.name))}</span>
             </h2>
             <form class="booking-form" id="booking-form" novalidate>
                 <div class="form-group">
-                    <label for="booking-name">Your Full Name <span aria-hidden="true">*</span></label>
-                    <input type="text" id="booking-name" required placeholder="e.g. Alexander Vance" autocomplete="name" minlength="2">
+                    <label for="booking-name">${t('yourName')} <span aria-hidden="true">*</span></label>
+                    <input type="text" id="booking-name" required placeholder="${escapeHtml(t('namePlaceholder'))}" autocomplete="name" minlength="2">
                 </div>
                 <div class="form-group">
-                    <label for="booking-phone">Your Phone / WhatsApp <span aria-hidden="true">*</span></label>
-                    <input type="tel" id="booking-phone" required placeholder="e.g. +1 234 567 8900" autocomplete="tel">
-                    <span class="field-hint">Include country code (e.g. +1, +44)</span>
+                    <label for="booking-phone">${t('phoneNumber')} <span aria-hidden="true">*</span></label>
+                    <input type="tel" id="booking-phone" required placeholder="${escapeHtml(t('phonePlaceholder'))}" autocomplete="tel">
+                    <span class="field-hint">${t('phoneHint')}</span>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="booking-date">Date <span aria-hidden="true">*</span></label>
+                        <label for="booking-date">${t('preferredDate')} <span aria-hidden="true">*</span></label>
                         <input type="date" id="booking-date" required min="${todayISO()}">
                     </div>
                     <div class="form-group">
-                        <label for="booking-time">Time <span aria-hidden="true">*</span></label>
+                        <label for="booking-time">${t('preferredTime')} <span aria-hidden="true">*</span></label>
                         <input type="time" id="booking-time" required>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="booking-restaurant">Restaurant / Venue <span aria-hidden="true">*</span></label>
-                    <input type="text" id="booking-restaurant" required placeholder="Where would you like to dine?">
+                    <label for="booking-restaurant">${t('venue')} <span aria-hidden="true">*</span></label>
+                    <input type="text" id="booking-restaurant" required placeholder="${t('venuePlaceholder')}">
                 </div>
                 <div class="form-group">
-                    <label for="booking-message">Personal Message <span class="optional-badge">optional</span></label>
-                    <textarea id="booking-message" placeholder="Add a note or special requests…"></textarea>
+                    <label for="booking-message">${t('notes')} <span class="optional-badge">${t('optional')}</span></label>
+                    <textarea id="booking-message" placeholder="${t('notesPlaceholder')}"></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">🍽️ Send Dining Request</button>
+                <button type="submit" class="btn btn-primary">${t('submitBooking')}</button>
             </form>
         </div>`;
 
@@ -967,7 +1298,7 @@ async function submitBooking(event) {
 
     // Validation
     if (!name || name.length < 2) {
-        showToast('Please enter your full name (at least 2 characters)', 'error');
+        showToast(t('bookingNameInvalid'), 'error');
         nameEl.focus();
         return;
     }
@@ -1748,10 +2079,17 @@ function showToast(message, type = 'success', duration = 3200) {
 
 // ===== Event Delegation =====
 function handleClick(e) {
-    const target = e.target.closest('[data-action], [data-page], [data-tab], [data-close], [data-filter], .admin-tab, .hero-brand, .modal-overlay, #btn-lightbox-close, .req-filter-pill, #theme-toggle, .theme-toggle-btn');
+    const target = e.target.closest('[data-action], [data-page], [data-tab], [data-close], [data-filter], .admin-tab, .hero-brand, .modal-overlay, #btn-lightbox-close, .req-filter-pill, #theme-toggle, .theme-toggle-btn, #lang-toggle, .lang-toggle-btn');
     if (!target) return;
 
-    // Theme toggle
+    // Language toggle (Fixed on Left)
+    if (target.id === 'lang-toggle' || target.classList.contains('lang-toggle-btn') || target.closest('#lang-toggle')) {
+        e.preventDefault();
+        cycleLanguage();
+        return;
+    }
+
+    // Theme toggle (Fixed on Right)
     if (target.id === 'theme-toggle' || target.classList.contains('theme-toggle-btn') || target.closest('#theme-toggle')) {
         e.preventDefault();
         toggleTheme();
@@ -1890,6 +2228,7 @@ function handleSubmit(e) {
 
 // ===== Init =====
 document.addEventListener('DOMContentLoaded', async () => {
+    initLanguage();
     initTheme();
     initAurora();
 

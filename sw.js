@@ -1,5 +1,5 @@
-/* ===== DineTogether Service Worker v10 ===== */
-const CACHE_NAME = 'dinetogether-v10';
+/* ===== DineTogether Service Worker v13 ===== */
+const CACHE_NAME = 'dinetogether-v13';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -9,7 +9,7 @@ const STATIC_ASSETS = [
   '/manifest.json',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
-  'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap'
+  'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600;1,700&family=Inter:wght@300;400;500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap'
 ];
 
 /* Install: pre-cache static shell */
