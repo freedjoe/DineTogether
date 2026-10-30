@@ -22,8 +22,8 @@
 
     /* Text */
     --text:        #fce8f0;
-    --text-muted:  #b07088;
-    --text-dim:    #6b3d52;
+    --text-muted:  #c2849c;
+    --text-dim:    #9c657e;
 
     /* Semantic colours */
     --success:     #0fde7a;
@@ -377,7 +377,7 @@ a { color: inherit; text-decoration: none; touch-action: manipulation; }
 
 /* ── Filters ── */
 .filters-section {
-    padding: 1.25rem 1.5rem; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 90;
+    padding: 1.25rem 1.5rem; position: relative; z-index: 10;
     background: rgba(13,0,8,0.92);
     backdrop-filter: blur(24px) saturate(1.6);
     -webkit-backdrop-filter: blur(24px) saturate(1.6);
@@ -607,9 +607,9 @@ a { color: inherit; text-decoration: none; touch-action: manipulation; }
 }
 
 .modal-close {
-    position: absolute; top: 1rem; right: 1rem;
+    position: absolute; top: 1rem; inset-inline-end: 1rem;
     background: rgba(255,45,120,0.10); color: var(--text-muted);
-    width: 34px; height: 34px; border-radius: 50%;
+    width: 38px; height: 38px; min-width: 38px; min-height: 38px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     transition: var(--t); z-index: 10;
     border: 1px solid var(--border-glow);
@@ -810,10 +810,10 @@ a { color: inherit; text-decoration: none; touch-action: manipulation; }
 
 /* ── Booking / Forms ── */
 .booking-body  { padding: 1.85rem; }
-.booking-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center; line-height: 1.2; }
+.booking-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center; line-height: 1.2; padding-inline-start: 2.75rem; margin-inline-end: 2.75rem; word-break: break-word; }
 .booking-form, .profile-form { display: flex; flex-direction: column; gap: .95rem; }
 .profile-form  { padding: 1.85rem; }
-.profile-form h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: .5rem; }
+.profile-form h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: .5rem; margin-inline-end: 2.75rem; word-break: break-word; }
 
 .form-group { display: flex; flex-direction: column; gap: .4rem; }
 .form-group label { font-size: .76rem; font-weight: 600; color: var(--text-muted); letter-spacing: .02em; }
@@ -1028,7 +1028,7 @@ a { color: inherit; text-decoration: none; touch-action: manipulation; }
 .db-manager-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-top: 1rem; }
 .db-card { background: var(--bg-card); border-radius: var(--radius-sm); padding: 1.25rem 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow); }
 .db-card-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.9rem; color: var(--rose-light); display: flex; align-items: center; gap: 0.5rem; }
-.db-stat-row { display: flex; justify-content: space-between; align-items: center; padding: 0.45rem 0; border-bottom: 1px solid rgba(255,45,120,0.06); font-size: 0.85rem; }
+.db-stat-row { display: flex; justify-content: space-between; align-items: center; padding: 0.45rem 0; border-bottom: 1px solid rgba(255,45,120,0.06); font-size: 0.85rem; flex-wrap: wrap; gap: 0.35rem; word-break: break-word; }
 .db-stat-row:last-child { border-bottom: none; }
 .db-query-section { background: var(--bg-card); border-radius: var(--radius-sm); padding: 1.25rem 1.5rem; border: 1px solid var(--border); }
 .sql-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
@@ -1110,9 +1110,9 @@ a { color: inherit; text-decoration: none; touch-action: manipulation; }
     /* Mobile Filters: Compact 2-row layout */
     .filters-section {
         padding: 0.75rem 1rem;
-        position: sticky;
-        top: calc(var(--nav-h) + env(safe-area-inset-top, 0px));
-        z-index: 95;
+        position: relative;
+        top: auto;
+        z-index: 10;
     }
     .filters-inner {
         display: flex;
@@ -1133,10 +1133,16 @@ a { color: inherit; text-decoration: none; touch-action: manipulation; }
         font-size: 0.65rem;
         margin-bottom: 0.2rem;
     }
-    .filter-group select,
+    .filter-group select {
+        padding: 0.58rem 2.2rem 0.58rem 0.95rem;
+        border-radius: 999px;
+    }
     .filter-group input {
         padding: 0.58rem 0.95rem;
         border-radius: 999px;
+    }
+    .search-input-wrap input {
+        padding: 0.58rem 2.5rem 0.58rem 0.95rem !important;
     }
     .select-wrap::after { right: 0.85rem; font-size: 0.85rem; }
 
@@ -1401,11 +1407,19 @@ a { color: inherit; text-decoration: none; touch-action: manipulation; }
         flex-wrap: wrap;
         justify-content: stretch;
     }
-    .request-actions .btn {
+    .request-actions button {
         flex: 1 1 calc(50% - 0.35rem);
         min-height: 42px;
         justify-content: center;
         font-size: 0.8rem;
+        display: inline-flex;
+        align-items: center;
+        text-align: center;
+    }
+    .request-actions .btn-delete {
+        margin-inline-start: 0 !important;
+        flex: 1 1 100% !important;
+        margin-top: 0.25rem;
     }
     .db-query-section input {
         min-height: 44px;
@@ -1418,7 +1432,7 @@ a { color: inherit; text-decoration: none; touch-action: manipulation; }
     .hero-logo-wrap { width: 62px; height: 62px; }
     .hero-logo-img { width: 48px; height: 48px; }
     .admin-profiles-list { grid-template-columns: 1fr; }
-    .admin-clients-list  { grid-template-columns: 1fr 1fr; }
+    .admin-clients-list  { grid-template-columns: 1fr; }
     .booking-form .form-row { grid-template-columns: 1fr; }
 }
 
@@ -1431,3 +1445,270 @@ a { color: inherit; text-decoration: none; touch-action: manipulation; }
     .orb, #aurora-canvas { display: none; }
 }
 :focus-visible { outline: 2px solid var(--rose); outline-offset: 3px; border-radius: 4px; }
+
+/* ══════════════════════════════════════════
+   DineTogether v3.2 — Additional Styles
+   Fixes, new components, polish
+   ══════════════════════════════════════════ */
+
+/* ── Skip Link (Accessibility) ── */
+.skip-link {
+    position: absolute; top: -100px; left: 1rem; z-index: 9999;
+    background: var(--rose); color: #fff; padding: 0.6rem 1.2rem;
+    border-radius: var(--radius-xs); font-weight: 600; font-size: 0.9rem;
+    transition: top 0.2s;
+}
+.skip-link:focus { top: 1rem; }
+
+/* ── Field Hints & Optional Badge ── */
+.field-hint {
+    font-size: 0.72rem; color: var(--text-dim); margin-top: 0.15rem;
+}
+.optional-badge {
+    font-size: 0.65rem; color: var(--text-dim); font-weight: 400;
+    background: var(--bg-elevated); padding: 0.1rem 0.45rem;
+    border-radius: 999px; margin-left: 0.3rem; border: 1px solid var(--border);
+}
+
+/* ── Link Button (inline) ── */
+.link-btn {
+    background: none; border: none; color: var(--rose-light);
+    text-decoration: underline; cursor: pointer; font: inherit;
+    padding: 0; font-size: inherit;
+}
+.link-btn:hover { color: var(--rose); }
+
+/* ── Results Count ── */
+.results-count {
+    font-size: 0.78rem; color: var(--text-dim); background: var(--bg-card);
+    border: 1px solid var(--border); padding: 0.32rem 0.85rem; border-radius: 999px;
+    white-space: nowrap; transition: var(--t);
+}
+
+/* ── Hero Stats ── */
+.hero-stats {
+    display: flex; justify-content: center; align-items: center;
+    background: rgba(13,0,8,0.6); backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1.35rem 2rem; max-width: 480px; margin: 0 auto;
+    box-shadow: var(--shadow), 0 0 40px rgba(255,45,120,0.07);
+}
+.stat { text-align: center; flex: 1; min-width: 80px; }
+.stat-number {
+    display: block; font-size: clamp(1.8rem,4vw,2.5rem); font-weight: 700;
+    font-family: 'Playfair Display', serif;
+    background: var(--grad-rose); -webkit-background-clip: text;
+    background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2;
+}
+.stat-label {
+    font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase;
+    letter-spacing: 0.1em; font-weight: 600; margin-top: 0.2rem;
+}
+.stat-divider { width: 1px; height: 38px; background: var(--border); flex-shrink: 0; margin: 0 1.5rem; }
+
+/* ── Site Footer ── */
+.site-footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 1.5rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    position: relative; z-index: 2;
+    background: linear-gradient(to top, rgba(13,0,8,0.85), transparent);
+}
+.site-footer-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap;
+}
+.footer-brand {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: 'Playfair Display', serif; font-size: 0.9rem; font-weight: 600;
+    background: var(--grad-rose); -webkit-background-clip: text;
+    background-clip: text; -webkit-text-fill-color: transparent;
+}
+.footer-brand img { border-radius: 5px; opacity: 0.85; filter: drop-shadow(0 0 6px rgba(255,45,120,0.4)); }
+.footer-copy {
+    font-size: 0.74rem; color: var(--text-dim);
+}
+
+/* ── Profile Availability Badge in Admin ── */
+.admin-profile-status { margin-bottom: 0.4rem; }
+.avail-badge {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 0.68rem; font-weight: 600; padding: 0.18rem 0.6rem;
+    border-radius: 999px; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.avail-on {
+    background: rgba(15,222,122,0.14); color: var(--success);
+    border: 1px solid rgba(15,222,122,0.28);
+}
+.avail-off {
+    background: rgba(255,59,59,0.12); color: var(--danger);
+    border: 1px solid rgba(255,59,59,0.22);
+}
+
+/* ── Gallery thumbnail keyboard focus ── */
+#gallery-thumbnails img:focus {
+    outline: 2px solid var(--rose); outline-offset: 2px;
+    border-color: var(--rose); opacity: 1;
+}
+
+/* ── Better focus-visible for all interactive elements ── */
+:focus-visible { outline: 2px solid var(--rose); outline-offset: 3px; border-radius: 4px; }
+button:focus-visible { outline: 2px solid var(--rose); outline-offset: 3px; }
+
+/* ── Hero brand link — prevent default anchor underline ── */
+.hero-brand { text-decoration: none; }
+
+/* ── Mobile footer fix ── */
+@media (max-width: 768px) {
+    .site-footer-inner {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+    .hero-stats {
+        padding: 0.85rem 1rem;
+        max-width: 100%;
+    }
+    .stat-number { font-size: 1.65rem; }
+    .stat-divider { display: none; }
+    .results-count {
+        font-size: 0.72rem;
+        padding: 0.25rem 0.65rem;
+    }
+}
+
+/* ── DB query section — mobile fix ── */
+@media (max-width: 480px) {
+    #sql-query-input {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* ── Fix modal-profile-actions margin on mobile ── */
+@media (max-width: 768px) {
+    .modal-profile-actions {
+        margin: 1.25rem -1.15rem -1.25rem;
+    }
+}
+
+/* ── Profile card focus-visible for keyboard users ── */
+.profile-card:focus-visible {
+    outline: 2px solid var(--rose);
+    outline-offset: 4px;
+    box-shadow: 0 0 0 4px rgba(255,45,120,0.2);
+}
+
+/* ── Better empty state clear button ── */
+.empty-state .link-btn {
+    font-size: inherit;
+    color: var(--rose-light);
+}
+
+/* ── Alt option focus in propose modal ── */
+.alt-option:focus-visible {
+    outline: 2px solid var(--rose);
+    outline-offset: 2px;
+    border-color: var(--rose);
+    border-radius: var(--radius-sm);
+}
+
+/* ══════════════════════════════════════════
+   DineTogether v3.3 — Premium Mobile & RTL Enhancements
+   Touch optimization, RTL logical properties, spacing polish
+   ══════════════════════════════════════════ */
+
+/* ── Touch Screen Photo Management ── */
+@media (hover: none) {
+    .photo-thumb-overlay {
+        background: rgba(0, 0, 0, 0.45);
+    }
+    .photo-thumb-del {
+        opacity: 1;
+        transform: scale(1);
+    }
+    .profile-card-likes:hover,
+    .btn-like-large:hover,
+    .profile-card-book:hover {
+        transform: none !important;
+    }
+}
+
+/* ── Mobile Toast Optimization ── */
+@media (max-width: 480px) {
+    .toast-container {
+        inset-inline: 1rem;
+        right: 1rem;
+        left: 1rem;
+        bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+        align-items: center;
+    }
+    .toast {
+        width: 100%;
+        max-width: 380px;
+        font-size: 0.84rem;
+        padding: 0.75rem 1.15rem;
+    }
+}
+
+/* ── Fluid Card Media Ratio & Text Safety ── */
+.profile-card-name {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+.profile-card-age {
+    flex-wrap: wrap;
+}
+
+/* ── RTL Localization Support ── */
+[dir="rtl"] {
+    text-align: right;
+}
+[dir="rtl"] .hero,
+[dir="rtl"] .profiles-section-header,
+[dir="rtl"] .booking-title,
+[dir="rtl"] .empty-state,
+[dir="rtl"] .site-footer,
+[dir="rtl"] .client-card,
+[dir="rtl"] .hero-brand,
+[dir="rtl"] .like-section-content {
+    text-align: center;
+}
+[dir="rtl"] .request-arrow {
+    transform: scaleX(-1);
+    display: inline-block;
+}
+[dir="rtl"] .toast {
+    transform: translateX(calc(-100% - 2rem));
+}
+[dir="rtl"] .toast.show {
+    transform: translateX(0);
+}
+[dir="rtl"] .toast.hiding {
+    transform: translateX(calc(-100% - 2rem));
+}
+[dir="rtl"] .select-wrap::after {
+    left: 1.1rem;
+    right: auto;
+}
+@media (max-width: 768px) {
+    [dir="rtl"] .select-wrap::after {
+        left: 0.85rem;
+        right: auto;
+    }
+    [dir="rtl"] .search-clear {
+        left: 0.85rem;
+        right: auto;
+    }
+    [dir="rtl"] .modal-close {
+        left: 0.85rem;
+        right: auto;
+    }
+    [dir="rtl"] .filter-group select {
+        padding: 0.58rem 0.95rem 0.58rem 2.2rem;
+    }
+    [dir="rtl"] .search-input-wrap input {
+        padding: 0.58rem 0.95rem 0.58rem 2.5rem !important;
+    }
+}

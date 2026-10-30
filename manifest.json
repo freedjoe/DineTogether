@@ -3,6 +3,7 @@
   "short_name": "DineTogether",
   "description": "Find your perfect dining companion. Connect over great food.",
   "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0d0008",
   "theme_color": "#ff2d78",
@@ -21,13 +22,7 @@
       "purpose": "any maskable"
     }
   ],
-  "screenshots": [
-    {
-      "src": "icons/screenshot.png",
-      "sizes": "1280x720",
-      "type": "image/png"
-    }
-  ],
   "categories": ["social", "lifestyle", "food"],
-  "lang": "en"
+  "lang": "en",
+  "dir": "ltr"
 }

@@ -1,9 +1,11 @@
 // =====================================================
-//  DineTogether v3.1 — app.js
+//  DineTogether v3.2 — app.js
 //  Real SQLite WASM · Photo Optimization · /_/admin
 //  Deep Rose · Pink · Sultry Dark Theme
 //  Enhanced Filters by Age · Complete Photos & Lightbox
 //  Booking with Phone Numbers · Full Booking Manager
+//  Production-polished: hero stats, results count,
+//  focus management, phone validation, keyboard nav
 // =====================================================
 
 'use strict';
@@ -187,6 +189,14 @@ async function getUserKey() {
     return cachedUserKey;
 }
 
+// ===== Phone Number Validation =====
+function isValidPhone(phone) {
+    // Accept international format: +, digits, spaces, dashes, dots, parens
+    // Minimum 6 digits after stripping non-numeric chars
+    const digits = phone.replace(/\D/g, '');
+    return digits.length >= 6 && digits.length <= 15 && /^[+\d\s\-().]+$/.test(phone);
+}
+
 // ===== Photo Optimization Engine =====
 async function optimizeImageFile(file, maxWidth = 800, maxHeight = 1000, quality = 0.85) {
     return new Promise((resolve, reject) => {
@@ -323,13 +333,40 @@ function hideLoading() {
     setTimeout(() => { overlay.classList.add('hidden'); }, 520);
 }
 
+// ===== Focus Management =====
+let _lastFocusedBeforeModal = null;
+
+function trapFocus(el) {
+    const focusable = el.querySelectorAll(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (!first) return;
+    first.focus();
+    el.addEventListener('keydown', function handler(e) {
+        if (e.key !== 'Tab') return;
+        if (e.shiftKey) {
+            if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+            if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+    });
+}
+
 // ===== Modal & Lightbox Helpers =====
 function openOverlay(id) {
     const el = document.getElementById(id);
     if (!el) return;
+    _lastFocusedBeforeModal = document.activeElement;
     el.classList.add('active');
     el.hidden = false;
     document.body.style.overflow = 'hidden';
+    // Focus trap after render
+    requestAnimationFrame(() => {
+        const modal = el.querySelector('.modal, .lightbox-content');
+        if (modal) trapFocus(modal);
+    });
 }
 
 function closeOverlay(id) {
@@ -338,6 +375,11 @@ function closeOverlay(id) {
     el.classList.remove('active');
     el.hidden = true;
     if (!$$('.modal-overlay.active').length) document.body.style.overflow = '';
+    // Restore focus
+    if (_lastFocusedBeforeModal && typeof _lastFocusedBeforeModal.focus === 'function') {
+        _lastFocusedBeforeModal.focus();
+        _lastFocusedBeforeModal = null;
+    }
 }
 
 let lightboxSwipeAttached = false;
@@ -414,6 +456,7 @@ function showPage(page, updateHash = true) {
             window.location.hash = '';
         }
         renderProfiles();
+        updateHeroStats();
     } else {
         const view = $('#admin-view');
         view.classList.add('active'); view.hidden = false;
@@ -440,6 +483,19 @@ function switchAdminTab(tab) {
     if (tab === 'database') {
         renderDatabaseStats();
     }
+}
+
+// ===== Hero Stats =====
+function updateHeroStats() {
+    const companionEl = $('#stat-companions');
+    const cityEl = $('#stat-cities');
+    const bookingsEl = $('#stat-bookings');
+    if (companionEl) companionEl.textContent = profiles.length;
+    if (cityEl) {
+        const uniqueCities = new Set(profiles.map(p => p.location?.split(',')[0]?.trim()).filter(Boolean));
+        cityEl.textContent = uniqueCities.size;
+    }
+    if (bookingsEl) bookingsEl.textContent = requests.length;
 }
 
 // ===== Render Client Profiles with Age Filter =====
@@ -470,13 +526,32 @@ function renderProfiles() {
     const clearBtn = $('#search-clear');
     if (clearBtn) clearBtn.hidden = !searchQuery;
 
+    // Update results count
+    const countEl = $('#results-count');
+    if (countEl) {
+        if (ageFilter || interestFilter || searchQuery) {
+            countEl.textContent = `${filtered.length} of ${profiles.length} companions`;
+        } else {
+            countEl.textContent = `${profiles.length} companion${profiles.length !== 1 ? 's' : ''}`;
+        }
+    }
+
     if (filtered.length === 0) {
         grid.innerHTML = `
             <div class="empty-state" style="grid-column:1/-1">
                 <span class="empty-state-icon">🔍</span>
                 <h3>No companions found</h3>
-                <p>Try adjusting your age or interest filters</p>
+                <p>Try adjusting your age or interest filters, or <button type="button" class="link-btn" id="clear-filters-btn">clear all filters</button></p>
             </div>`;
+        $('#clear-filters-btn')?.addEventListener('click', () => {
+            const ageEl = $('#filter-age');
+            const intEl = $('#filter-interest');
+            const srchEl = $('#filter-search');
+            if (ageEl) ageEl.value = '';
+            if (intEl) intEl.value = '';
+            if (srchEl) srchEl.value = '';
+            renderProfiles();
+        });
         return;
     }
 
@@ -506,7 +581,7 @@ function renderProfiles() {
                     <div class="profile-card-tags">${tags}</div>
                     <div class="profile-card-footer">
                         <button class="profile-card-likes ${userLikedIds.has(p.id) ? 'liked' : ''}" type="button" data-action="like-profile" data-id="${p.id}" title="${userLikedIds.has(p.id) ? 'Undo like for ' + name : 'Like ' + name}" aria-pressed="${userLikedIds.has(p.id)}">
-                            <span class="heart-icon">${userLikedIds.has(p.id) ? '❤️' : '🤍'}</span>
+                            <span class="heart-icon" aria-hidden="true">${userLikedIds.has(p.id) ? '❤️' : '🤍'}</span>
                             <span class="likes-count" id="card-likes-${p.id}">${p.likes || 0}</span>
                         </button>
                         <button class="profile-card-book" type="button" data-action="book" data-id="${p.id}">Book Now</button>
@@ -541,20 +616,21 @@ function openProfileModal(id) {
     content.innerHTML = `
         <div class="photo-gallery">
             <div class="gallery-blur-bg" id="gallery-blur-bg" style="background-image:url('${escapeHtml(curPhoto)}')"></div>
-            <img src="${escapeHtml(curPhoto)}" alt="${name}" class="gallery-main" id="gallery-main-img" width="700" height="460" data-action="open-lightbox" title="Click to view complete full photo">
+            <img src="${escapeHtml(curPhoto)}" alt="${name}" class="gallery-main" id="gallery-main-img" width="700" height="460" data-action="open-lightbox" title="Click to view full photo">
             <div class="gallery-overlay" aria-hidden="true"></div>
-            <button class="btn-full-photo" type="button" data-action="open-lightbox" title="View complete full photo">⛶ Full Photo</button>
+            <button class="btn-full-photo" type="button" data-action="open-lightbox" title="View full photo">⛶ Full Photo</button>
             ${multi ? `
                 <button class="gallery-nav gallery-prev" type="button" data-action="gallery-prev" aria-label="Previous photo">&#10094;</button>
                 <button class="gallery-nav gallery-next" type="button" data-action="gallery-next" aria-label="Next photo">&#10095;</button>
-                <span class="gallery-counter" id="gallery-counter">1 / ${currentGalleryPhotos.length}</span>
+                <span class="gallery-counter" id="gallery-counter" aria-live="polite" aria-atomic="true">1 / ${currentGalleryPhotos.length}</span>
             ` : ''}
         </div>
         ${multi ? `
-            <div class="gallery-thumbnails" id="gallery-thumbnails">
+            <div class="gallery-thumbnails" id="gallery-thumbnails" role="list" aria-label="Photo thumbnails">
                 ${currentGalleryPhotos.map((photo, i) => `
-                    <img src="${escapeHtml(photo)}" alt="Photo ${i + 1}" class="${i === 0 ? 'active' : ''}"
-                         data-action="gallery-thumb" data-index="${i}" loading="lazy" decoding="async" width="62" height="62">
+                    <img src="${escapeHtml(photo)}" alt="Photo ${i + 1} of ${name}" class="${i === 0 ? 'active' : ''}"
+                         data-action="gallery-thumb" data-index="${i}" loading="lazy" decoding="async" width="62" height="62"
+                         role="listitem" tabindex="${i === 0 ? '0' : '-1'}">
                 `).join('')}
             </div>
         ` : ''}
@@ -565,7 +641,7 @@ function openProfileModal(id) {
                 <span class="meta-sep">·</span>
                 <span>📍 ${escapeHtml(profile.location)}</span>
                 <span class="meta-sep">·</span>
-                <span class="modal-meta-likes"><span class="heart-pulse">${isLiked ? '❤️' : '🤍'}</span> <strong id="modal-likes-count">${profile.likes || 0}</strong> likes</span>
+                <span class="modal-meta-likes"><span class="heart-pulse" aria-hidden="true">${isLiked ? '❤️' : '🤍'}</span> <strong id="modal-likes-count">${profile.likes || 0}</strong> likes</span>
             </div>
             <p class="modal-profile-bio">${escapeHtml(profile.bio)}</p>
             <div class="modal-profile-details">
@@ -590,7 +666,7 @@ function openProfileModal(id) {
                     <p class="like-section-sub" id="modal-like-sub">${isLiked ? 'Tap again if you want to undo your like' : 'Tap the heart if you\'d love to dine with ' + name}</p>
                 </div>
                 <button class="btn-like-large ${isLiked ? 'liked' : ''}" type="button" data-action="like-profile-modal" data-id="${profile.id}" title="${isLiked ? 'Click to undo like' : 'Click to like'}" aria-pressed="${isLiked}">
-                    <span class="heart-bounce">${isLiked ? '❤️' : '🤍'}</span>
+                    <span class="heart-bounce" aria-hidden="true">${isLiked ? '❤️' : '🤍'}</span>
                     <span class="like-btn-label">${isLiked ? 'Liked' : 'Like'}</span>
                     <span class="like-pill-count" id="modal-btn-likes">${profile.likes || 0}</span>
                 </button>
@@ -623,7 +699,6 @@ function setupGallerySwipe() {
         const diffX = e.changedTouches[0].clientX - startX;
         const diffY = e.changedTouches[0].clientY - startY;
 
-        // Check horizontal swipe threshold
         if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 35) {
             if (diffX < 0) navigateGallery(1);
             else navigateGallery(-1);
@@ -654,7 +729,10 @@ function updateGalleryDisplay() {
     }
     const counter = $('#gallery-counter');
     if (counter) counter.textContent = `${currentGalleryIndex + 1} / ${currentGalleryPhotos.length}`;
-    $$('#gallery-thumbnails img').forEach((thumb, i) => thumb.classList.toggle('active', i === currentGalleryIndex));
+    $$('#gallery-thumbnails img').forEach((thumb, i) => {
+        thumb.classList.toggle('active', i === currentGalleryIndex);
+        thumb.setAttribute('tabindex', i === currentGalleryIndex ? '0' : '-1');
+    });
 }
 
 async function handleLikeProfile(id, triggerEl) {
@@ -778,32 +856,33 @@ function openBookingModal(profileId) {
             <h2 class="booking-title" id="booking-title">
                 Book <span style="background:var(--grad-rose);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">${escapeHtml(profile.name)}</span>
             </h2>
-            <form class="booking-form" id="booking-form">
+            <form class="booking-form" id="booking-form" novalidate>
                 <div class="form-group">
-                    <label for="booking-name">Your Full Name *</label>
-                    <input type="text" id="booking-name" required placeholder="e.g. Alexander Vance" autocomplete="name">
+                    <label for="booking-name">Your Full Name <span aria-hidden="true">*</span></label>
+                    <input type="text" id="booking-name" required placeholder="e.g. Alexander Vance" autocomplete="name" minlength="2">
                 </div>
                 <div class="form-group">
-                    <label for="booking-phone">Your Phone / WhatsApp Number *</label>
+                    <label for="booking-phone">Your Phone / WhatsApp <span aria-hidden="true">*</span></label>
                     <input type="tel" id="booking-phone" required placeholder="e.g. +1 234 567 8900" autocomplete="tel">
+                    <span class="field-hint">Include country code (e.g. +1, +44)</span>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="booking-date">Date *</label>
+                        <label for="booking-date">Date <span aria-hidden="true">*</span></label>
                         <input type="date" id="booking-date" required min="${todayISO()}">
                     </div>
                     <div class="form-group">
-                        <label for="booking-time">Time *</label>
+                        <label for="booking-time">Time <span aria-hidden="true">*</span></label>
                         <input type="time" id="booking-time" required>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="booking-restaurant">Restaurant / Venue *</label>
+                    <label for="booking-restaurant">Restaurant / Venue <span aria-hidden="true">*</span></label>
                     <input type="text" id="booking-restaurant" required placeholder="Where would you like to dine?">
                 </div>
                 <div class="form-group">
-                    <label for="booking-message">Personal Message (optional)</label>
-                    <textarea id="booking-message" placeholder="Add a note or special requests..."></textarea>
+                    <label for="booking-message">Personal Message <span class="optional-badge">optional</span></label>
+                    <textarea id="booking-message" placeholder="Add a note or special requests…"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">🍽️ Send Dining Request</button>
             </form>
@@ -817,16 +896,50 @@ function closeBookingModal() { closeOverlay('booking-modal'); }
 async function submitBooking(event) {
     event.preventDefault();
 
-    const name = $('#booking-name').value.trim();
-    const phone = $('#booking-phone').value.trim();
-    const date = $('#booking-date').value;
-    const time = $('#booking-time').value;
-    const restaurant = $('#booking-restaurant').value.trim();
-    const message = $('#booking-message').value.trim();
+    const nameEl = $('#booking-name');
+    const phoneEl = $('#booking-phone');
+    const dateEl = $('#booking-date');
+    const timeEl = $('#booking-time');
+    const restaurantEl = $('#booking-restaurant');
+    const messageEl = $('#booking-message');
+
+    const name = nameEl.value.trim();
+    const phone = phoneEl.value.trim();
+    const date = dateEl.value;
+    const time = timeEl.value;
+    const restaurant = restaurantEl.value.trim();
+    const message = messageEl.value.trim();
+
+    // Validation
+    if (!name || name.length < 2) {
+        showToast('Please enter your full name (at least 2 characters)', 'error');
+        nameEl.focus();
+        return;
+    }
+    if (!phone || !isValidPhone(phone)) {
+        showToast('Please enter a valid phone number including country code', 'error');
+        phoneEl.focus();
+        return;
+    }
+    if (!date) {
+        showToast('Please select a date', 'error');
+        dateEl.focus();
+        return;
+    }
+    if (!time) {
+        showToast('Please select a time', 'error');
+        timeEl.focus();
+        return;
+    }
+    if (!restaurant || restaurant.length < 2) {
+        showToast('Please enter a restaurant or venue name', 'error');
+        restaurantEl.focus();
+        return;
+    }
 
     const submitBtn = event.target.querySelector('[type="submit"]');
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Saving booking to SQLite…';
+    submitBtn.textContent = 'Saving booking…';
 
     try {
         let client = await DB.clients.byPhone(phone);
@@ -857,9 +970,10 @@ async function submitBooking(event) {
         [clients, requests] = await Promise.all([DB.clients.all(), DB.requests.all()]);
 
         closeBookingModal();
-        showToast('Dining request sent & saved in SQLite! 🍽️', 'success');
+        showToast('Dining request sent successfully! 🍽️', 'success');
         updateRequestBadge();
         updateQuickStats();
+        updateHeroStats();
     } catch (e) {
         console.error('Booking error:', e);
         showToast('Failed to save request to database', 'error');
@@ -883,6 +997,9 @@ function renderAdminProfiles() {
             <div class="admin-profile-info">
                 <div class="admin-profile-name">${escapeHtml(p.name)}</div>
                 <div class="admin-profile-meta">${p.age} yrs · ❤️ ${p.likes || 0} likes · 📷 ${p.photos?.length || 1}<br>${escapeHtml(p.location)}</div>
+                <div class="admin-profile-status">
+                    <span class="avail-badge ${p.available ? 'avail-on' : 'avail-off'}">${p.available ? '● Available' : '○ Unavailable'}</span>
+                </div>
                 <div class="admin-profile-actions">
                     <button class="btn-edit" type="button" data-action="edit-profile" data-id="${p.id}">✏️ Edit &amp; Photos</button>
                     <button class="btn-delete" type="button" data-action="delete-profile" data-id="${p.id}">🗑️ Delete</button>
@@ -938,10 +1055,10 @@ function renderAdminRequests() {
                     <div class="request-header">
                         <div class="request-client">
                             ${escapeHtml(r.clientName)}
-                            <span class="request-arrow">→</span>
+                            <span class="request-arrow" aria-hidden="true">→</span>
                             ${escapeHtml(r.profileName)}
                         </div>
-                        <span class="request-status status-${statusClass}">${statusLabel}</span>
+                        <span class="request-status status-${statusClass}" role="status">${statusLabel}</span>
                     </div>
 
                     <div>
@@ -958,7 +1075,7 @@ function renderAdminRequests() {
                     <div class="request-actions">
                         ${r.status === 'pending' ? `
                             <button class="btn-success" type="button" data-action="set-booking-status" data-id="${r.id}" data-status="accepted">✅ Accept</button>
-                            <button class="btn-danger" type="button" data-action="set-booking-status" data-id="${r.id}" data-status="declined">❌ Cancel / Decline</button>
+                            <button class="btn-danger" type="button" data-action="set-booking-status" data-id="${r.id}" data-status="declined">❌ Decline</button>
                             <button class="btn-warning" type="button" data-action="propose" data-id="${r.id}">🔄 Propose Alternative</button>
                         ` : ''}
                         ${r.status === 'accepted' ? `
@@ -969,7 +1086,7 @@ function renderAdminRequests() {
                             <button class="btn-success" type="button" data-action="set-booking-status" data-id="${r.id}" data-status="accepted">✅ Re-accept</button>
                             <button class="btn-pending" type="button" data-action="set-booking-status" data-id="${r.id}" data-status="pending">⏳ Move to Pending</button>
                         ` : ''}
-                        <button class="btn-delete" type="button" data-action="delete-booking" data-id="${r.id}" style="margin-left:auto" title="Delete from SQLite">🗑️ Delete</button>
+                        <button class="btn-delete" type="button" data-action="delete-booking" data-id="${r.id}" style="margin-left:auto" title="Delete booking">🗑️ Delete</button>
                     </div>
                 </div>
             </div>`;
@@ -989,15 +1106,16 @@ async function updateRequestStatus(requestId, status) {
         updateRequestBadge();
         updateQuickStats();
         renderDatabaseStats();
-        const msg = status === 'accepted' ? 'Booking Accepted! ✅' : (status === 'declined' ? 'Booking Cancelled ❌' : 'Booking moved to Pending ⏳');
+        updateHeroStats();
+        const msg = status === 'accepted' ? 'Booking Accepted! ✅' : (status === 'declined' ? 'Booking Declined ❌' : 'Booking moved to Pending ⏳');
         showToast(msg, status === 'accepted' ? 'success' : (status === 'declined' ? 'error' : 'info'));
     } catch (e) {
-        showToast('Failed to update request', 'error');
+        showToast('Failed to update booking status', 'error');
     }
 }
 
 async function deleteBookingRequest(requestId) {
-    if (!confirm('Are you sure you want to delete this booking request from SQLite?')) return;
+    if (!confirm('Delete this booking request? This cannot be undone.')) return;
     try {
         await DB.requests.delete(requestId);
         requests = await DB.requests.all();
@@ -1005,7 +1123,8 @@ async function deleteBookingRequest(requestId) {
         updateRequestBadge();
         updateQuickStats();
         renderDatabaseStats();
-        showToast('Booking deleted from SQLite database', 'info');
+        updateHeroStats();
+        showToast('Booking deleted', 'info');
     } catch (e) {
         showToast('Failed to delete booking', 'error');
     }
@@ -1015,7 +1134,7 @@ function renderAdminClients() {
     const list = $('#admin-clients-list');
     if (!list) return;
     if (clients.length === 0) {
-        list.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><span class="empty-state-icon">👥</span><h3>No clients yet</h3><p>Registered clients will appear here</p></div>`;
+        list.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><span class="empty-state-icon">👥</span><h3>No clients yet</h3><p>Registered clients will appear here after a booking is made</p></div>`;
         return;
     }
     list.innerHTML = clients.map(c => {
@@ -1037,9 +1156,26 @@ function renderAdminClients() {
                     <span class="client-stat-item">✅ ${accepted} dinner${accepted !== 1 ? 's' : ''}</span>
                     ${pending ? `<span class="client-stat-item">⏳ ${pending} pending</span>` : ''}
                 </div>
+                <div class="client-actions" style="margin-top:0.85rem;display:flex;justify-content:center;">
+                    <button class="btn-delete" type="button" data-action="delete-client" data-id="${c.id}" title="Delete Client" aria-label="Delete ${escapeHtml(c.name)}">🗑️ Delete</button>
+                </div>
             </div>`;
     }).join('');
     list.querySelectorAll('img').forEach(img => img.addEventListener('error', () => imgFallback(img), { once: true }));
+}
+
+async function deleteClient(clientId) {
+    if (!confirm('Delete this client from SQLite? Any linked booking history will remain.')) return;
+    try {
+        await DB.clients.delete(clientId);
+        clients = await DB.clients.all();
+        renderAdminClients();
+        updateQuickStats();
+        renderDatabaseStats();
+        showToast('Client deleted from SQLite', 'info');
+    } catch (e) {
+        showToast('Failed to delete client', 'error');
+    }
 }
 
 function updateRequestBadge() {
@@ -1095,7 +1231,7 @@ function handleDownloadSQLite() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showToast('Downloaded dinetogether.sqlite! You can open it in DB Browser for SQLite.', 'success', 4500);
+        showToast('Downloaded dinetogether.sqlite! Open it in DB Browser for SQLite.', 'success', 4500);
     } catch (e) {
         showToast('Export failed: ' + e.message, 'error');
     }
@@ -1149,12 +1285,12 @@ function handleRunSQL() {
             html += '</tbody></table>';
             if (rows.length > 100) html += `<div style="color:var(--text-dim);margin-top:0.4rem;font-size:0.75rem">Showing 100 of ${rows.length} rows</div>`;
             resultEl.innerHTML = html;
-            showToast(`Query executed on SQLite! (${rows.length} rows)`, 'success');
+            showToast(`Query returned ${rows.length} row${rows.length !== 1 ? 's' : ''}`, 'success');
         } else {
             DB.runRaw(sql);
-            resultEl.innerHTML = '<span style="color:var(--success)">Statement executed successfully & database persisted!</span>';
+            resultEl.innerHTML = '<span style="color:var(--success)">Statement executed successfully &amp; database persisted!</span>';
             renderDatabaseStats();
-            showToast('Statement executed & saved into SQLite!', 'success');
+            showToast('Statement executed & saved to SQLite!', 'success');
         }
     } catch (err) {
         resultEl.innerHTML = `<span style="color:var(--danger)">SQL Error: ${escapeHtml(err.message)}</span>`;
@@ -1175,7 +1311,7 @@ function renderFormPhotos() {
             <img src="${escapeHtml(url)}" alt="Photo ${i + 1}" loading="lazy">
             <div class="photo-thumb-overlay">
                 ${i > 0 ? `<button type="button" class="btn-make-cover" data-action="make-cover-photo" data-index="${i}" title="Make Cover Photo" style="background:var(--rose);color:#fff;border-radius:4px;padding:3px 6px;font-size:0.65rem;font-weight:600">★ Main</button>` : ''}
-                <button type="button" class="photo-thumb-del" data-action="delete-form-photo" data-index="${i}" title="Delete photo">✕</button>
+                <button type="button" class="photo-thumb-del" data-action="delete-form-photo" data-index="${i}" title="Delete photo" aria-label="Delete photo ${i + 1}">✕</button>
             </div>
             ${i === 0 ? '<span class="photo-thumb-main-badge">Cover</span>' : ''}
         </div>
@@ -1243,27 +1379,27 @@ function profileFormHTML(profile = null) {
 
             <div class="form-section-label">Basic Information</div>
             <div class="form-group">
-                <label for="pf-name">Full Name *</label>
-                <input type="text" id="pf-name" required placeholder="Enter full name" value="${escapeHtml(profile?.name || '')}">
+                <label for="pf-name">Full Name <span aria-hidden="true">*</span></label>
+                <input type="text" id="pf-name" required placeholder="Enter full name" value="${escapeHtml(profile?.name || '')}" minlength="2">
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="pf-age">Age *</label>
+                    <label for="pf-age">Age <span aria-hidden="true">*</span></label>
                     <input type="number" id="pf-age" required min="18" max="99" placeholder="Age" value="${profile?.age ?? ''}">
                 </div>
                 <div class="form-group">
-                    <label for="pf-location">Location *</label>
+                    <label for="pf-location">Location <span aria-hidden="true">*</span></label>
                     <input type="text" id="pf-location" required placeholder="City, Country" value="${escapeHtml(profile?.location || '')}">
                 </div>
             </div>
             <div class="form-group">
-                <label for="pf-bio">Bio *</label>
-                <textarea id="pf-bio" required placeholder="Write a charming, engaging bio...">${escapeHtml(profile?.bio || '')}</textarea>
+                <label for="pf-bio">Bio <span aria-hidden="true">*</span></label>
+                <textarea id="pf-bio" required placeholder="Write a charming, engaging bio..." minlength="20">${escapeHtml(profile?.bio || '')}</textarea>
             </div>
 
             <div class="form-section-label">Preferences</div>
             <div class="form-group">
-                <label for="pf-interests">Interests (comma separated)</label>
+                <label for="pf-interests">Interests <span class="optional-badge">comma separated</span></label>
                 <input type="text" id="pf-interests" placeholder="art, music, travel, wine, fitness" value="${escapeHtml((profile?.interests || []).join(', '))}">
             </div>
 
@@ -1276,25 +1412,25 @@ function profileFormHTML(profile = null) {
 
             <div class="photo-upload-zone" id="pf-upload-zone" style="margin-top:0.75rem">
                 <input type="file" id="pf-file-input" accept="image/*" multiple aria-label="Upload photos">
-                <div class="photo-upload-icon">📸</div>
+                <div class="photo-upload-icon" aria-hidden="true">📸</div>
                 <div class="photo-upload-text">Click or drag photos here to upload</div>
                 <div class="photo-upload-sub">Auto-downscales &amp; compresses image file size for crisp portrait display</div>
             </div>
 
             <div class="photo-upload-progress" id="pf-upload-progress" hidden>
-                <div class="spinner"></div>
+                <div class="spinner" aria-hidden="true"></div>
                 <span id="pf-upload-status">Optimizing photo…</span>
             </div>
 
-            <div style="display:flex;gap:0.5rem;margin-top:0.6rem">
-                <input type="url" id="pf-add-url-input" placeholder="Or add photo from URL (https://...)" style="flex:1;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-xs);padding:0.5rem 0.8rem;font-size:0.82rem;color:var(--text)">
-                <button type="button" class="btn btn-secondary" id="btn-add-photo-url" style="padding:0.5rem 0.9rem;font-size:0.8rem">Add URL</button>
+            <div style="display:flex;gap:0.5rem;margin-top:0.6rem;flex-wrap:wrap">
+                <input type="url" id="pf-add-url-input" placeholder="Or add photo from URL (https://...)" style="flex:1;min-width:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-xs);padding:0.5rem 0.8rem;font-size:0.82rem;color:var(--text)" aria-label="Photo URL">
+                <button type="button" class="btn btn-secondary" id="btn-add-photo-url" style="padding:0.5rem 0.9rem;font-size:0.8rem;flex-shrink:0">Add URL</button>
             </div>
 
             <div class="form-section-label" style="margin-top:1rem">Likes &amp; Status</div>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="pf-likes">Likes Count (❤️)</label>
+                    <label for="pf-likes">Likes Count ❤️</label>
                     <input type="number" id="pf-likes" min="0" value="${profile?.likes ?? 120}">
                 </div>
                 <div class="form-group">
@@ -1337,12 +1473,19 @@ function setupProfileFormHandlers() {
 
     addUrlBtn?.addEventListener('click', () => {
         const url = (addUrlInput?.value || '').trim();
-        if (url) {
+        if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
             currentFormPhotos.push(url);
             if (addUrlInput) addUrlInput.value = '';
             renderFormPhotos();
             showToast('Photo URL added to gallery', 'success');
+        } else if (url) {
+            showToast('Please enter a valid URL starting with https://', 'error');
         }
+    });
+
+    // Enter key on URL input
+    addUrlInput?.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); addUrlBtn?.click(); }
     });
 
     $('#pf-photo-grid')?.addEventListener('click', e => {
@@ -1372,12 +1515,32 @@ async function saveProfile(event) {
     const form = event.target;
     const editId = form.dataset.editId ? Number(form.dataset.editId) : null;
 
+    // Validation
+    const name = $('#pf-name').value.trim();
+    const age = parseInt($('#pf-age').value, 10);
+    const bio = $('#pf-bio').value.trim();
+
+    if (!name || name.length < 2) {
+        showToast('Name must be at least 2 characters', 'error');
+        $('#pf-name').focus();
+        return;
+    }
+    if (!age || age < 18 || age > 99) {
+        showToast('Age must be between 18 and 99', 'error');
+        $('#pf-age').focus();
+        return;
+    }
+    if (!bio || bio.length < 20) {
+        showToast('Bio must be at least 20 characters', 'error');
+        $('#pf-bio').focus();
+        return;
+    }
+
     const submitBtn = form.querySelector('[type="submit"]');
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Writing to SQLite database…';
+    submitBtn.textContent = 'Saving to SQLite…';
 
     const interests = ($('#pf-interests').value || '').split(',').map(i => i.trim().toLowerCase()).filter(Boolean);
-    const name = $('#pf-name').value.trim();
     const isAvail = $('#pf-available').value === '1';
 
     const photos = currentFormPhotos.length ? currentFormPhotos : [
@@ -1385,9 +1548,9 @@ async function saveProfile(event) {
     ];
 
     const profileData = {
-        name, age: parseInt($('#pf-age').value, 10),
+        name, age,
         location: $('#pf-location').value.trim(),
-        bio: $('#pf-bio').value.trim(),
+        bio,
         interests,
         photos,
         likes: parseInt($('#pf-likes').value, 10) || 0,
@@ -1401,7 +1564,7 @@ async function saveProfile(event) {
             showToast('Profile & photos saved to SQLite! ✅', 'success');
         } else {
             await DB.profiles.save(profileData);
-            showToast('New profile created in SQLite database! ✨', 'success');
+            showToast('New profile created in SQLite! ✨', 'success');
         }
         profiles = await DB.profiles.all();
         closeProfileFormModal();
@@ -1409,16 +1572,18 @@ async function saveProfile(event) {
         renderProfiles();
         renderDatabaseStats();
         updateQuickStats();
+        updateHeroStats();
     } catch (e) {
         console.error('Save profile error:', e);
         showToast('Failed to save profile to database', 'error');
     } finally {
         submitBtn.disabled = false;
+        submitBtn.textContent = editId ? '💾 Save Changes to SQLite' : '✨ Save New Profile to SQLite';
     }
 }
 
 async function deleteProfile(id) {
-    if (!confirm('Are you sure you want to delete this profile from SQLite? This cannot be undone.')) return;
+    if (!confirm('Delete this profile from SQLite? This cannot be undone.')) return;
     try {
         await DB.profiles.delete(id);
         profiles = await DB.profiles.all();
@@ -1426,7 +1591,8 @@ async function deleteProfile(id) {
         renderProfiles();
         renderDatabaseStats();
         updateQuickStats();
-        showToast('Profile deleted from SQLite database', 'info');
+        updateHeroStats();
+        showToast('Profile deleted from SQLite', 'info');
     } catch (e) {
         showToast('Failed to delete profile', 'error');
     }
@@ -1447,9 +1613,10 @@ function openProposeModal(requestId) {
             <p style="color:var(--text-muted);margin-bottom:1.25rem;text-align:center;font-size:0.9rem">
                 Instead of <strong style="color:var(--text)">${escapeHtml(request.profileName)}</strong>, suggest another companion for <strong style="color:var(--text)">${escapeHtml(request.clientName)}</strong>:
             </p>
-            <div class="alt-list">
+            <div class="alt-list" role="list">
                 ${alternatives.map(p => `
-                    <div class="alt-option" data-action="select-alt" data-request="${requestId}" data-profile="${p.id}" role="button" tabindex="0">
+                    <div class="alt-option" data-action="select-alt" data-request="${requestId}" data-profile="${p.id}"
+                         role="button" tabindex="0" aria-label="Suggest ${escapeHtml(p.name)}">
                         <img src="${escapeHtml(mainPhoto(p))}" alt="${escapeHtml(p.name)}" loading="lazy" width="50" height="50">
                         <div>
                             <div style="font-weight:700;margin-bottom:0.1rem">${escapeHtml(p.name)}</div>
@@ -1463,6 +1630,17 @@ function openProposeModal(requestId) {
         </div>`;
 
     content.querySelectorAll('img').forEach(img => img.addEventListener('error', () => imgFallback(img), { once: true }));
+
+    // Keyboard navigation for alt-option items
+    content.querySelectorAll('.alt-option').forEach(el => {
+        el.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                selectAlternative(Number(el.dataset.request), Number(el.dataset.profile));
+            }
+        });
+    });
+
     openOverlay('booking-modal');
 }
 
@@ -1500,7 +1678,8 @@ function showToast(message, type = 'success', duration = 3200) {
     const icons = { success: '✓', error: '✕', info: 'ℹ' };
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    toast.innerHTML = `<span class="toast-icon">${icons[type] || '✓'}</span><span>${escapeHtml(message)}</span>`;
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `<span class="toast-icon" aria-hidden="true">${icons[type] || '✓'}</span><span>${escapeHtml(message)}</span>`;
     toastContainer.appendChild(toast);
 
     raf(() => { raf(() => toast.classList.add('show')); });
@@ -1514,7 +1693,7 @@ function showToast(message, type = 'success', duration = 3200) {
 
 // ===== Event Delegation =====
 function handleClick(e) {
-    const target = e.target.closest('[data-action], [data-page], [data-tab], [data-close], [data-filter], .admin-tab, .logo, .modal-overlay, #btn-lightbox-close');
+    const target = e.target.closest('[data-action], [data-page], [data-tab], [data-close], [data-filter], .admin-tab, .hero-brand, .modal-overlay, #btn-lightbox-close, .req-filter-pill');
     if (!target) return;
 
     // Backdrop click
@@ -1531,16 +1710,17 @@ function handleClick(e) {
         return;
     }
 
-    if (target.classList.contains('logo') || target.id === 'logo-home') {
+    if (target.classList.contains('hero-brand') || target.id === 'logo-home' || target.closest('#logo-home')) {
         e.preventDefault();
-        showPage('client');
+        // Handled separately via triple-click
         return;
     }
 
     // Booking filter pills
     if (target.classList.contains('req-filter-pill')) {
-        $$('.req-filter-pill').forEach(btn => btn.classList.remove('active'));
+        $$('.req-filter-pill').forEach(btn => { btn.classList.remove('active'); btn.setAttribute('aria-selected', 'false'); });
         target.classList.add('active');
+        target.setAttribute('aria-selected', 'true');
         currentBookingFilter = target.dataset.filter || 'all';
         renderAdminRequests();
         return;
@@ -1580,7 +1760,7 @@ function handleClick(e) {
         case 'open-lightbox': {
             const src = $('#gallery-main-img')?.src || (currentGalleryPhotos[currentGalleryIndex]);
             const profile = profiles.find(p => p.id === selectedProfileId) || profiles[0];
-            openLightbox(src, profile?.name || 'Companion photo');
+            openLightbox(src, profile?.name ? `${profile.name} — Photo ${currentGalleryIndex + 1}` : 'Photo');
             break;
         }
         case 'like-profile':
@@ -1592,6 +1772,7 @@ function handleClick(e) {
             break;
         case 'edit-profile': openEditProfileModal(id); break;
         case 'delete-profile': deleteProfile(id); break;
+        case 'delete-client': deleteClient(id); break;
         case 'set-booking-status': updateRequestStatus(id, target.dataset.status); break;
         case 'delete-booking': deleteBookingRequest(id); break;
         case 'propose': openProposeModal(id); break;
@@ -1624,6 +1805,20 @@ function handleKeydown(e) {
         e.preventDefault();
         openProfileModal(Number(card.dataset.id));
     }
+
+    // Gallery thumbnail keyboard navigation
+    const thumb = e.target.closest('#gallery-thumbnails img');
+    if (thumb) {
+        if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            const next = thumb.nextElementSibling;
+            if (next) { next.focus(); setGalleryIndex(Number(next.dataset.index)); }
+        } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            const prev = thumb.previousElementSibling;
+            if (prev) { prev.focus(); setGalleryIndex(Number(prev.dataset.index)); }
+        }
+    }
 }
 
 function handleSubmit(e) {
@@ -1643,7 +1838,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.addEventListener('hashchange', checkRoute);
     window.addEventListener('popstate', checkRoute);
 
-    // Age, Interest, and Search filter listeners
+    // Filter listeners
     $('#filter-age')?.addEventListener('change', renderProfiles);
     $('#filter-interest')?.addEventListener('change', renderProfiles);
     $('#filter-search')?.addEventListener('input', debouncedRenderProfiles);
@@ -1661,20 +1856,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (e.key === 'Enter') { e.preventDefault(); handleRunSQL(); }
     });
 
-    // Logo triple click shortcut for quick admin access
+    // Logo triple-click shortcut for admin access
     let logoClicks = 0;
-    $('#logo-home')?.addEventListener('click', () => {
+    let logoClickTimer = null;
+    $('#logo-home')?.addEventListener('click', e => {
+        e.preventDefault();
         logoClicks++;
+        clearTimeout(logoClickTimer);
+        logoClickTimer = setTimeout(() => { logoClicks = 0; }, 800);
         if (logoClicks >= 3) {
             logoClicks = 0;
+            clearTimeout(logoClickTimer);
             showPage('admin');
-            showToast('Admin mode activated via secret trigger!', 'info');
+            showToast('Admin mode activated! 🔐', 'info');
         }
-        setTimeout(() => { logoClicks = 0; }, 1000);
     });
 
     // Fix admin panels initial state
     $$('#admin-view .admin-panel').forEach(p => { if (!p.classList.contains('active')) p.hidden = true; });
+
+    // Set footer year
+    const yearEl = $('#footer-year');
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
 
     initPWA();
 
@@ -1688,7 +1891,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         userLikedIds = new Set(DB.profiles.getUserLikes(key));
     } catch (err) {
         console.error('DB init failed:', err);
-        showToast('Database fallback active', 'error');
+        showToast('Database fallback active — data may not persist', 'error');
         profiles = DEFAULT_PROFILES;
         clients = DEFAULT_CLIENTS;
         requests = DEFAULT_REQUESTS;
@@ -1698,6 +1901,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     checkRoute();
     updateRequestBadge();
     updateQuickStats();
+    updateHeroStats();
 
     // Hide loading overlay
     hideLoading();

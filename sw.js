@@ -1,12 +1,15 @@
-/* ===== DineTogether Service Worker v2 ===== */
-const CACHE_NAME = 'dinetogether-v2';
+/* ===== DineTogether Service Worker v5 ===== */
+const CACHE_NAME = 'dinetogether-v5';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/styles.css',
   '/app.js',
+  '/db.js',
   '/manifest.json',
-  'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap'
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap'
 ];
 
 /* Install: pre-cache static shell */
@@ -29,17 +32,28 @@ self.addEventListener('activate', e => {
   );
 });
 
-/* Fetch: network-first for API/images, cache-first for static */
+/* Fetch: cache-first for fonts/images, network-first for app shell */
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
 
-  // Skip cross-origin non-image requests
-  if (url.origin !== location.origin && !url.hostname.includes('unsplash') && !url.hostname.includes('fonts')) {
+  // Skip non-GET requests
+  if (e.request.method !== 'GET') return;
+
+  // Skip cross-origin requests except fonts, unsplash images, and cdnjs
+  if (url.origin !== location.origin &&
+      !url.hostname.includes('fonts.googleapis.com') &&
+      !url.hostname.includes('fonts.gstatic.com') &&
+      !url.hostname.includes('unsplash.com') &&
+      !url.hostname.includes('ui-avatars.com') &&
+      !url.hostname.includes('cdnjs.cloudflare.com')) {
     return;
   }
 
-  // Cache-first for fonts and images
-  if (url.hostname.includes('fonts') || url.hostname.includes('unsplash') || url.hostname.includes('ui-avatars')) {
+  // Cache-first for fonts, images, and sql.js WASM
+  if (url.hostname.includes('fonts') ||
+      url.hostname.includes('unsplash') ||
+      url.hostname.includes('ui-avatars') ||
+      url.hostname.includes('cdnjs')) {
     e.respondWith(
       caches.match(e.request).then(cached => {
         if (cached) return cached;
@@ -55,7 +69,7 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Network-first for app shell
+  // Network-first for app shell (html, css, js)
   e.respondWith(
     fetch(e.request).then(res => {
       if (res && res.status === 200 && e.request.method === 'GET') {

@@ -200,7 +200,7 @@ const DB = (() => {
             PRIMARY KEY(profile_id, user_key)
         )`);
 
-        // Migrations for existing SQLite tables
+        // Migrations for existing SQLite tables (safe: errors are caught)
         try { _db.run("ALTER TABLE profiles ADD COLUMN likes INTEGER DEFAULT 0"); } catch (e) {}
         try { _db.run("ALTER TABLE clients ADD COLUMN phone TEXT"); } catch (e) {}
         try { _db.run("ALTER TABLE requests ADD COLUMN client_phone TEXT"); } catch (e) {}
@@ -234,21 +234,24 @@ const DB = (() => {
             );
         }
 
+        // FIX: include phone column in client seed
         for (const c of clients) {
             _db.run(
-                `INSERT INTO clients (name,email,avatar,join_date) VALUES (?,?,?,?)`,
-                [c.name, c.email, c.avatar, c.joinDate]
+                `INSERT INTO clients (name,email,phone,avatar,join_date) VALUES (?,?,?,?,?)`,
+                [c.name, c.email || '', c.phone || '', c.avatar, c.joinDate]
             );
         }
 
+        // FIX: include client_phone column in request seed
         for (const r of requests) {
             _db.run(
-                `INSERT INTO requests (client_id,client_name,client_avatar,profile_id,
+                `INSERT INTO requests (client_id,client_name,client_phone,client_avatar,profile_id,
                  profile_name,profile_image,date,time,restaurant,message,status,created_at)
-                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
-                [r.clientId, r.clientName, r.clientAvatar, r.profileId, r.profileName,
-                 r.profileImage, r.date, r.time, r.restaurant, r.message,
-                 r.status || 'pending', r.createdAt || new Date().toISOString().split('T')[0]]
+                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+                [r.clientId, r.clientName, r.clientPhone || r.phone || '', r.clientAvatar,
+                 r.profileId, r.profileName, r.profileImage, r.date, r.time,
+                 r.restaurant, r.message, r.status || 'pending',
+                 r.createdAt || new Date().toISOString().split('T')[0]]
             );
         }
 
@@ -358,6 +361,7 @@ const DB = (() => {
 
             async delete(id) {
                 _db.run('DELETE FROM profiles WHERE id=?', [id]);
+                _db.run('DELETE FROM profile_likes WHERE profile_id=?', [id]);
                 await persist();
             },
         },
@@ -388,6 +392,10 @@ const DB = (() => {
                     return { ...c, id };
                 }
             },
+            async delete(id) {
+                _db.run('DELETE FROM clients WHERE id=?', [id]);
+                await persist();
+            },
         },
 
         // ── Requests ─────────────────────────────────────────────
@@ -397,6 +405,9 @@ const DB = (() => {
             byStatus(s) { return query('SELECT * FROM requests WHERE status=? ORDER BY id DESC', [s]).map(parseRequest); },
             pendingCount() {
                 return queryOne('SELECT COUNT(*) as c FROM requests WHERE status=?', ['pending'])?.c ?? 0;
+            },
+            count() {
+                return queryOne('SELECT COUNT(*) as c FROM requests')?.c ?? 0;
             },
             async save(r) {
                 if (r.id) {
@@ -500,6 +511,7 @@ const DB = (() => {
             _db.run('DELETE FROM profiles');
             _db.run('DELETE FROM clients');
             _db.run('DELETE FROM requests');
+            _db.run('DELETE FROM profile_likes');
             await persist();
             await idbGetAll(IDB_PHOTO_STORE).then(rows =>
                 Promise.all(rows.map(r => idbDel(IDB_PHOTO_STORE, r.id)))

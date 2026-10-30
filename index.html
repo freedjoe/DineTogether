@@ -36,6 +36,9 @@
 </head>
 
 <body>
+    <!-- Skip to content (accessibility) -->
+    <a href="#profiles-grid" class="skip-link">Skip to companions</a>
+
     <!-- Aurora Canvas -->
     <canvas id="aurora-canvas" aria-hidden="true"></canvas>
 
@@ -62,6 +65,14 @@
         <section class="hero">
             <div class="hero-bg" aria-hidden="true"></div>
             <div class="hero-content">
+                <!-- Brand logo — also serves as triple-click admin shortcut -->
+                <a href="#" id="logo-home" class="hero-brand" aria-label="DineTogether — home">
+                    <div class="hero-logo-wrap" aria-hidden="true">
+                        <img src="icons/icon-512.png" alt="" class="hero-logo-img" width="56" height="56">
+                    </div>
+                    <span class="hero-brand-title">DineTogether</span>
+                </a>
+
                 <div class="hero-badge">
                     <span class="badge-dot"></span>
                     Premium Dining Experiences
@@ -69,6 +80,24 @@
                 <h1>Find Your Perfect <span class="highlight">Dining Companion</span></h1>
                 <p>Connect with fascinating people over exquisite food. Make lasting friendships, meaningful
                     connections, or simply savour great company.</p>
+
+                <!-- Live stats from DB -->
+                <div class="hero-stats" aria-label="Platform statistics">
+                    <div class="stat">
+                        <span class="stat-number" id="stat-companions">—</span>
+                        <span class="stat-label">Companions</span>
+                    </div>
+                    <div class="stat-divider" aria-hidden="true"></div>
+                    <div class="stat">
+                        <span class="stat-number" id="stat-cities">—</span>
+                        <span class="stat-label">Cities</span>
+                    </div>
+                    <div class="stat-divider" aria-hidden="true"></div>
+                    <div class="stat">
+                        <span class="stat-number" id="stat-bookings">—</span>
+                        <span class="stat-label">Bookings</span>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -115,9 +144,20 @@
         <section class="profiles-section">
             <div class="profiles-section-header">
                 <h2>Discover Companions</h2>
+                <span class="results-count" id="results-count" aria-live="polite" aria-atomic="true"></span>
             </div>
             <div id="profiles-grid" class="profiles-grid" role="list"></div>
         </section>
+
+        <footer class="site-footer">
+            <div class="site-footer-inner">
+                <span class="footer-brand">
+                    <img src="icons/icon-512.png" alt="" width="18" height="18" aria-hidden="true">
+                    DineTogether
+                </span>
+                <span class="footer-copy">© <span id="footer-year"></span> DineTogether. All rights reserved.</span>
+            </div>
+        </footer>
     </div>
 
     <!-- ══════════════════ ADMIN VIEW (hidden route /_/admin) ══════════════════ -->
@@ -139,12 +179,13 @@
             </div>
         </div>
 
-        <div class="admin-tabs" role="tablist">
-            <button class="admin-tab admin-exit-tab" type="button" data-page="client" title="Back to site">
+        <div class="admin-tabs" role="tablist" aria-label="Admin sections">
+            <button class="admin-tab admin-exit-tab" type="button" data-page="client" title="Back to site"
+                aria-label="Back to main site">
                 ← Back to Site
             </button>
             <button class="admin-tab active" type="button" data-tab="profiles" id="tab-profiles" role="tab"
-                aria-selected="true">
+                aria-selected="true" aria-controls="admin-profiles">
                 <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path
                         d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
@@ -152,7 +193,7 @@
                 Profiles
             </button>
             <button class="admin-tab" type="button" data-tab="requests" id="tab-requests" role="tab"
-                aria-selected="false">
+                aria-selected="false" aria-controls="admin-requests">
                 <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path
                         d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z" />
@@ -160,7 +201,7 @@
                 Bookings <span id="request-badge" class="badge" hidden>0</span>
             </button>
             <button class="admin-tab" type="button" data-tab="clients" id="tab-clients" role="tab"
-                aria-selected="false">
+                aria-selected="false" aria-controls="admin-clients">
                 <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path
                         d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
@@ -168,7 +209,7 @@
                 Clients
             </button>
             <button class="admin-tab" type="button" data-tab="database" id="tab-database" role="tab"
-                aria-selected="false">
+                aria-selected="false" aria-controls="admin-database">
                 <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path
                         d="M12 2C6.48 2 2 4.02 2 6.5v11C2 20 6.48 22 12 22s10-2.02 10-4.5v-11C22 4.02 17.52 2 12 2zm0 2.2c3.98 0 7.8 1.14 8 2.3-.2 1.16-4.02 2.3-8 2.3s-7.8-1.14-8-2.3c.2-1.16 4.02-2.3 8-2.3zm8 6.3c-.56.55-2.22 1.25-4.47 1.63-.97.16-2.22.27-3.53.27s-2.56-.11-3.53-.27C6.22 11.75 4.56 11.05 4 10.5V8.53c1.94 1.12 5.02 1.67 8 1.67s6.06-.55 8-1.67v1.97zm0 5.5c-.56.55-2.22 1.25-4.47 1.63-.97.16-2.22.27-3.53.27s-2.56-.11-3.53-.27C6.22 17.25 4.56 16.55 4 16v-1.97c1.94 1.12 5.02 1.67 8 1.67s6.06-.55 8-1.67v1.97z" />
@@ -177,7 +218,7 @@
             </button>
         </div>
 
-        <div id="admin-profiles" class="admin-panel active" role="tabpanel">
+        <div id="admin-profiles" class="admin-panel active" role="tabpanel" aria-labelledby="tab-profiles">
             <div class="panel-header">
                 <h2>Manage Profiles</h2>
                 <button class="btn btn-primary btn-icon" type="button" id="btn-add-profile">
@@ -190,43 +231,44 @@
             <div id="admin-profiles-list" class="admin-profiles-list"></div>
         </div>
 
-        <div id="admin-requests" class="admin-panel" role="tabpanel" hidden>
+        <div id="admin-requests" class="admin-panel" role="tabpanel" aria-labelledby="tab-requests" hidden>
             <div class="panel-header" style="flex-direction:column;align-items:flex-start;gap:0.75rem">
                 <h2>Manage Bookings</h2>
-                <div class="requests-filter-pills" id="requests-filter-pills" role="tablist">
-                    <button class="req-filter-pill active" type="button" data-filter="all">All Bookings (<span
-                            id="cnt-all">0</span>)</button>
-                    <button class="req-filter-pill" type="button" data-filter="pending">⏳ Pending (<span
-                            id="cnt-pending">0</span>)</button>
-                    <button class="req-filter-pill" type="button" data-filter="accepted">✅ Accepted (<span
-                            id="cnt-accepted">0</span>)</button>
-                    <button class="req-filter-pill" type="button" data-filter="declined">❌ Cancelled (<span
-                            id="cnt-declined">0</span>)</button>
+                <div class="requests-filter-pills" id="requests-filter-pills" role="tablist"
+                    aria-label="Filter bookings">
+                    <button class="req-filter-pill active" type="button" data-filter="all" role="tab"
+                        aria-selected="true">All Bookings (<span id="cnt-all">0</span>)</button>
+                    <button class="req-filter-pill" type="button" data-filter="pending" role="tab"
+                        aria-selected="false">⏳ Pending (<span id="cnt-pending">0</span>)</button>
+                    <button class="req-filter-pill" type="button" data-filter="accepted" role="tab"
+                        aria-selected="false">✅ Accepted (<span id="cnt-accepted">0</span>)</button>
+                    <button class="req-filter-pill" type="button" data-filter="declined" role="tab"
+                        aria-selected="false">❌ Cancelled (<span id="cnt-declined">0</span>)</button>
                 </div>
             </div>
             <div id="admin-requests-list" class="admin-requests-list"></div>
         </div>
 
-        <div id="admin-clients" class="admin-panel" role="tabpanel" hidden>
+        <div id="admin-clients" class="admin-panel" role="tabpanel" aria-labelledby="tab-clients" hidden>
             <div class="panel-header">
                 <h2>Registered Clients</h2>
             </div>
             <div id="admin-clients-list" class="admin-clients-list"></div>
         </div>
 
-        <div id="admin-database" class="admin-panel" role="tabpanel" hidden>
+        <div id="admin-database" class="admin-panel" role="tabpanel" aria-labelledby="tab-database" hidden>
             <div class="panel-header">
                 <h2>SQLite Database Manager</h2>
                 <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
                     <button class="btn btn-primary btn-icon" type="button" id="btn-download-sqlite"
                         title="Download real binary .sqlite file">
-                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
+                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
                         </svg>
                         Export .sqlite File
                     </button>
                     <button class="btn btn-secondary btn-icon" type="button" id="btn-export-json">
-                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
+                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path
                                 d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
                         </svg>
@@ -241,7 +283,7 @@
                             (WebAssembly)</strong></div>
                     <div class="db-stat-row"><span>Storage:</span><strong style="color:var(--success)">IndexedDB Binary
                             Store (DineTogetherV3)</strong></div>
-                    <div class="db-stat-row"><span>Sync Mode:</span><strong>Real-time flush on every query</strong>
+                    <div class="db-stat-row"><span>Sync Mode:</span><strong>Real-time flush on every write</strong>
                     </div>
                 </div>
                 <div class="db-card">
@@ -252,8 +294,8 @@
                             rows</strong></div>
                     <div class="db-stat-row"><span>requests:</span><strong id="db-stat-requests" class="badge">0
                             rows</strong></div>
-                    <div class="db-stat-row"><span>photos (IDB store):</span><strong id="db-stat-photos" class="badge">0
-                            files</strong></div>
+                    <div class="db-stat-row"><span>photos (IDB store):</span><strong id="db-stat-photos"
+                            class="badge">0 files</strong></div>
                 </div>
             </div>
 
@@ -262,10 +304,11 @@
                 <h3
                     style="font-size:1.05rem;margin-bottom:0.6rem;color:var(--text);font-family:'Playfair Display',serif">
                     Execute SQL Query (Direct to SQLite)</h3>
-                <div style="display:flex;gap:0.75rem;margin-bottom:0.75rem">
+                <div style="display:flex;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap">
                     <input type="text" id="sql-query-input"
                         value="SELECT id, name, age, likes, location, available FROM profiles"
-                        style="flex:1;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-xs);padding:0.6rem 0.9rem;color:var(--text);font-family:monospace;font-size:0.85rem">
+                        style="flex:1;min-width:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-xs);padding:0.6rem 0.9rem;color:var(--text);font-family:monospace;font-size:0.85rem"
+                        aria-label="SQL query input">
                     <button class="btn btn-primary" id="btn-run-query" type="button">Run SQL</button>
                 </div>
                 <div id="sql-query-result"
@@ -282,8 +325,8 @@
         hidden>
         <div class="modal modal-large">
             <div class="modal-handle" aria-hidden="true"></div>
-            <button class="modal-close" type="button" data-close="profile" aria-label="Close">
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+            <button class="modal-close" type="button" data-close="profile" aria-label="Close profile">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path
                         d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
                 </svg>
@@ -297,8 +340,8 @@
         hidden>
         <div class="modal modal-booking">
             <div class="modal-handle" aria-hidden="true"></div>
-            <button class="modal-close" type="button" data-close="booking" aria-label="Close">
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+            <button class="modal-close" type="button" data-close="booking" aria-label="Close booking">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path
                         d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
                 </svg>
@@ -312,8 +355,8 @@
         aria-labelledby="profile-form-title" hidden>
         <div class="modal modal-form">
             <div class="modal-handle" aria-hidden="true"></div>
-            <button class="modal-close" type="button" data-close="form" aria-label="Close">
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+            <button class="modal-close" type="button" data-close="form" aria-label="Close form">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path
                         d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
                 </svg>
@@ -323,10 +366,11 @@
     </div>
 
     <!-- Full Picture Lightbox Modal -->
-    <div id="lightbox-modal" class="modal-overlay lightbox-overlay" role="dialog" aria-modal="true" hidden>
+    <div id="lightbox-modal" class="modal-overlay lightbox-overlay" role="dialog" aria-modal="true"
+        aria-label="Full photo view" hidden>
         <button class="lightbox-close" type="button" id="btn-lightbox-close" aria-label="Close full view">✕</button>
         <div class="lightbox-content">
-            <img id="lightbox-img" src="" alt="Complete photo" class="lightbox-img">
+            <img id="lightbox-img" src="" alt="Full companion photo" class="lightbox-img">
             <div id="lightbox-caption" class="lightbox-caption"></div>
         </div>
     </div>
@@ -335,7 +379,7 @@
     <div id="toast-container" class="toast-container" aria-live="polite" role="status"></div>
 
     <!-- Loading screen -->
-    <div id="loading-overlay" class="loading-overlay">
+    <div id="loading-overlay" class="loading-overlay" role="progressbar" aria-label="Loading DineTogether">
         <div class="loading-inner">
             <div class="loading-logo" aria-hidden="true">
                 <img src="icons/icon-512.png" alt="DineTogether" width="68" height="68" class="loading-logo-img">

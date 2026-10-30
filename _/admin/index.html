@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting to Admin...</title>
     <meta http-equiv="refresh" content="0; url=../../#/_/admin">
     <script>
-        window.location.replace(window.location.origin + window.location.pathname.replace(/\/_\/admin\/?$/, '') + '/#/_/admin');
+        const basePath = window.location.pathname.replace(/\/_\/admin(\/index\.html)?\/?$/i, '');
+        window.location.replace((basePath || '') + '/#/_/admin');
     </script>
 </head>
 <body style="background:#0d0008;color:#ff2d78;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0">
