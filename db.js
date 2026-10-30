@@ -212,6 +212,36 @@ const DB = (() => {
                 PRIMARY KEY(profile_id, user_key)
             )`);
         } catch (e) {}
+
+        // Migration: migrate legacy unsplash URLs to local /public/images/
+        try {
+            const profRows = query('SELECT id, photos FROM profiles');
+            for (const r of profRows) {
+                if (r.photos && r.photos.includes('images.unsplash.com')) {
+                    const photos = safeJSON(r.photos, []);
+                    let changed = false;
+                    const updated = photos.map((p, idx) => {
+                        if (typeof p === 'string' && p.includes('images.unsplash.com')) {
+                            changed = true;
+                            return `/public/images/profile-${r.id}-${idx + 1}.jpg`;
+                        }
+                        return p;
+                    });
+                    if (changed) {
+                        _db.run('UPDATE profiles SET photos = ? WHERE id = ?', [JSON.stringify(updated), r.id]);
+                    }
+                }
+            }
+            _db.run("UPDATE clients SET avatar = '/public/images/client-1.jpg' WHERE id = 1 AND avatar LIKE '%unsplash%'");
+            _db.run("UPDATE clients SET avatar = '/public/images/client-2.jpg' WHERE id = 2 AND avatar LIKE '%unsplash%'");
+            _db.run("UPDATE clients SET avatar = '/public/images/client-3.jpg' WHERE id = 3 AND avatar LIKE '%unsplash%'");
+            _db.run("UPDATE requests SET client_avatar = '/public/images/client-1.jpg' WHERE client_id = 1 AND client_avatar LIKE '%unsplash%'");
+            _db.run("UPDATE requests SET client_avatar = '/public/images/client-2.jpg' WHERE client_id = 2 AND client_avatar LIKE '%unsplash%'");
+            _db.run("UPDATE requests SET profile_image = '/public/images/profile-1-1.jpg' WHERE profile_id = 1 AND profile_image LIKE '%unsplash%'");
+            _db.run("UPDATE requests SET profile_image = '/public/images/profile-3-1.jpg' WHERE profile_id = 3 AND profile_image LIKE '%unsplash%'");
+        } catch (e) {
+            console.warn('Migration unsplash error:', e);
+        }
     }
 
     // ─── Seed ──────────────────────────────────────────────────────
@@ -275,6 +305,7 @@ const DB = (() => {
 
             createSchema();
             await seedIfEmpty(defaultProfiles, defaultClients, defaultRequests);
+            await persist();
 
             return {
                 profiles: query('SELECT * FROM profiles ORDER BY id').map(parseProfile),
@@ -296,12 +327,23 @@ const DB = (() => {
                 const ratings = JSON.stringify(p.ratings   || []);
                 const likes   = Number(p.likes != null ? p.likes : 120);
 
-                if (p.id) {
+                const exists = p.id ? queryOne('SELECT 1 FROM profiles WHERE id=?', [p.id]) : null;
+
+                if (exists) {
                     _db.run(
                         `UPDATE profiles SET name=?,age=?,bio=?,cuisine=?,interests=?,location=?,
                          rating=?,reviews=?,ratings=?,available=?,photos=?,likes=? WHERE id=?`,
                         [p.name, p.age, p.bio, p.cuisine || '', inter, p.location,
                          p.rating || 4.8, p.reviews || 0, ratings, p.available ? 1 : 0, photos, likes, p.id]
+                    );
+                    await persist();
+                    return { ...p, likes };
+                } else if (p.id) {
+                    _db.run(
+                        `INSERT INTO profiles (id,name,age,bio,cuisine,interests,location,
+                         rating,reviews,ratings,available,photos,likes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+                        [p.id, p.name, p.age, p.bio, p.cuisine || '', inter, p.location,
+                         p.rating || 4.8, p.reviews || 0, ratings, p.available ? 1 : 0, photos, likes]
                     );
                     await persist();
                     return { ...p, likes };
@@ -402,6 +444,7 @@ const DB = (() => {
 
         requests: {
             all() { return query('SELECT * FROM requests ORDER BY id DESC').map(parseRequest); },
+            get(id) { return parseRequest(queryOne('SELECT * FROM requests WHERE id=?', [id])); },
             byStatus(s) { return query('SELECT * FROM requests WHERE status=? ORDER BY id DESC', [s]).map(parseRequest); },
             pendingCount() {
                 return queryOne('SELECT COUNT(*) as c FROM requests WHERE status=?', ['pending'])?.c ?? 0;
@@ -415,17 +458,19 @@ const DB = (() => {
                         `UPDATE requests SET client_id=?,client_name=?,client_phone=?,client_avatar=?,
                          profile_id=?,profile_name=?,profile_image=?,date=?,time=?,
                          restaurant=?,message=?,status=?,created_at=? WHERE id=?`,
-                        [r.clientId, r.clientName, r.clientPhone || '', r.clientAvatar, r.profileId, r.profileName,
-                         r.profileImage, r.date, r.time, r.restaurant, r.message,
-                         r.status, r.createdAt, r.id]
+                        [r.clientId || null, r.clientName || '', r.clientPhone || '', r.clientAvatar || '',
+                         r.profileId || null, r.profileName || '', r.profileImage || '',
+                         r.date || '', r.time || '', r.restaurant || '', r.message || '',
+                         r.status || 'pending', r.createdAt || new Date().toISOString().split('T')[0], r.id]
                     );
                 } else {
                     _db.run(
                         `INSERT INTO requests (client_id,client_name,client_phone,client_avatar,profile_id,
                          profile_name,profile_image,date,time,restaurant,message,status,created_at)
                          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-                        [r.clientId, r.clientName, r.clientPhone || '', r.clientAvatar, r.profileId, r.profileName,
-                         r.profileImage, r.date, r.time, r.restaurant, r.message,
+                        [r.clientId || null, r.clientName || '', r.clientPhone || '', r.clientAvatar || '',
+                         r.profileId || null, r.profileName || '', r.profileImage || '',
+                         r.date || '', r.time || '', r.restaurant || '', r.message || '',
                          r.status || 'pending', r.createdAt || new Date().toISOString().split('T')[0]]
                     );
                     r = { ...r, id: lastId() };
@@ -527,3 +572,8 @@ const DB = (() => {
         },
     };
 })();
+
+// Expose DB globally on window
+if (typeof window !== 'undefined') {
+    window.DB = DB;
+}

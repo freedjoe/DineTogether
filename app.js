@@ -49,10 +49,10 @@ const DEFAULT_PROFILES = [
         cuisine: 'french', interests: ['art', 'food', 'travel'],
         location: 'Paris, France', likes: 184,
         photos: [
-            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&h=1000&fit=crop&auto=format&q=85',
-            'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=800&h=1000&fit=crop&auto=format&q=85',
-            'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&h=1000&fit=crop&auto=format&q=85',
-            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=1000&fit=crop&auto=format&q=85'
+            '/public/images/profile-1-1.jpg',
+            '/public/images/profile-1-2.jpg',
+            '/public/images/profile-1-3.jpg',
+            '/public/images/profile-1-4.jpg'
         ],
         available: true
     },
@@ -62,9 +62,9 @@ const DEFAULT_PROFILES = [
         cuisine: 'italian', interests: ['food', 'travel', 'music'],
         location: 'Milan, Italy', likes: 142,
         photos: [
-            'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&h=1000&fit=crop&auto=format&q=85',
-            'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=800&h=1000&fit=crop&auto=format&q=85',
-            'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&h=1000&fit=crop&auto=format&q=85'
+            '/public/images/profile-2-1.jpg',
+            '/public/images/profile-2-2.jpg',
+            '/public/images/profile-2-3.jpg'
         ],
         available: true
     },
@@ -74,9 +74,9 @@ const DEFAULT_PROFILES = [
         cuisine: 'japanese', interests: ['fitness', 'food', 'art'],
         location: 'Tokyo, Japan', likes: 196,
         photos: [
-            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=1000&fit=crop&auto=format&q=85',
-            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&h=1000&fit=crop&auto=format&q=85',
-            'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=800&h=1000&fit=crop&auto=format&q=85'
+            '/public/images/profile-3-1.jpg',
+            '/public/images/profile-3-2.jpg',
+            '/public/images/profile-3-3.jpg'
         ],
         available: true
     },
@@ -86,9 +86,9 @@ const DEFAULT_PROFILES = [
         cuisine: 'mexican', interests: ['travel', 'art', 'food'],
         location: 'Barcelona, Spain', likes: 165,
         photos: [
-            'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&h=1000&fit=crop&auto=format&q=85',
-            'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&h=1000&fit=crop&auto=format&q=85',
-            'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=800&h=1000&fit=crop&auto=format&q=85'
+            '/public/images/profile-4-1.jpg',
+            '/public/images/profile-4-2.jpg',
+            '/public/images/profile-4-3.jpg'
         ],
         available: true
     },
@@ -98,9 +98,9 @@ const DEFAULT_PROFILES = [
         cuisine: 'indian', interests: ['tech', 'food', 'travel'],
         location: 'London, UK', likes: 138,
         photos: [
-            'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=800&h=1000&fit=crop&auto=format&q=85',
-            'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&h=1000&fit=crop&auto=format&q=85',
-            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&h=1000&fit=crop&auto=format&q=85'
+            '/public/images/profile-5-1.jpg',
+            '/public/images/profile-5-2.jpg',
+            '/public/images/profile-5-3.jpg'
         ],
         available: true
     },
@@ -110,35 +110,35 @@ const DEFAULT_PROFILES = [
         cuisine: 'american', interests: ['music', 'food', 'art'],
         location: 'New York, USA', likes: 172,
         photos: [
-            'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&h=1000&fit=crop&auto=format&q=85',
-            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=1000&fit=crop&auto=format&q=85',
-            'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=800&h=1000&fit=crop&auto=format&q=85'
+            '/public/images/profile-6-1.jpg',
+            '/public/images/profile-6-2.jpg',
+            '/public/images/profile-6-3.jpg'
         ],
         available: true
     }
 ];
 
 const DEFAULT_CLIENTS = [
-    { id: 1, name: 'James Wilson', phone: '+1 202 555 0142', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&auto=format&q=80', joinDate: '2024-01-15' },
-    { id: 2, name: 'Michael Brown', phone: '+44 7911 123456', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&auto=format&q=80', joinDate: '2024-02-20' },
-    { id: 3, name: 'David Lee', phone: '+33 6 12 34 56 78', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&auto=format&q=80', joinDate: '2024-03-10' }
+    { id: 1, name: 'James Wilson', phone: '+1 202 555 0142', avatar: '/public/images/client-1.jpg', joinDate: '2024-01-15' },
+    { id: 2, name: 'Michael Brown', phone: '+44 7911 123456', avatar: '/public/images/client-2.jpg', joinDate: '2024-02-20' },
+    { id: 3, name: 'David Lee', phone: '+33 6 12 34 56 78', avatar: '/public/images/client-3.jpg', joinDate: '2024-03-10' }
 ];
 
 const DEFAULT_REQUESTS = [
     {
         id: 1, clientId: 1, clientName: 'James Wilson', clientPhone: '+1 202 555 0142',
-        clientAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&auto=format&q=80',
+        clientAvatar: '/public/images/client-1.jpg',
         profileId: 1, profileName: 'Sophie Laurent',
-        profileImage: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&h=1000&fit=crop&auto=format&q=85',
+        profileImage: '/public/images/profile-1-1.jpg',
         date: '2026-10-15', time: '19:30', restaurant: 'Le Petit Bistro',
         message: 'Would love to discuss art and try their famous duck confit!',
         status: 'pending', createdAt: '2026-09-28'
     },
     {
         id: 2, clientId: 2, clientName: 'Michael Brown', clientPhone: '+44 7911 123456',
-        clientAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&auto=format&q=80',
+        clientAvatar: '/public/images/client-2.jpg',
         profileId: 3, profileName: 'Yuki Tanaka',
-        profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=1000&fit=crop&auto=format&q=85',
+        profileImage: '/public/images/profile-3-1.jpg',
         date: '2026-10-18', time: '20:00', restaurant: 'Sakura Sushi Bar',
         message: 'I\'ve been wanting to try authentic omakase. Would be great to learn about Japanese cuisine!',
         status: 'accepted', createdAt: '2026-09-27'
@@ -440,7 +440,16 @@ const I18N = {
         adminSuggestCompanion: (name) => `Suggest ${name}`,
         adminConfirmDeleteProfile: 'Delete this companion? This cannot be undone.',
         adminConfirmDeleteBooking: 'Delete this booking request? This cannot be undone.',
-        adminConfirmDeleteClient: 'Delete this client from SQLite? Any linked booking history will remain.'
+        adminConfirmDeleteClient: 'Delete this client from SQLite? Any linked booking history will remain.',
+        adminConfirmDeleteProfileTitle: 'Delete Companion Profile?',
+        adminConfirmDeleteProfileMsg: (name) => `Are you sure you want to delete <strong style="color:var(--text)">${name}</strong>? All uploaded photos will be permanently deleted from <code style="color:var(--rose)">/public/images</code>. This cannot be undone.`,
+        adminConfirmDeleteBookingTitle: 'Delete Booking Request?',
+        adminConfirmDeleteBookingMsg: 'Are you sure you want to delete this booking request? This action cannot be undone.',
+        adminConfirmDeleteClientTitle: 'Delete Client Account?',
+        adminConfirmDeleteClientMsg: (name) => `Are you sure you want to delete client <strong style="color:var(--text)">${name}</strong>? Their account will be removed from SQLite.`,
+        confirmBtnDelete: '🗑️ Delete',
+        confirmBtnCancel: 'Cancel',
+        confirmBtnOk: 'OK'
     },
     fr: {
         code: 'FR',
@@ -613,7 +622,16 @@ const I18N = {
         adminSuggestCompanion: (name) => `Suggérer ${name}`,
         adminConfirmDeleteProfile: 'Supprimer ce compagnon ? Cette action est irréversible.',
         adminConfirmDeleteBooking: 'Supprimer cette demande de réservation ? Action irréversible.',
-        adminConfirmDeleteClient: 'Supprimer ce client de SQLite ? L\'historique des réservations sera conservé.'
+        adminConfirmDeleteClient: 'Supprimer ce client de SQLite ? L\'historique des réservations sera conservé.',
+        adminConfirmDeleteProfileTitle: 'Supprimer le profil ?',
+        adminConfirmDeleteProfileMsg: (name) => `Êtes-vous sûr de vouloir supprimer <strong style="color:var(--text)">${name}</strong> ? Toutes les photos téléchargées seront définitivement supprimées de <code style="color:var(--rose)">/public/images</code>. Action irréversible.`,
+        adminConfirmDeleteBookingTitle: 'Supprimer la réservation ?',
+        adminConfirmDeleteBookingMsg: 'Êtes-vous sûr de vouloir supprimer cette demande de réservation ? Cette action est irréversible.',
+        adminConfirmDeleteClientTitle: 'Supprimer le compte client ?',
+        adminConfirmDeleteClientMsg: (name) => `Êtes-vous sûr de vouloir supprimer le client <strong style="color:var(--text)">${name}</strong> ? Son compte sera retiré de SQLite.`,
+        confirmBtnDelete: '🗑️ Supprimer',
+        confirmBtnCancel: 'Annuler',
+        confirmBtnOk: 'OK'
     },
     ar: {
         code: 'العربية',
@@ -786,7 +804,16 @@ const I18N = {
         adminSuggestCompanion: (name) => `اقتراح ${name}`,
         adminConfirmDeleteProfile: 'هل أنت متأكد من حذف هذا المرافق؟ لا يمكن التراجع عن هذا الإجراء.',
         adminConfirmDeleteBooking: 'هل أنت متأكد من حذف طلب الحجز؟ لا يمكن التراجع عن هذا الإجراء.',
-        adminConfirmDeleteClient: 'هل أنت متأكد من حذف هذا العميل من SQLite؟ سيبقى سجل الحجوزات المرتبط به.'
+        adminConfirmDeleteClient: 'هل أنت متأكد من حذف هذا العميل من SQLite؟ سيبقى سجل الحجوزات المرتبط به.',
+        adminConfirmDeleteProfileTitle: 'حذف ملف المرافق؟',
+        adminConfirmDeleteProfileMsg: (name) => `هل أنت متأكد من حذف <strong style="color:var(--text)">${name}</strong>؟ سيتم حذف جميع الصور المرفوعة نهائياً من مجلد <code style="color:var(--rose)">/public/images</code> ولا يمكن التراجع عن هذا الإجراء.`,
+        adminConfirmDeleteBookingTitle: 'حذف طلب الحجز؟',
+        adminConfirmDeleteBookingMsg: 'هل أنت متأكد من حذف طلب هذا الحجز نهائياً؟ لا يمكن التراجع عن هذا الإجراء.',
+        adminConfirmDeleteClientTitle: 'حذف حساب العميل؟',
+        adminConfirmDeleteClientMsg: (name) => `هل أنت متأكد من حذف حساب العميل <strong style="color:var(--text)">${name}</strong>؟ سيتم حذفه من قاعدة البيانات.`,
+        confirmBtnDelete: '🗑️ حذف',
+        confirmBtnCancel: 'إلغاء',
+        confirmBtnOk: 'موافق'
     }
 };
 
@@ -1878,7 +1905,20 @@ async function updateRequestStatus(requestId, status) {
 }
 
 async function deleteBookingRequest(requestId) {
-    const t = I18N[currentLang] || I18N.en; if (!confirm(t.adminConfirmDeleteBooking)) return;
+    const langObj = I18N[currentLang] || I18N.en;
+    const req = requests.find(r => r.id === requestId) || (await DB.requests.get(requestId));
+    const clientName = req?.clientName || `#${requestId}`;
+
+    const confirmed = await showConfirmDialog({
+        title: langObj.adminConfirmDeleteBookingTitle,
+        message: langObj.adminConfirmDeleteBookingMsg,
+        confirmText: langObj.confirmBtnDelete,
+        cancelText: langObj.confirmBtnCancel,
+        danger: true,
+        icon: 'warning'
+    });
+    if (!confirmed) return;
+
     try {
         await DB.requests.delete(requestId);
         requests = await DB.requests.all();
@@ -1929,7 +1969,20 @@ function renderAdminClients() {
 }
 
 async function deleteClient(clientId) {
-    const t = I18N[currentLang] || I18N.en; if (!confirm(t.adminConfirmDeleteClient)) return;
+    const langObj = I18N[currentLang] || I18N.en;
+    const c = clients.find(cl => cl.id === clientId) || (await DB.clients.get(clientId));
+    const clientName = c?.name || `#${clientId}`;
+
+    const confirmed = await showConfirmDialog({
+        title: langObj.adminConfirmDeleteClientTitle,
+        message: langObj.adminConfirmDeleteClientMsg(clientName),
+        confirmText: langObj.confirmBtnDelete,
+        cancelText: langObj.confirmBtnCancel,
+        danger: true,
+        icon: 'warning'
+    });
+    if (!confirmed) return;
+
     try {
         await DB.clients.delete(clientId);
         clients = await DB.clients.all();
@@ -2095,30 +2148,69 @@ function renderFormPhotos() {
     grid.querySelectorAll('img').forEach(img => img.addEventListener('error', () => imgFallback(img), { once: true }));
 }
 
+let pendingNewProfileId = null;
+
+function getTargetProfileId() {
+    const form = $('#profile-form');
+    if (form && form.dataset.editId) {
+        return parseInt(form.dataset.editId, 10);
+    }
+    if (!pendingNewProfileId) {
+        const maxId = profiles.reduce((m, p) => Math.max(m, Number(p.id) || 0), 0);
+        pendingNewProfileId = (maxId || 0) + 1;
+    }
+    return pendingNewProfileId;
+}
+
 async function handlePhotoUpload(files) {
     if (!files || !files.length) return;
     const progressEl = $('#pf-upload-progress');
     const statusText = $('#pf-upload-status');
     if (progressEl) progressEl.hidden = false;
 
+    const targetProfileId = getTargetProfileId();
     let processed = 0;
     for (const file of Array.from(files)) {
         if (!file.type.startsWith('image/')) continue;
         processed++;
-        if (statusText) statusText.textContent = `Optimizing ${file.name} (${processed}/${files.length})…`;
+        if (statusText) statusText.textContent = `Optimizing & saving ${file.name} (${processed}/${files.length})…`;
         try {
             const opt = await optimizeImageFile(file);
-            currentFormPhotos.push(opt.dataUrl);
-            await DB.photos.add(null, opt.dataUrl, {
+            const photoIndex = currentFormPhotos.length + 1;
+
+            let photoUrl = opt.dataUrl;
+            try {
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        profileId: targetProfileId,
+                        photoIndex: photoIndex,
+                        data: opt.dataUrl,
+                        filename: file.name
+                    })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.url) {
+                        photoUrl = data.url;
+                    }
+                }
+            } catch (netErr) {
+                console.warn('Server upload failed, falling back to dataUrl:', netErr);
+            }
+
+            currentFormPhotos.push(photoUrl);
+            await DB.photos.add(null, photoUrl, {
                 filename: opt.filename,
                 width: opt.width,
                 height: opt.height,
                 size_kb: opt.optimizedSizeKB
             });
-            showToast(`Photo optimized: ${opt.originalSizeKB}KB → ${opt.optimizedSizeKB}KB (-${opt.savings}% saved!)`, 'success', 3500);
+            showToast(`Photo saved: ${photoUrl.split('/').pop()} (-${opt.savings}% optimized)`, 'success', 3500);
         } catch (err) {
-            console.error('Image optimization failed:', err);
-            showToast(`Failed to optimize ${file.name}`, 'error');
+            console.error('Image upload failed:', err);
+            showToast(`Failed to upload ${file.name}`, 'error');
         }
     }
 
@@ -2128,6 +2220,8 @@ async function handlePhotoUpload(files) {
 
 function openAddProfileModal() {
     currentFormPhotos = [];
+    const maxId = profiles.reduce((m, p) => Math.max(m, Number(p.id) || 0), 0);
+    pendingNewProfileId = (maxId || 0) + 1;
     const content = $('#profile-form-content');
     content.innerHTML = profileFormHTML();
     setupProfileFormHandlers();
@@ -2138,6 +2232,7 @@ function openAddProfileModal() {
 function openEditProfileModal(id) {
     const profile = profiles.find(p => p.id === id);
     if (!profile) return;
+    pendingNewProfileId = null;
     currentFormPhotos = profile.photos?.length ? [...profile.photos] : (profile.image ? [profile.image] : []);
     const content = $('#profile-form-content');
     content.innerHTML = profileFormHTML(profile);
@@ -2145,6 +2240,12 @@ function openEditProfileModal(id) {
     renderFormPhotos();
     openOverlay('profile-form-modal');
 }
+
+// Expose handlers for tests & automation
+window.handlePhotoUpload = handlePhotoUpload;
+window.openAddProfileModal = openAddProfileModal;
+window.openEditProfileModal = openEditProfileModal;
+window.getFormPhotos = () => currentFormPhotos;
 
 function profileFormHTML(profile = null) {
     const isEdit = !!profile;
@@ -2248,13 +2349,42 @@ function setupProfileFormHandlers() {
         });
     }
 
-    addUrlBtn?.addEventListener('click', () => {
+    addUrlBtn?.addEventListener('click', async () => {
         const url = (addUrlInput?.value || '').trim();
         if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
-            currentFormPhotos.push(url);
+            const targetProfileId = getTargetProfileId();
+            const photoIndex = currentFormPhotos.length + 1;
+            let finalUrl = url;
+
+            try {
+                addUrlBtn.disabled = true;
+                addUrlBtn.textContent = '…';
+                const res = await fetch('/api/upload-url', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        profileId: targetProfileId,
+                        photoIndex: photoIndex,
+                        url: url
+                    })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.url) {
+                        finalUrl = data.url;
+                    }
+                }
+            } catch (err) {
+                console.warn('Server upload-url failed, using original URL:', err);
+            } finally {
+                addUrlBtn.disabled = false;
+                addUrlBtn.textContent = (I18N[currentLang] || I18N.en).adminAddUrlBtn;
+            }
+
+            currentFormPhotos.push(finalUrl);
             if (addUrlInput) addUrlInput.value = '';
             renderFormPhotos();
-            showToast('Photo URL added to gallery', 'success');
+            showToast('Photo added to gallery', 'success');
         } else if (url) {
             showToast('Please enter a valid URL starting with https://', 'error');
         }
@@ -2285,7 +2415,10 @@ function setupProfileFormHandlers() {
     });
 }
 
-function closeProfileFormModal() { closeOverlay('profile-form-modal'); }
+function closeProfileFormModal() {
+    pendingNewProfileId = null;
+    closeOverlay('profile-form-modal');
+}
 
 async function saveProfile(event) {
     event.preventDefault();
@@ -2340,9 +2473,11 @@ async function saveProfile(event) {
             await DB.profiles.save({ ...existing, ...profileData, id: editId });
             showToast('Profile & photos saved to SQLite! ✅', 'success');
         } else {
-            await DB.profiles.save(profileData);
+            const targetId = pendingNewProfileId || ((profiles.reduce((m, p) => Math.max(m, Number(p.id) || 0), 0)) + 1);
+            await DB.profiles.save({ ...profileData, id: targetId });
             showToast('New profile created in SQLite! ✨', 'success');
         }
+        pendingNewProfileId = null;
         profiles = await DB.profiles.all();
         closeProfileFormModal();
         renderAdminProfiles();
@@ -2360,8 +2495,35 @@ async function saveProfile(event) {
 }
 
 async function deleteProfile(id) {
-    if (!confirm('Delete this profile from SQLite? This cannot be undone.')) return;
+    const profile = profiles.find(p => p.id === id) || (await DB.profiles.get(id));
+    const langObj = I18N[currentLang] || I18N.en;
+    const name = profile?.name || `#${id}`;
+
+    const confirmed = await showConfirmDialog({
+        title: langObj.adminConfirmDeleteProfileTitle,
+        message: langObj.adminConfirmDeleteProfileMsg(name),
+        confirmText: langObj.confirmBtnDelete,
+        cancelText: langObj.confirmBtnCancel,
+        danger: true,
+        icon: 'warning'
+    });
+    if (!confirmed) return;
+
     try {
+        // Delete uploaded photos from /public/images
+        try {
+            await fetch('/api/delete-profile-images', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    profileId: id,
+                    photos: profile?.photos || []
+                })
+            });
+        } catch (netErr) {
+            console.warn('Server photo deletion failed:', netErr);
+        }
+
         await DB.profiles.delete(id);
         profiles = await DB.profiles.all();
         renderAdminProfiles();
@@ -2369,8 +2531,9 @@ async function deleteProfile(id) {
         renderDatabaseStats();
         updateQuickStats();
         updateHeroStats();
-        showToast('Profile deleted from SQLite', 'info');
+        showToast(`Profile & photos deleted: ${name}`, 'info');
     } catch (e) {
+        console.error('Delete profile failed:', e);
         showToast('Failed to delete profile', 'error');
     }
 }
@@ -2445,6 +2608,125 @@ async function selectAlternative(requestId, newProfileId) {
         showToast('Failed to propose alternative', 'error');
     }
 }
+
+// ===== Beautiful Confirmation & Alert Dialog System (SweetAlert2 + Custom Modal Fallback) =====
+function showConfirmDialog({
+    title,
+    message,
+    icon = 'warning',
+    confirmText,
+    cancelText,
+    danger = true
+}) {
+    const langObj = I18N[currentLang] || I18N.en;
+    const finalTitle = title || (danger ? (langObj.adminConfirmDeleteProfileTitle || 'Confirm Action') : 'Notice');
+    const finalConfirmText = confirmText || (danger ? (langObj.confirmBtnDelete || 'Delete') : (langObj.confirmBtnOk || 'OK'));
+    const finalCancelText = cancelText || (langObj.confirmBtnCancel || 'Cancel');
+
+    // Prefer SweetAlert2 if loaded
+    if (window.Swal && typeof window.Swal.fire === 'function') {
+        const isDark = document.body.classList.contains('dark-theme');
+        const isRtl = document.documentElement.dir === 'rtl';
+        return window.Swal.fire({
+            title: finalTitle,
+            html: message || '',
+            icon: icon === 'danger' ? 'warning' : (icon === 'trash' ? 'warning' : icon),
+            showCancelButton: true,
+            confirmButtonText: finalConfirmText,
+            cancelButtonText: finalCancelText,
+            focusCancel: true,
+            reverseButtons: !isRtl,
+            background: isDark ? '#140c12' : '#ffffff',
+            color: isDark ? '#fbeaf0' : '#1c1917',
+            confirmButtonColor: danger ? '#e11d48' : '#e11d48',
+            cancelButtonColor: isDark ? '#2a1a24' : '#f4f4f5',
+            customClass: {
+                popup: 'dt-swal-popup',
+                title: 'dt-swal-title',
+                htmlContainer: 'dt-swal-text',
+                confirmButton: 'dt-swal-confirm',
+                cancelButton: 'dt-swal-cancel'
+            }
+        }).then(res => !!res.isConfirmed);
+    }
+
+    // Custom built-in modal fallback
+    return new Promise(resolve => {
+        const modal = $('#confirm-dialog-modal');
+        if (!modal) {
+            resolve(false);
+            return;
+        }
+
+        const titleEl = $('#confirm-dialog-title');
+        const msgEl = $('#confirm-dialog-message');
+        const iconEl = $('#confirm-dialog-icon');
+        const confirmBtn = $('#confirm-dialog-confirm');
+        const cancelBtn = $('#confirm-dialog-cancel');
+
+        if (titleEl) titleEl.textContent = finalTitle;
+        if (msgEl) msgEl.innerHTML = message || '';
+        if (iconEl) {
+            iconEl.textContent = danger ? '🗑️' : (icon === 'info' ? 'ℹ️' : '⚠️');
+        }
+        if (confirmBtn) {
+            confirmBtn.textContent = finalConfirmText;
+            confirmBtn.className = danger ? 'btn btn-danger confirm-btn-confirm' : 'btn btn-primary confirm-btn-confirm';
+        }
+        if (cancelBtn) cancelBtn.textContent = finalCancelText;
+
+        const cleanup = (result) => {
+            modal.classList.remove('active');
+            setTimeout(() => { modal.hidden = true; }, 220);
+            document.removeEventListener('keydown', keyHandler);
+            resolve(result);
+        };
+
+        const keyHandler = (e) => {
+            if (e.key === 'Escape') { e.preventDefault(); cleanup(false); }
+            else if (e.key === 'Enter') { e.preventDefault(); cleanup(true); }
+        };
+
+        confirmBtn.onclick = () => cleanup(true);
+        cancelBtn.onclick = () => cleanup(false);
+        modal.onclick = (e) => {
+            if (e.target === modal) cleanup(false);
+        };
+
+        document.addEventListener('keydown', keyHandler);
+        modal.hidden = false;
+        requestAnimationFrame(() => {
+            modal.classList.add('active');
+            cancelBtn.focus();
+        });
+    });
+}
+
+function showAlertDialog({ title, message, icon = 'info', okText }) {
+    const langObj = I18N[currentLang] || I18N.en;
+    if (window.Swal && typeof window.Swal.fire === 'function') {
+        const isDark = document.body.classList.contains('dark-theme');
+        return window.Swal.fire({
+            title: title || '',
+            html: message || '',
+            icon: icon,
+            confirmButtonText: okText || langObj.confirmBtnOk || 'OK',
+            background: isDark ? '#140c12' : '#ffffff',
+            color: isDark ? '#fbeaf0' : '#1c1917',
+            confirmButtonColor: '#e11d48',
+            customClass: {
+                popup: 'dt-swal-popup',
+                title: 'dt-swal-title',
+                htmlContainer: 'dt-swal-text',
+                confirmButton: 'dt-swal-confirm'
+            }
+        });
+    }
+    return showConfirmDialog({ title, message, icon, confirmText: okText || 'OK', danger: false });
+}
+
+window.showConfirmDialog = showConfirmDialog;
+window.showAlertDialog = showAlertDialog;
 
 // ===== Toast System =====
 let toastContainer = null;
