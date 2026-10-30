@@ -270,14 +270,14 @@ function applyTheme(theme, notify = true) {
         toggleBtn.setAttribute('title', isLight ? 'Switch to 🌙 Dark mode' : 'Switch to ☀️ Light mode');
         toggleBtn.setAttribute('aria-label', isLight ? 'Switch to Dark mode' : 'Switch to Light mode');
         const label = document.getElementById('theme-label');
-        if (label) label.textContent = isLight ? 'Light' : 'Dark';
+        if (label) label.textContent = isLight ? 'Dark' : 'Light';
         const iconDark = toggleBtn.querySelector('.theme-icon-dark');
         const iconLight = toggleBtn.querySelector('.theme-icon-light');
         if (iconDark && iconLight) {
-            iconDark.hidden = isLight;
-            iconDark.style.display = isLight ? 'none' : 'inline-flex';
-            iconLight.hidden = !isLight;
-            iconLight.style.display = isLight ? 'inline-flex' : 'none';
+            iconDark.hidden = !isLight;
+            iconDark.style.display = isLight ? 'inline-flex' : 'none';
+            iconLight.hidden = isLight;
+            iconLight.style.display = isLight ? 'none' : 'inline-flex';
         }
     }
 

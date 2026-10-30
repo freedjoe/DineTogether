@@ -51,11 +51,11 @@
     <!-- Skip to content (accessibility) -->
     <a href="#profiles-grid" class="skip-link">Skip to companions</a>
 
-    <!-- Theme Toggle (Light / Dark Mode) -->
+    <!-- Theme Toggle (Light / Dark Mode Action Pill) -->
     <button id="theme-toggle" class="theme-toggle-btn" type="button" aria-label="Switch to Light mode" title="Switch to ☀️ Light mode">
-        <span class="theme-icon theme-icon-dark" aria-hidden="true">🌙</span>
-        <span class="theme-icon theme-icon-light" aria-hidden="true" hidden style="display:none;">☀️</span>
-        <span class="theme-label" id="theme-label">Dark</span>
+        <span class="theme-icon theme-icon-light" aria-hidden="true">☀️</span>
+        <span class="theme-icon theme-icon-dark" aria-hidden="true" hidden style="display:none;">🌙</span>
+        <span class="theme-label" id="theme-label">Light</span>
     </button>
     <script>
         (function() {
@@ -67,11 +67,11 @@
                         btn.setAttribute('title', 'Switch to 🌙 Dark mode');
                         btn.setAttribute('aria-label', 'Switch to Dark mode');
                         var label = document.getElementById('theme-label');
-                        if (label) label.textContent = 'Light';
+                        if (label) label.textContent = 'Dark';
                         var d = btn.querySelector('.theme-icon-dark');
                         var l = btn.querySelector('.theme-icon-light');
-                        if (d) { d.hidden = true; d.style.display = 'none'; }
-                        if (l) { l.hidden = false; l.style.display = 'inline-flex'; }
+                        if (d) { d.hidden = false; d.style.display = 'inline-flex'; }
+                        if (l) { l.hidden = true; l.style.display = 'none'; }
                     }
                 }
             } catch (_) {}
