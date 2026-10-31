@@ -1,12 +1,12 @@
-/* ===== DineTogether Service Worker v22 ===== */
-const CACHE_NAME = 'dinetogether-v22';
+/* ===== DineTogether Service Worker v23 ===== */
+const CACHE_NAME = 'dinetogether-v23';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/styles.css',
   '/app.js',
   '/db.js',
-  '/public/vendor/sweetalert2.all.min.js',
+  '/assets/vendor/sweetalert2.all.min.js',
   '/manifest.json',
   '/icons/icon-192.png',
   '/icons/icon-512.png',

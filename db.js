@@ -213,17 +213,21 @@ const DB = (() => {
             )`);
         } catch (e) {}
 
-        // Migration: migrate legacy unsplash URLs to local /public/images/
+        // Migration: migrate legacy unsplash URLs and /public/images/ to local /assets/images/
         try {
             const profRows = query('SELECT id, photos FROM profiles');
             for (const r of profRows) {
-                if (r.photos && r.photos.includes('images.unsplash.com')) {
+                if (r.photos && (r.photos.includes('images.unsplash.com') || r.photos.includes('/public/images/'))) {
                     const photos = safeJSON(r.photos, []);
                     let changed = false;
                     const updated = photos.map((p, idx) => {
                         if (typeof p === 'string' && p.includes('images.unsplash.com')) {
                             changed = true;
-                            return `/public/images/profile-${r.id}-${idx + 1}.jpg`;
+                            return `/assets/images/profile-${r.id}-${idx + 1}.jpg`;
+                        }
+                        if (typeof p === 'string' && p.includes('/public/images/')) {
+                            changed = true;
+                            return p.replace('/public/images/', '/assets/images/');
                         }
                         return p;
                     });
@@ -232,15 +236,19 @@ const DB = (() => {
                     }
                 }
             }
-            _db.run("UPDATE clients SET avatar = '/public/images/client-1.jpg' WHERE id = 1 AND avatar LIKE '%unsplash%'");
-            _db.run("UPDATE clients SET avatar = '/public/images/client-2.jpg' WHERE id = 2 AND avatar LIKE '%unsplash%'");
-            _db.run("UPDATE clients SET avatar = '/public/images/client-3.jpg' WHERE id = 3 AND avatar LIKE '%unsplash%'");
-            _db.run("UPDATE requests SET client_avatar = '/public/images/client-1.jpg' WHERE client_id = 1 AND client_avatar LIKE '%unsplash%'");
-            _db.run("UPDATE requests SET client_avatar = '/public/images/client-2.jpg' WHERE client_id = 2 AND client_avatar LIKE '%unsplash%'");
-            _db.run("UPDATE requests SET profile_image = '/public/images/profile-1-1.jpg' WHERE profile_id = 1 AND profile_image LIKE '%unsplash%'");
-            _db.run("UPDATE requests SET profile_image = '/public/images/profile-3-1.jpg' WHERE profile_id = 3 AND profile_image LIKE '%unsplash%'");
+            _db.run("UPDATE profiles SET photos = REPLACE(photos, '/public/images/', '/assets/images/') WHERE photos LIKE '%/public/images/%'");
+            _db.run("UPDATE clients SET avatar = '/assets/images/client-1.jpg' WHERE id = 1 AND avatar LIKE '%unsplash%'");
+            _db.run("UPDATE clients SET avatar = '/assets/images/client-2.jpg' WHERE id = 2 AND avatar LIKE '%unsplash%'");
+            _db.run("UPDATE clients SET avatar = '/assets/images/client-3.jpg' WHERE id = 3 AND avatar LIKE '%unsplash%'");
+            _db.run("UPDATE clients SET avatar = REPLACE(avatar, '/public/images/', '/assets/images/') WHERE avatar LIKE '%/public/images/%'");
+            _db.run("UPDATE requests SET client_avatar = '/assets/images/client-1.jpg' WHERE client_id = 1 AND client_avatar LIKE '%unsplash%'");
+            _db.run("UPDATE requests SET client_avatar = '/assets/images/client-2.jpg' WHERE client_id = 2 AND client_avatar LIKE '%unsplash%'");
+            _db.run("UPDATE requests SET profile_image = '/assets/images/profile-1-1.jpg' WHERE profile_id = 1 AND profile_image LIKE '%unsplash%'");
+            _db.run("UPDATE requests SET profile_image = '/assets/images/profile-3-1.jpg' WHERE profile_id = 3 AND profile_image LIKE '%unsplash%'");
+            _db.run("UPDATE requests SET client_avatar = REPLACE(client_avatar, '/public/images/', '/assets/images/') WHERE client_avatar LIKE '%/public/images/%'");
+            _db.run("UPDATE requests SET profile_image = REPLACE(profile_image, '/public/images/', '/assets/images/') WHERE profile_image LIKE '%/public/images/%'");
         } catch (e) {
-            console.warn('Migration unsplash error:', e);
+            console.warn('Migration images error:', e);
         }
     }
 

@@ -5,9 +5,9 @@ const path = require('path');
 
 const PORT = parseInt(process.env.PORT, 10) || 8080;
 const ROOT = __dirname;
-const IMAGES_DIR = path.join(ROOT, 'public', 'images');
+const IMAGES_DIR = path.join(ROOT, 'assets', 'images');
 
-// Ensure public/images directory exists
+// Ensure assets/images directory exists
 if (!fs.existsSync(IMAGES_DIR)) {
     fs.mkdirSync(IMAGES_DIR, { recursive: true });
 }
@@ -145,7 +145,7 @@ const server = http.createServer((req, res) => {
 
                 fs.writeFileSync(targetPath, buffer);
 
-                const fileUrl = `/public/images/${fileName}`;
+                const fileUrl = `/assets/images/${fileName}`;
                 setCors(res);
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({
@@ -198,7 +198,7 @@ const server = http.createServer((req, res) => {
 
                 await downloadImage(sourceUrl, targetPath);
 
-                const fileUrl = `/public/images/${fileName}`;
+                const fileUrl = `/assets/images/${fileName}`;
                 setCors(res);
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({
@@ -218,7 +218,7 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    // API: Delete profile photos from /public/images
+    // API: Delete profile photos from /assets/images
     if (req.method === 'POST' && cleanUrl === '/api/delete-profile-images') {
         let bodyStr = '';
         req.on('data', chunk => bodyStr += chunk);
@@ -249,9 +249,9 @@ const server = http.createServer((req, res) => {
                         }
                     }
 
-                    // 2. Delete any additional photos in body.photos pointing to /public/images/
+                    // 2. Delete any additional photos in body.photos pointing to /assets/images/ or /public/images/
                     for (const photoUrl of photos) {
-                        if (typeof photoUrl === 'string' && photoUrl.includes('/public/images/')) {
+                        if (typeof photoUrl === 'string' && (photoUrl.includes('/assets/images/') || photoUrl.includes('/public/images/'))) {
                             const fileName = path.basename(photoUrl.split('?')[0]);
                             if (fileName && !deletedFiles.includes(fileName)) {
                                 const fullPath = path.join(IMAGES_DIR, fileName);

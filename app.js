@@ -49,10 +49,10 @@ const DEFAULT_PROFILES = [
         cuisine: 'french', interests: ['art', 'food', 'travel'],
         location: 'Paris, France', likes: 184,
         photos: [
-            '/public/images/profile-1-1.jpg',
-            '/public/images/profile-1-2.jpg',
-            '/public/images/profile-1-3.jpg',
-            '/public/images/profile-1-4.jpg'
+            '/assets/images/profile-1-1.jpg',
+            '/assets/images/profile-1-2.jpg',
+            '/assets/images/profile-1-3.jpg',
+            '/assets/images/profile-1-4.jpg'
         ],
         available: true
     },
@@ -62,9 +62,9 @@ const DEFAULT_PROFILES = [
         cuisine: 'italian', interests: ['food', 'travel', 'music'],
         location: 'Milan, Italy', likes: 142,
         photos: [
-            '/public/images/profile-2-1.jpg',
-            '/public/images/profile-2-2.jpg',
-            '/public/images/profile-2-3.jpg'
+            '/assets/images/profile-2-1.jpg',
+            '/assets/images/profile-2-2.jpg',
+            '/assets/images/profile-2-3.jpg'
         ],
         available: true
     },
@@ -74,9 +74,9 @@ const DEFAULT_PROFILES = [
         cuisine: 'japanese', interests: ['fitness', 'food', 'art'],
         location: 'Tokyo, Japan', likes: 196,
         photos: [
-            '/public/images/profile-3-1.jpg',
-            '/public/images/profile-3-2.jpg',
-            '/public/images/profile-3-3.jpg'
+            '/assets/images/profile-3-1.jpg',
+            '/assets/images/profile-3-2.jpg',
+            '/assets/images/profile-3-3.jpg'
         ],
         available: true
     },
@@ -86,9 +86,9 @@ const DEFAULT_PROFILES = [
         cuisine: 'mexican', interests: ['travel', 'art', 'food'],
         location: 'Barcelona, Spain', likes: 165,
         photos: [
-            '/public/images/profile-4-1.jpg',
-            '/public/images/profile-4-2.jpg',
-            '/public/images/profile-4-3.jpg'
+            '/assets/images/profile-4-1.jpg',
+            '/assets/images/profile-4-2.jpg',
+            '/assets/images/profile-4-3.jpg'
         ],
         available: true
     },
@@ -98,9 +98,9 @@ const DEFAULT_PROFILES = [
         cuisine: 'indian', interests: ['tech', 'food', 'travel'],
         location: 'London, UK', likes: 138,
         photos: [
-            '/public/images/profile-5-1.jpg',
-            '/public/images/profile-5-2.jpg',
-            '/public/images/profile-5-3.jpg'
+            '/assets/images/profile-5-1.jpg',
+            '/assets/images/profile-5-2.jpg',
+            '/assets/images/profile-5-3.jpg'
         ],
         available: true
     },
@@ -110,35 +110,35 @@ const DEFAULT_PROFILES = [
         cuisine: 'american', interests: ['music', 'food', 'art'],
         location: 'New York, USA', likes: 172,
         photos: [
-            '/public/images/profile-6-1.jpg',
-            '/public/images/profile-6-2.jpg',
-            '/public/images/profile-6-3.jpg'
+            '/assets/images/profile-6-1.jpg',
+            '/assets/images/profile-6-2.jpg',
+            '/assets/images/profile-6-3.jpg'
         ],
         available: true
     }
 ];
 
 const DEFAULT_CLIENTS = [
-    { id: 1, name: 'James Wilson', phone: '+1 202 555 0142', avatar: '/public/images/client-1.jpg', joinDate: '2024-01-15' },
-    { id: 2, name: 'Michael Brown', phone: '+44 7911 123456', avatar: '/public/images/client-2.jpg', joinDate: '2024-02-20' },
-    { id: 3, name: 'David Lee', phone: '+33 6 12 34 56 78', avatar: '/public/images/client-3.jpg', joinDate: '2024-03-10' }
+    { id: 1, name: 'James Wilson', phone: '+1 202 555 0142', avatar: '/assets/images/client-1.jpg', joinDate: '2024-01-15' },
+    { id: 2, name: 'Michael Brown', phone: '+44 7911 123456', avatar: '/assets/images/client-2.jpg', joinDate: '2024-02-20' },
+    { id: 3, name: 'David Lee', phone: '+33 6 12 34 56 78', avatar: '/assets/images/client-3.jpg', joinDate: '2024-03-10' }
 ];
 
 const DEFAULT_REQUESTS = [
     {
         id: 1, clientId: 1, clientName: 'James Wilson', clientPhone: '+1 202 555 0142',
-        clientAvatar: '/public/images/client-1.jpg',
+        clientAvatar: '/assets/images/client-1.jpg',
         profileId: 1, profileName: 'Sophie Laurent',
-        profileImage: '/public/images/profile-1-1.jpg',
+        profileImage: '/assets/images/profile-1-1.jpg',
         date: '2026-10-15', time: '19:30', restaurant: 'Le Petit Bistro',
         message: 'Would love to discuss art and try their famous duck confit!',
         status: 'pending', createdAt: '2026-09-28'
     },
     {
         id: 2, clientId: 2, clientName: 'Michael Brown', clientPhone: '+44 7911 123456',
-        clientAvatar: '/public/images/client-2.jpg',
+        clientAvatar: '/assets/images/client-2.jpg',
         profileId: 3, profileName: 'Yuki Tanaka',
-        profileImage: '/public/images/profile-3-1.jpg',
+        profileImage: '/assets/images/profile-3-1.jpg',
         date: '2026-10-18', time: '20:00', restaurant: 'Sakura Sushi Bar',
         message: 'I\'ve been wanting to try authentic omakase. Would be great to learn about Japanese cuisine!',
         status: 'accepted', createdAt: '2026-09-27'
@@ -442,7 +442,7 @@ const I18N = {
         adminConfirmDeleteBooking: 'Delete this booking request? This cannot be undone.',
         adminConfirmDeleteClient: 'Delete this client from SQLite? Any linked booking history will remain.',
         adminConfirmDeleteProfileTitle: 'Delete Companion Profile?',
-        adminConfirmDeleteProfileMsg: (name) => `Are you sure you want to delete <strong style="color:var(--text)">${name}</strong>? All uploaded photos will be permanently deleted from <code style="color:var(--rose)">/public/images</code>. This cannot be undone.`,
+        adminConfirmDeleteProfileMsg: (name) => `Are you sure you want to delete <strong style="color:var(--text)">${name}</strong>? All uploaded photos will be permanently deleted from <code style="color:var(--rose)">/assets/images</code>. This cannot be undone.`,
         adminConfirmDeleteBookingTitle: 'Delete Booking Request?',
         adminConfirmDeleteBookingMsg: 'Are you sure you want to delete this booking request? This action cannot be undone.',
         adminConfirmDeleteClientTitle: 'Delete Client Account?',
@@ -624,7 +624,7 @@ const I18N = {
         adminConfirmDeleteBooking: 'Supprimer cette demande de réservation ? Action irréversible.',
         adminConfirmDeleteClient: 'Supprimer ce client de SQLite ? L\'historique des réservations sera conservé.',
         adminConfirmDeleteProfileTitle: 'Supprimer le profil ?',
-        adminConfirmDeleteProfileMsg: (name) => `Êtes-vous sûr de vouloir supprimer <strong style="color:var(--text)">${name}</strong> ? Toutes les photos téléchargées seront définitivement supprimées de <code style="color:var(--rose)">/public/images</code>. Action irréversible.`,
+        adminConfirmDeleteProfileMsg: (name) => `Êtes-vous sûr de vouloir supprimer <strong style="color:var(--text)">${name}</strong> ? Toutes les photos téléchargées seront définitivement supprimées de <code style="color:var(--rose)">/assets/images</code>. Action irréversible.`,
         adminConfirmDeleteBookingTitle: 'Supprimer la réservation ?',
         adminConfirmDeleteBookingMsg: 'Êtes-vous sûr de vouloir supprimer cette demande de réservation ? Cette action est irréversible.',
         adminConfirmDeleteClientTitle: 'Supprimer le compte client ?',
@@ -806,7 +806,7 @@ const I18N = {
         adminConfirmDeleteBooking: 'هل أنت متأكد من حذف طلب الحجز؟ لا يمكن التراجع عن هذا الإجراء.',
         adminConfirmDeleteClient: 'هل أنت متأكد من حذف هذا العميل من SQLite؟ سيبقى سجل الحجوزات المرتبط به.',
         adminConfirmDeleteProfileTitle: 'حذف ملف المرافق؟',
-        adminConfirmDeleteProfileMsg: (name) => `هل أنت متأكد من حذف <strong style="color:var(--text)">${name}</strong>؟ سيتم حذف جميع الصور المرفوعة نهائياً من مجلد <code style="color:var(--rose)">/public/images</code> ولا يمكن التراجع عن هذا الإجراء.`,
+        adminConfirmDeleteProfileMsg: (name) => `هل أنت متأكد من حذف <strong style="color:var(--text)">${name}</strong>؟ سيتم حذف جميع الصور المرفوعة نهائياً من مجلد <code style="color:var(--rose)">/assets/images</code> ولا يمكن التراجع عن هذا الإجراء.`,
         adminConfirmDeleteBookingTitle: 'حذف طلب الحجز؟',
         adminConfirmDeleteBookingMsg: 'هل أنت متأكد من حذف طلب هذا الحجز نهائياً؟ لا يمكن التراجع عن هذا الإجراء.',
         adminConfirmDeleteClientTitle: 'حذف حساب العميل؟',
@@ -2510,7 +2510,7 @@ async function deleteProfile(id) {
     if (!confirmed) return;
 
     try {
-        // Delete uploaded photos from /public/images
+        // Delete uploaded photos from /assets/images
         try {
             await fetch('/api/delete-profile-images', {
                 method: 'POST',
