@@ -60,10 +60,22 @@ Open [http://localhost:8080](http://localhost:8080) in your browser.
 
 ### Admin Panel
 
-Navigate to `http://localhost:8080/#/_/admin` or use either of these shortcuts:
-- **URL**: Append `#/_/admin` to the URL
+Navigate to the direct admin route at `http://localhost:8080/_/admin/` and sign in with the configured admin credentials.
+
+For local development, set:
+
+```bash
+export ADMIN_USERNAME=admin
+export ADMIN_PASSWORD=change-me
+```
+
+Then visit:
+- **Direct route**: `http://localhost:8080/_/admin/`
+- **Hash route**: `http://localhost:8080/#/_/admin`
 - **Keyboard**: Press `Ctrl+Shift+A` (or `Cmd+Shift+A` on Mac)
 - **Hidden trigger**: Click the DineTogether logo 3 times rapidly
+
+The server enforces HTTP Basic Auth for the admin route and admin upload APIs to prevent unauthenticated access.
 
 ---
 
@@ -150,7 +162,14 @@ Copy all files to the web server's document root. No server-side configuration n
 
 ## Environment Variables
 
-This application has **no server-side environment variables** — it runs entirely in the browser.
+For local/server deployment, set the admin credentials before starting the app:
+
+```bash
+export ADMIN_USERNAME=admin
+export ADMIN_PASSWORD=change-me
+```
+
+This application otherwise runs fully in the browser; the server only adds the admin protection layer and file upload handling.
 
 The only external services used are:
 - **Google Fonts** — CDN fonts (no API key required)

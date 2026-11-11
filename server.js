@@ -6,6 +6,46 @@ const path = require('path');
 const PORT = parseInt(process.env.PORT, 10) || 8080;
 const ROOT = __dirname;
 const IMAGES_DIR = path.join(ROOT, 'assets', 'images');
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'dinetogether-dev';
+const ALLOWED_IMAGE_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif']);
+const ALLOWED_IMAGE_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+
+if (!process.env.ADMIN_USERNAME || !process.env.ADMIN_PASSWORD) {
+    console.warn('WARNING: ADMIN_USERNAME / ADMIN_PASSWORD are not set; using local dev defaults. Override in production.');
+}
+
+function isAllowedImageContentType(contentType = '') {
+    const mime = String(contentType).split(';', 1)[0].trim().toLowerCase();
+    return ALLOWED_IMAGE_MIME_TYPES.has(mime);
+}
+
+function getAllowedImageExtFromData(data, filename) {
+    if (data && data.startsWith('data:image/')) {
+        const match = data.match(/^data:image\/([a-zA-Z0-9+]+);base64,/);
+        if (match) {
+            const subtype = match[1].toLowerCase();
+            if (subtype === 'svg' || subtype === 'svg+xml') {
+                throw new Error('SVG uploads are not allowed for security reasons');
+            }
+            if (subtype === 'jpeg') return '.jpg';
+            if (['jpg', 'png', 'webp', 'gif'].includes(subtype)) return `.${subtype}`;
+            throw new Error('Unsupported image type');
+        }
+    }
+
+    if (filename) {
+        const matchExt = path.extname(filename).toLowerCase();
+        if (matchExt === '.svg') {
+            throw new Error('SVG uploads are not allowed for security reasons');
+        }
+        if (ALLOWED_IMAGE_EXTENSIONS.has(matchExt)) {
+            return matchExt === '.jpeg' ? '.jpg' : matchExt;
+        }
+    }
+
+    return '.jpg';
+}
 
 // Ensure assets/images directory exists
 if (!fs.existsSync(IMAGES_DIR)) {
@@ -31,7 +71,42 @@ const MIME_TYPES = {
 function setCors(res) {
     // Same-origin only: a wildcard would let any website drive the local upload API.
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+}
+
+function isAdminRoute(url) {
+    const cleanUrl = url.split('?')[0].split('#')[0].toLowerCase();
+    return cleanUrl === '/_/admin' || cleanUrl === '/_/admin/' || cleanUrl.startsWith('/_/admin/') || cleanUrl === '/api/upload' || cleanUrl === '/api/upload-url' || cleanUrl === '/api/delete-profile-images';
+}
+
+function sendBasicAuthChallenge(res) {
+    res.statusCode = 401;
+    res.setHeader('WWW-Authenticate', 'Basic realm="DineTogether Admin"');
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.end(JSON.stringify({ error: 'Authentication required for admin access' }));
+}
+
+function requireAdminAuth(req, res) {
+    const url = req.url || '/';
+    if (!isAdminRoute(url)) return false;
+
+    const authHeader = req.headers.authorization || '';
+    const match = /^Basic\s+([A-Za-z0-9+/=]+)$/.exec(authHeader);
+    if (!match) {
+        sendBasicAuthChallenge(res);
+        return true;
+    }
+
+    try {
+        const decoded = Buffer.from(match[1], 'base64').toString('utf8');
+        const [user, pass] = decoded.split(':');
+        if (user === ADMIN_USERNAME && pass === ADMIN_PASSWORD) {
+            return false;
+        }
+    } catch (_) {}
+
+    sendBasicAuthChallenge(res);
+    return true;
 }
 
 function getNextPhotoIndex(profileId) {
@@ -87,7 +162,6 @@ function downloadImage(url, destPath, maxRedirects = 5) {
 const server = http.createServer((req, res) => {
     let cleanUrl = req.url.split('?')[0].split('#')[0];
 
-    // Decode once so encoded traversal (%2e%2e%2f) is caught by the path check below
     try {
         cleanUrl = decodeURIComponent(cleanUrl);
     } catch (_) {
@@ -100,6 +174,10 @@ const server = http.createServer((req, res) => {
         setCors(res);
         res.writeHead(204);
         return res.end();
+    }
+
+    if (requireAdminAuth(req, res)) {
+        return;
     }
 
     // API: Base64 / Data URL upload endpoint
@@ -123,22 +201,13 @@ const server = http.createServer((req, res) => {
                     photoIndex = getNextPhotoIndex(profileId);
                 }
 
-                let ext = '.jpg';
-                if (body.data && body.data.startsWith('data:image/')) {
-                    const match = body.data.match(/^data:image\/([a-zA-Z0-9+]+);base64,/);
-                    if (match) {
-                        const sub = match[1].toLowerCase();
-                        if (sub === 'png') ext = '.png';
-                        else if (sub === 'webp') ext = '.webp';
-                        else if (sub === 'gif') ext = '.gif';
-                        else if (sub === 'svg+xml') ext = '.svg';
-                        else ext = '.jpg';
-                    }
-                } else if (body.filename) {
-                    const matchExt = path.extname(body.filename).toLowerCase();
-                    if (['.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg'].includes(matchExt)) {
-                        ext = matchExt === '.jpeg' ? '.jpg' : matchExt;
-                    }
+                let ext;
+                try {
+                    ext = getAllowedImageExtFromData(body.data, body.filename);
+                } catch (err) {
+                    setCors(res);
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    return res.end(JSON.stringify({ error: err.message }));
                 }
 
                 let base64Data = body.data || '';
@@ -194,6 +263,7 @@ const server = http.createServer((req, res) => {
                     photoIndex = getNextPhotoIndex(profileId);
                 }
                 const sourceUrl = (body.url || '').trim();
+                const urlLower = sourceUrl.toLowerCase();
 
                 if (!sourceUrl || (!sourceUrl.startsWith('http://') && !sourceUrl.startsWith('https://'))) {
                     setCors(res);
@@ -201,10 +271,25 @@ const server = http.createServer((req, res) => {
                     return res.end(JSON.stringify({ error: 'Invalid URL' }));
                 }
 
+                if (urlLower.endsWith('.svg') || urlLower.includes('.svg?')) {
+                    setCors(res);
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    return res.end(JSON.stringify({ error: 'SVG uploads are not allowed for security reasons' }));
+                }
+
                 const fileName = `profile-${profileId}-${photoIndex}.jpg`;
                 const targetPath = path.join(IMAGES_DIR, fileName);
 
-                await downloadImage(sourceUrl, targetPath);
+                const downloadResult = await downloadImage(sourceUrl, targetPath);
+                const contentType = String(downloadResult?.contentType || '').toLowerCase();
+                if (!isAllowedImageContentType(contentType) || contentType.includes('svg')) {
+                    if (fs.existsSync(targetPath)) {
+                        fs.unlinkSync(targetPath);
+                    }
+                    setCors(res);
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    return res.end(JSON.stringify({ error: 'Only raster image uploads are allowed' }));
+                }
 
                 const fileUrl = `/assets/images/${fileName}`;
                 setCors(res);

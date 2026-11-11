@@ -37,6 +37,9 @@ It was removed; same-origin use is unaffected, cross-origin preflight/writes are
 `Cache-Control: no-cache`, and prunes non-current caches on fetch. Verified: only `dinetogether-v24`
 remains after two reloads.
 
+**SEC-11 — SVG upload hardening.** `/api/upload` and `/api/upload-url` now reject SVG payloads and
+non-raster image MIME types, allowing only JPEG/PNG/WEBP/GIF uploads to reduce scriptable-file risk.
+
 ## Verified protections
 
 - All user-supplied strings rendered through `escapeHtml()` (quotes and angle brackets).

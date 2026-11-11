@@ -380,7 +380,7 @@ const I18N = {
         adminAddProfile: 'Add Profile',
         adminNoProfilesTitle: 'No profiles in SQLite yet',
         adminNoProfilesSub: 'Add your first companion profile',
-        adminEditPhotos: 'Edit & Photos',
+        adminEditPhotos: 'Edit',
         adminDelete: 'Delete',
         adminManageBookings: 'Manage Bookings',
         adminFilterAll: 'All Bookings',
