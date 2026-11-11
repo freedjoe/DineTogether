@@ -30,7 +30,12 @@ function debounce(fn, ms = 200) {
 }
 
 function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
-function todayISO() { return new Date().toISOString().split('T')[0]; }
+function todayISO() {
+    // Local calendar date (toISOString would shift the day for non-UTC timezones)
+    const now = new Date();
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    return local.toISOString().split('T')[0];
+}
 
 const PLACEHOLDER = 'data:image/svg+xml,' + encodeURIComponent(
     '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500"><rect fill="#130010" width="100%" height="100%"/><text x="50%" y="50%" fill="#a0144a" font-family="sans-serif" font-size="16" text-anchor="middle" dy=".3em">DineTogether</text></svg>'
@@ -178,6 +183,17 @@ function formatLocation(loc) {
     return LOCATION_I18N[lang]?.[loc] || loc;
 }
 
+// Interest slugs → localized display labels
+const INTEREST_TAG_KEYS = {
+    art: 'tagArt', music: 'tagMusic', travel: 'tagTravel',
+    fitness: 'tagFitness', tech: 'tagTech', food: 'tagFood'
+};
+
+function formatInterest(interest) {
+    const key = INTEREST_TAG_KEYS[String(interest || '').toLowerCase()];
+    return key ? t(key) : interest;
+}
+
 // ===== Device & IP Identification (Single Like per Device/IP) =====
 let cachedUserKey = null;
 
@@ -220,7 +236,7 @@ function isValidPhone(phone) {
     // Accept international format: +, digits, spaces, dashes, dots, parens
     // Minimum 6 digits after stripping non-numeric chars
     const digits = phone.replace(/\D/g, '');
-    return digits.length >= 6 && digits.length <= 15 && /^[+\d\s\-().]+$/.test(phone);
+    return digits.length >= 7 && digits.length <= 15 && /^[+\d\s\-().]+$/.test(phone);
 }
 
 // ===== Photo Optimization Engine =====
@@ -447,6 +463,47 @@ const I18N = {
         adminConfirmDeleteBookingMsg: 'Are you sure you want to delete this booking request? This action cannot be undone.',
         adminConfirmDeleteClientTitle: 'Delete Client Account?',
         adminConfirmDeleteClientMsg: (name) => `Are you sure you want to delete client <strong style="color:var(--text)">${name}</strong>? Their account will be removed from SQLite.`,
+        bookingSuccessToast: 'Dining request sent successfully! 🍽️',
+        bookingTimeInvalid: 'Please select a time',
+        bookingVenueInvalid: 'Please enter a restaurant or venue name',
+        bookingSaveFailed: 'Failed to save your request. Please try again.',
+        savingBooking: 'Saving booking…',
+        bookingPhoneInvalidText: 'Please enter a valid phone number including country code',
+        likeToast: (name) => `You liked ${name}! ❤️`,
+        unlikeToast: (name) => `Removed like for ${name}`,
+        likeError: 'Failed to update like. Please try again.',
+        profileNameInvalid: 'Name must be at least 2 characters',
+        profileAgeInvalid: 'Age must be between 18 and 99',
+        profileBioInvalid: 'Bio must be at least 20 characters',
+        savingProfile: 'Saving to SQLite…',
+        profileSaved: 'Profile & photos saved to SQLite! ✅',
+        profileCreated: 'New profile created in SQLite! ✨',
+        profileSaveFailed: 'Failed to save profile to database',
+        profileDeleted: 'Profile & photos deleted',
+        profileDeleteFailed: 'Failed to delete profile',
+        photoAdded: 'Photo added to gallery',
+        photoUrlInvalid: 'Please enter a valid URL starting with https://',
+        adminOptimizingPhoto: (file, i, n) => `Optimizing & saving ${file} (${i}/${n})…`,
+        adminAltNone: 'No alternative profiles available',
+        adminSuggestedTag: (name) => `[Admin suggested: ${name}]`,
+        adminAltProposed: (name) => `Alternative proposed: ${name}`,
+        adminAltFailed: 'Failed to propose alternative',
+        tagArt: 'Art',
+        tagMusic: 'Music',
+        tagTravel: 'Travel',
+        tagFitness: 'Fitness',
+        tagTech: 'Technology',
+        tagFood: 'Food & Wine',
+        clientNoPhone: 'No phone',
+        bookingDeleted: 'Booking deleted',
+        bookingDeleteFailed: 'Failed to delete booking',
+        bookingStatusFailed: 'Failed to update booking status',
+        bookingAcceptedToast: 'Booking accepted! ✅',
+        bookingDeclinedToast: 'Booking declined ❌',
+        bookingPendingToast: 'Booking moved back to pending ⏳',
+        clientDeleted: 'Client removed from SQLite',
+        clientDeleteFailed: 'Failed to delete client',
+        photoSetCover: 'Set as main cover photo! ★',
         confirmBtnDelete: '🗑️ Delete',
         confirmBtnCancel: 'Cancel',
         confirmBtnOk: 'OK'
@@ -629,6 +686,47 @@ const I18N = {
         adminConfirmDeleteBookingMsg: 'Êtes-vous sûr de vouloir supprimer cette demande de réservation ? Cette action est irréversible.',
         adminConfirmDeleteClientTitle: 'Supprimer le compte client ?',
         adminConfirmDeleteClientMsg: (name) => `Êtes-vous sûr de vouloir supprimer le client <strong style="color:var(--text)">${name}</strong> ? Son compte sera retiré de SQLite.`,
+        bookingSuccessToast: 'Demande de réservation envoyée avec succès ! 🍽️',
+        bookingTimeInvalid: 'Veuillez sélectionner une heure',
+        bookingVenueInvalid: 'Veuillez saisir un restaurant ou un lieu',
+        bookingSaveFailed: "Impossible d'enregistrer votre demande. Veuillez réessayer.",
+        savingBooking: 'Enregistrement de la réservation…',
+        bookingPhoneInvalidText: 'Veuillez saisir un numéro de téléphone valide avec indicatif pays',
+        likeToast: (name) => `Vous aimez ${name} ! ❤️`,
+        unlikeToast: (name) => `Mention J'aime retirée pour ${name}`,
+        likeError: "Impossible de mettre à jour la mention J'aime. Réessayez.",
+        profileNameInvalid: 'Le nom doit contenir au moins 2 caractères',
+        profileAgeInvalid: "L'âge doit être compris entre 18 et 99 ans",
+        profileBioInvalid: 'La biographie doit contenir au moins 20 caractères',
+        savingProfile: 'Enregistrement dans SQLite…',
+        profileSaved: 'Profil et photos enregistrés dans SQLite ! ✅',
+        profileCreated: 'Nouveau profil créé dans SQLite ! ✨',
+        profileSaveFailed: "Impossible d'enregistrer le profil",
+        profileDeleted: 'Profil et photos supprimés',
+        profileDeleteFailed: 'Impossible de supprimer le profil',
+        photoAdded: 'Photo ajoutée à la galerie',
+        photoUrlInvalid: 'Veuillez saisir une URL valide commençant par https://',
+        adminOptimizingPhoto: (file, i, n) => `Optimisation et enregistrement de ${file} (${i}/${n})…`,
+        adminAltNone: 'Aucun profil alternatif disponible',
+        adminSuggestedTag: (name) => `[Suggéré par l'admin : ${name}]`,
+        adminAltProposed: (name) => `Alternative proposée : ${name}`,
+        adminAltFailed: "Impossible de proposer l'alternative",
+        tagArt: 'Art',
+        tagMusic: 'Musique',
+        tagTravel: 'Voyage',
+        tagFitness: 'Fitness',
+        tagTech: 'Technologie',
+        tagFood: 'Gastronomie',
+        clientNoPhone: 'Téléphone non renseigné',
+        bookingDeleted: 'Réservation supprimée',
+        bookingDeleteFailed: 'Impossible de supprimer la réservation',
+        bookingStatusFailed: 'Impossible de mettre à jour le statut',
+        bookingAcceptedToast: 'Réservation acceptée ! ✅',
+        bookingDeclinedToast: 'Réservation refusée ❌',
+        bookingPendingToast: 'Réservation remise en attente ⏳',
+        clientDeleted: 'Client supprimé',
+        clientDeleteFailed: 'Impossible de supprimer le client',
+        photoSetCover: 'Définie comme photo principale ! ★',
         confirmBtnDelete: '🗑️ Supprimer',
         confirmBtnCancel: 'Annuler',
         confirmBtnOk: 'OK'
@@ -811,6 +909,47 @@ const I18N = {
         adminConfirmDeleteBookingMsg: 'هل أنت متأكد من حذف طلب هذا الحجز نهائياً؟ لا يمكن التراجع عن هذا الإجراء.',
         adminConfirmDeleteClientTitle: 'حذف حساب العميل؟',
         adminConfirmDeleteClientMsg: (name) => `هل أنت متأكد من حذف حساب العميل <strong style="color:var(--text)">${name}</strong>؟ سيتم حذفه من قاعدة البيانات.`,
+        bookingSuccessToast: 'تم إرسال طلب الحجز بنجاح! 🍽️',
+        bookingTimeInvalid: 'يرجى اختيار وقت',
+        bookingVenueInvalid: 'يرجى إدخال اسم المطعم أو المكان',
+        bookingSaveFailed: 'تعذّر حفظ طلبك. يرجى المحاولة مرة أخرى.',
+        savingBooking: 'جارٍ حفظ الحجز…',
+        bookingPhoneInvalidText: 'يرجى إدخال رقم هاتف صالح مع رمز الدولة',
+        likeToast: (name) => `أعجبك ${name}! ❤️`,
+        unlikeToast: (name) => `تمت إزالة الإعجاب بـ ${name}`,
+        likeError: 'تعذّر تحديث الإعجاب. يرجى المحاولة مرة أخرى.',
+        profileNameInvalid: 'يجب أن يتكون الاسم من حرفين على الأقل',
+        profileAgeInvalid: 'يجب أن يكون العمر بين 18 و99 سنة',
+        profileBioInvalid: 'يجب أن تكون النبذة 20 حرفاً على الأقل',
+        savingProfile: 'جارٍ الحفظ في SQLite…',
+        profileSaved: 'تم حفظ الملف والصور في SQLite! ✅',
+        profileCreated: 'تم إنشاء ملف جديد في SQLite! ✨',
+        profileSaveFailed: 'تعذّر حفظ الملف في قاعدة البيانات',
+        profileDeleted: 'تم حذف الملف والصور',
+        profileDeleteFailed: 'تعذّر حذف الملف',
+        photoAdded: 'تمت إضافة الصورة إلى المعرض',
+        photoUrlInvalid: 'يرجى إدخال رابط صالح يبدأ بـ https://',
+        adminOptimizingPhoto: (file, i, n) => `جارٍ تحسين ${file} وحفظه (${i}/${n})…`,
+        adminAltNone: 'لا توجد ملفات بديلة متاحة',
+        adminSuggestedTag: (name) => `[اقترح المسؤول: ${name}]`,
+        adminAltProposed: (name) => `تم اقتراح بديل: ${name}`,
+        adminAltFailed: 'تعذّر اقتراح البديل',
+        tagArt: 'فن',
+        tagMusic: 'موسيقى',
+        tagTravel: 'سفر',
+        tagFitness: 'لياقة',
+        tagTech: 'تقنية',
+        tagFood: 'طعام',
+        clientNoPhone: 'لا يوجد هاتف',
+        bookingDeleted: 'تم حذف الحجز',
+        bookingDeleteFailed: 'تعذّر حذف الحجز',
+        bookingStatusFailed: 'تعذّر تحديث حالة الحجز',
+        bookingAcceptedToast: 'تم قبول الحجز! ✅',
+        bookingDeclinedToast: 'تم رفض الحجز ❌',
+        bookingPendingToast: 'أُعيد الحجز إلى قيد الانتظار ⏳',
+        clientDeleted: 'تم حذف العميل',
+        clientDeleteFailed: 'تعذّر حذف العميل',
+        photoSetCover: 'تم تعيينها كصورة رئيسية! ★',
         confirmBtnDelete: '🗑️ حذف',
         confirmBtnCancel: 'إلغاء',
         confirmBtnOk: 'موافق'
@@ -968,8 +1107,13 @@ function initTheme() {
 
 function applyTheme(theme, notify = true) {
     document.documentElement.setAttribute('data-theme', theme);
-    const toggleBtn = document.getElementById('theme-toggle');
     const isLight = theme === 'light';
+
+    // Keep the browser/PWA chrome colour aligned with the active theme
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta) themeMeta.setAttribute('content', isLight ? '#fdf9fa' : '#080206');
+
+    const toggleBtn = document.getElementById('theme-toggle');
 
     if (toggleBtn) {
         toggleBtn.setAttribute('aria-pressed', isLight ? 'true' : 'false');
@@ -1049,7 +1193,7 @@ let deferredInstallPrompt = null;
 
 function initPWA() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').then(reg => {
+        navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(reg => {
             console.log('[SW] Registered:', reg.scope);
         }).catch(err => console.warn('[SW] Registration failed:', err));
     }
@@ -1097,20 +1241,30 @@ function hideLoading() {
 // ===== Focus Management =====
 let _lastFocusedBeforeModal = null;
 
+const FOCUSABLE_SELECTOR = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 function trapFocus(el) {
-    const focusable = el.querySelectorAll(
-        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-    );
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
+    const getFocusable = () => [...el.querySelectorAll(FOCUSABLE_SELECTOR)]
+        .filter(node => node.offsetParent !== null || node === document.activeElement);
+
+    const first = getFocusable()[0];
     if (!first) return;
     first.focus();
+
+    // Attach a single reusable handler per modal element (reopening used to stack listeners)
+    if (el.dataset.focusTrapBound === '1') return;
+    el.dataset.focusTrapBound = '1';
+
     el.addEventListener('keydown', function handler(e) {
         if (e.key !== 'Tab') return;
+        const focusable = getFocusable();
+        if (!focusable.length) return;
+        const firstEl = focusable[0];
+        const lastEl = focusable[focusable.length - 1];
         if (e.shiftKey) {
-            if (document.activeElement === first) { e.preventDefault(); last.focus(); }
-        } else {
-            if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+            if (document.activeElement === firstEl) { e.preventDefault(); lastEl.focus(); }
+        } else if (document.activeElement === lastEl) {
+            e.preventDefault(); firstEl.focus();
         }
     });
 }
@@ -1208,6 +1362,10 @@ function checkRoute() {
 
 // ===== Page Navigation =====
 function showPage(page, updateHash = true) {
+    // Route changes should start at the top instead of inheriting the previous scroll offset
+    try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); }
+    catch (_) { window.scrollTo(0, 0); }
+
     $$('.page').forEach(p => { p.classList.remove('active'); p.hidden = true; });
 
     if (page === 'client') {
@@ -1319,8 +1477,8 @@ function renderProfiles() {
         const photo = mainPhoto(p);
         const name = escapeHtml(p.name);
         const bio = escapeHtml(p.bio);
-        const location = escapeHtml(p.location);
-        const tags = (p.interests || []).map(i => `<span class="tag">${escapeHtml(i)}</span>`).join('');
+        const location = escapeHtml(formatLocation(p.location));
+        const tags = (p.interests || []).map(i => `<span class="tag">${escapeHtml(formatInterest(i))}</span>`).join('');
 
         return `
             <article class="profile-card" role="listitem" data-action="open-profile" data-id="${p.id}" tabindex="0" aria-label="View ${name}'s profile">
@@ -1421,7 +1579,7 @@ function openProfileModal(id) {
                         <div class="modal-profile-meta">
                             <span>🎂 ${profile.age} ${t('yearsOld')}</span>
                             <span class="meta-sep">·</span>
-                            <span>📍 ${escapeHtml(profile.location)}</span>
+                            <span>📍 ${escapeHtml(formatLocation(profile.location))}</span>
                             <span class="meta-sep">·</span>
                             <span class="modal-meta-likes"><span class="heart-pulse" aria-hidden="true">${isLiked ? '❤️' : '🤍'}</span> <strong id="modal-likes-count">${profile.likes || 0}</strong> ${t('likesLabel')}</span>
                         </div>
@@ -1429,7 +1587,7 @@ function openProfileModal(id) {
                         <div class="modal-profile-details">
                             <div class="detail-item">
                                 <div class="detail-label">${t('ageLocation')}</div>
-                                <div class="detail-value">${profile.age} ${t('yearsOldShort')} · ${escapeHtml(profile.location)}</div>
+                                <div class="detail-value">${profile.age} ${t('yearsOldShort')} · ${escapeHtml(formatLocation(profile.location))}</div>
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">${t('availability')}</div>
@@ -1439,7 +1597,7 @@ function openProfileModal(id) {
                             </div>
                         </div>
                         <div class="modal-profile-tags">
-                            ${(profile.interests || []).map(i => `<span class="tag">${escapeHtml(i)}</span>`).join('')}
+                            ${(profile.interests || []).map(i => `<span class="tag">${escapeHtml(formatInterest(i))}</span>`).join('')}
                         </div>
 
                         <div class="like-section">
@@ -1532,10 +1690,10 @@ async function handleLikeProfile(id, triggerEl) {
 
         if (res.liked) {
             userLikedIds.add(id);
-            showToast(`You liked ${p?.name || 'companion'}! ❤️`, 'success');
+            showToast(t('likeToast', p?.name || 'companion'), 'success');
         } else {
             userLikedIds.delete(id);
-            showToast(`Removed like for ${p?.name || 'companion'}`, 'info');
+            showToast(t('unlikeToast', p?.name || 'companion'), 'info');
         }
 
         const cardBtn = triggerEl ? triggerEl.closest('.profile-card-likes') : $(`[data-action="like-profile"][data-id="${id}"]`);
@@ -1558,7 +1716,7 @@ async function handleLikeProfile(id, triggerEl) {
         }
     } catch (e) {
         console.error('Like toggle error:', e);
-        showToast('Failed to update like', 'error');
+        showToast(t('likeError'), 'error');
     }
 }
 
@@ -1571,10 +1729,10 @@ async function handleLikeProfileModal(id, triggerBtn) {
 
         if (res.liked) {
             userLikedIds.add(id);
-            showToast(`You liked ${p?.name || 'companion'}! ❤️`, 'success');
+            showToast(t('likeToast', p?.name || 'companion'), 'success');
         } else {
             userLikedIds.delete(id);
-            showToast(`Removed like for ${p?.name || 'companion'}`, 'info');
+            showToast(t('unlikeToast', p?.name || 'companion'), 'info');
         }
 
         updateModalLikeUI(id, res.liked, res.likes);
@@ -1595,7 +1753,7 @@ async function handleLikeProfileModal(id, triggerBtn) {
         }
     } catch (e) {
         console.error('Like toggle error:', e);
-        showToast('Failed to update like', 'error');
+        showToast(t('likeError'), 'error');
     }
 }
 
@@ -1705,29 +1863,29 @@ async function submitBooking(event) {
         return;
     }
     if (!phone || !isValidPhone(phone)) {
-        showToast('Please enter a valid phone number including country code', 'error');
+        showToast(t('bookingPhoneInvalidText'), 'error');
         phoneEl.focus();
         return;
     }
-    if (!date) {
-        showToast('Please select a date', 'error');
+    if (!date || date < todayISO()) {
+        showToast(t('bookingDateInvalid'), 'error');
         dateEl.focus();
         return;
     }
     if (!time) {
-        showToast('Please select a time', 'error');
+        showToast(t('bookingTimeInvalid'), 'error');
         timeEl.focus();
         return;
     }
     if (!restaurant || restaurant.length < 2) {
-        showToast('Please enter a restaurant or venue name', 'error');
+        showToast(t('bookingVenueInvalid'), 'error');
         restaurantEl.focus();
         return;
     }
 
     const submitBtn = event.target.querySelector('[type="submit"]');
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Saving booking…';
+    submitBtn.textContent = t('savingBooking');
 
     try {
         let client = await DB.clients.byPhone(phone);
@@ -1740,7 +1898,10 @@ async function submitBooking(event) {
         }
 
         const profile = profiles.find(p => p.id === selectedProfileId);
-        if (!profile) return;
+        if (!profile) {
+            showToast(t('bookingSaveFailed'), 'error');
+            return;
+        }
 
         await DB.requests.save({
             clientId: client.id,
@@ -1758,16 +1919,16 @@ async function submitBooking(event) {
         [clients, requests] = await Promise.all([DB.clients.all(), DB.requests.all()]);
 
         closeBookingModal();
-        showToast('Dining request sent successfully! 🍽️', 'success');
+        showToast(t('bookingSuccessToast'), 'success');
         updateRequestBadge();
         updateQuickStats();
         updateHeroStats();
     } catch (e) {
         console.error('Booking error:', e);
-        showToast('Failed to save request to database', 'error');
+        showToast(t('bookingSaveFailed'), 'error');
     } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = '🍽️ Send Dining Request';
+        submitBtn.textContent = t('submitBooking');
     }
 }
 
@@ -1883,24 +2044,28 @@ function renderAdminRequests() {
     }).join('');
 
     list.querySelectorAll('img').forEach(img => img.addEventListener('error', () => imgFallback(img), { once: true }));
-}
-
-async function updateRequestStatus(requestId, status) {
+}async function updateRequestStatus(requestId, status) {
     const request = requests.find(r => r.id === requestId);
     if (!request) return;
+    const previousStatus = request.status;
     request.status = status;
     try {
         await DB.requests.save(request);
         requests = await DB.requests.all();
+
         renderAdminRequests();
         updateRequestBadge();
         updateQuickStats();
         renderDatabaseStats();
         updateHeroStats();
-        const msg = status === 'accepted' ? 'Booking Accepted! ✅' : (status === 'declined' ? 'Booking Declined ❌' : 'Booking moved to Pending ⏳');
+        const msg = status === 'accepted' ? t('bookingAcceptedToast')
+            : (status === 'declined' ? t('bookingDeclinedToast') : t('bookingPendingToast'));
         showToast(msg, status === 'accepted' ? 'success' : (status === 'declined' ? 'error' : 'info'));
     } catch (e) {
-        showToast('Failed to update booking status', 'error');
+        // Roll back the optimistic change so the UI does not disagree with SQLite
+        request.status = previousStatus;
+        renderAdminRequests();
+        showToast(t('bookingStatusFailed'), 'error');
     }
 }
 
@@ -1927,9 +2092,9 @@ async function deleteBookingRequest(requestId) {
         updateQuickStats();
         renderDatabaseStats();
         updateHeroStats();
-        showToast('Booking deleted', 'info');
+        showToast(t('bookingDeleted'), 'info');
     } catch (e) {
-        showToast('Failed to delete booking', 'error');
+        showToast(t('bookingDeleteFailed'), 'error');
     }
 }
 
@@ -1953,7 +2118,7 @@ function renderAdminClients() {
                 </div>
                 <div class="client-name">${escapeHtml(c.name)}</div>
                 <div class="client-phone" style="font-size:0.8rem;color:var(--rose-soft);margin-bottom:0.6rem;font-weight:600">
-                    📞 ${escapeHtml(c.phone || 'No phone')}
+                    📞 ${escapeHtml(c.phone || t.clientNoPhone)}
                 </div>
                 <div class="client-stats">
                     <span class="client-stat-item">📅 ${escapeHtml(c.joinDate)}</span>
@@ -1975,7 +2140,7 @@ async function deleteClient(clientId) {
 
     const confirmed = await showConfirmDialog({
         title: langObj.adminConfirmDeleteClientTitle,
-        message: langObj.adminConfirmDeleteClientMsg(clientName),
+        message: langObj.adminConfirmDeleteClientMsg(escapeHtml(clientName)),
         confirmText: langObj.confirmBtnDelete,
         cancelText: langObj.confirmBtnCancel,
         danger: true,
@@ -1989,9 +2154,9 @@ async function deleteClient(clientId) {
         renderAdminClients();
         updateQuickStats();
         renderDatabaseStats();
-        showToast('Client deleted from SQLite', 'info');
+        showToast(t('clientDeleted'), 'info');
     } catch (e) {
-        showToast('Failed to delete client', 'error');
+        showToast(t('clientDeleteFailed'), 'error');
     }
 }
 
@@ -2119,11 +2284,11 @@ function handleRunSQL() {
             DB.runRaw(sql);
             resultEl.innerHTML = '<span style="color:var(--success)">Statement executed successfully &amp; database persisted!</span>';
             renderDatabaseStats();
-            showToast('Statement executed & saved to SQLite!', 'success');
+            showToast(t('adminSqlSuccess'), 'success');
         }
     } catch (err) {
         resultEl.innerHTML = `<span style="color:var(--danger)">SQL Error: ${escapeHtml(err.message)}</span>`;
-        showToast('SQL syntax error', 'error');
+        showToast(t('adminSqlError'), 'error');
     }
 }
 
@@ -2132,7 +2297,7 @@ function renderFormPhotos() {
     const grid = $('#pf-photo-grid');
     if (!grid) return;
     if (currentFormPhotos.length === 0) {
-        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:1rem;color:var(--text-dim);font-size:0.8rem">${(I18N[currentLang] || I18N.en).adminNoPhotosYet}</div>';
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:1rem;color:var(--text-dim);font-size:0.8rem">${(I18N[currentLang] || I18N.en).adminNoPhotosYet}</div>`;
         return;
     }
     grid.innerHTML = currentFormPhotos.map((url, i) => `
@@ -2173,7 +2338,7 @@ async function handlePhotoUpload(files) {
     for (const file of Array.from(files)) {
         if (!file.type.startsWith('image/')) continue;
         processed++;
-        if (statusText) statusText.textContent = `Optimizing & saving ${file.name} (${processed}/${files.length})…`;
+        if (statusText) statusText.textContent = t('adminOptimizingPhoto', file.name, processed, files.length);
         try {
             const opt = await optimizeImageFile(file);
             const photoIndex = currentFormPhotos.length + 1;
@@ -2201,7 +2366,7 @@ async function handlePhotoUpload(files) {
             }
 
             currentFormPhotos.push(photoUrl);
-            await DB.photos.add(null, photoUrl, {
+            await DB.photos.add(targetProfileId, photoUrl, {
                 filename: opt.filename,
                 width: opt.width,
                 height: opt.height,
@@ -2384,9 +2549,9 @@ function setupProfileFormHandlers() {
             currentFormPhotos.push(finalUrl);
             if (addUrlInput) addUrlInput.value = '';
             renderFormPhotos();
-            showToast('Photo added to gallery', 'success');
+            showToast(t('photoAdded'), 'success');
         } else if (url) {
-            showToast('Please enter a valid URL starting with https://', 'error');
+            showToast(t('photoUrlInvalid'), 'error');
         }
     });
 
@@ -2410,7 +2575,7 @@ function setupProfileFormHandlers() {
             const [selected] = currentFormPhotos.splice(idx, 1);
             currentFormPhotos.unshift(selected);
             renderFormPhotos();
-            showToast('Set as main cover photo! ★', 'info');
+            showToast(t('photoSetCover'), 'info');
         }
     });
 }
@@ -2431,24 +2596,24 @@ async function saveProfile(event) {
     const bio = $('#pf-bio').value.trim();
 
     if (!name || name.length < 2) {
-        showToast('Name must be at least 2 characters', 'error');
+        showToast(t('profileNameInvalid'), 'error');
         $('#pf-name').focus();
         return;
     }
     if (!age || age < 18 || age > 99) {
-        showToast('Age must be between 18 and 99', 'error');
+        showToast(t('profileAgeInvalid'), 'error');
         $('#pf-age').focus();
         return;
     }
     if (!bio || bio.length < 20) {
-        showToast('Bio must be at least 20 characters', 'error');
+        showToast(t('profileBioInvalid'), 'error');
         $('#pf-bio').focus();
         return;
     }
 
     const submitBtn = form.querySelector('[type="submit"]');
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Saving to SQLite…';
+    submitBtn.textContent = t('savingProfile');
 
     const interests = ($('#pf-interests').value || '').split(',').map(i => i.trim().toLowerCase()).filter(Boolean);
     const isAvail = $('#pf-available').value === '1';
@@ -2471,11 +2636,11 @@ async function saveProfile(event) {
         if (editId) {
             const existing = profiles.find(p => p.id === editId);
             await DB.profiles.save({ ...existing, ...profileData, id: editId });
-            showToast('Profile & photos saved to SQLite! ✅', 'success');
+            showToast(t('profileSaved'), 'success');
         } else {
             const targetId = pendingNewProfileId || ((profiles.reduce((m, p) => Math.max(m, Number(p.id) || 0), 0)) + 1);
             await DB.profiles.save({ ...profileData, id: targetId });
-            showToast('New profile created in SQLite! ✨', 'success');
+            showToast(t('profileCreated'), 'success');
         }
         pendingNewProfileId = null;
         profiles = await DB.profiles.all();
@@ -2487,10 +2652,10 @@ async function saveProfile(event) {
         updateHeroStats();
     } catch (e) {
         console.error('Save profile error:', e);
-        showToast('Failed to save profile to database', 'error');
+        showToast(t('profileSaveFailed'), 'error');
     } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = editId ? '💾 Save Changes to SQLite' : '✨ Save New Profile to SQLite';
+        submitBtn.textContent = editId ? t('adminSaveProfileEdit') : t('adminSaveProfileAdd');
     }
 }
 
@@ -2501,7 +2666,7 @@ async function deleteProfile(id) {
 
     const confirmed = await showConfirmDialog({
         title: langObj.adminConfirmDeleteProfileTitle,
-        message: langObj.adminConfirmDeleteProfileMsg(name),
+        message: langObj.adminConfirmDeleteProfileMsg(escapeHtml(name)),
         confirmText: langObj.confirmBtnDelete,
         cancelText: langObj.confirmBtnCancel,
         danger: true,
@@ -2531,10 +2696,10 @@ async function deleteProfile(id) {
         renderDatabaseStats();
         updateQuickStats();
         updateHeroStats();
-        showToast(`Profile & photos deleted: ${name}`, 'info');
+        showToast(`${t('profileDeleted')}: ${name}`, 'info');
     } catch (e) {
         console.error('Delete profile failed:', e);
-        showToast('Failed to delete profile', 'error');
+        showToast(t('profileDeleteFailed'), 'error');
     }
 }
 
@@ -2545,7 +2710,7 @@ function openProposeModal(requestId) {
     const t = I18N[currentLang] || I18N.en;
 
     const alternatives = profiles.filter(p => p.id !== request.profileId && p.available);
-    if (alternatives.length === 0) { showToast('No alternative profiles available', 'error'); return; }
+    if (alternatives.length === 0) { showToast(t('adminAltNone'), 'error'); return; }
 
     const content = $('#booking-content');
     content.innerHTML = `
@@ -2594,7 +2759,7 @@ async function selectAlternative(requestId, newProfileId) {
     request.profileName = newProfile.name;
     request.profileImage = mainPhoto(newProfile);
     request.status = 'pending';
-    request.message = (request.message || '') + ` [Admin suggested: ${newProfile.name}]`;
+    request.message = (request.message || '') + ` ${t('adminSuggestedTag', newProfile.name)}`;
 
     try {
         await DB.requests.save(request);
@@ -2603,9 +2768,9 @@ async function selectAlternative(requestId, newProfileId) {
         updateRequestBadge();
         closeBookingModal();
         renderDatabaseStats();
-        showToast(`Alternative proposed: ${newProfile.name}`, 'success');
+        showToast(t('adminAltProposed', newProfile.name), 'success');
     } catch (e) {
-        showToast('Failed to propose alternative', 'error');
+        showToast(t('adminAltFailed'), 'error');
     }
 }
 

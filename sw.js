@@ -1,5 +1,5 @@
 /* ===== DineTogether Service Worker v23 ===== */
-const CACHE_NAME = 'dinetogether-v23';
+const CACHE_NAME = 'dinetogether-v24';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -33,8 +33,19 @@ self.addEventListener('activate', e => {
   );
 });
 
+/* Delete pre-v24 caches left behind by an earlier controller */
+let pruneDone = false;
+function pruneOldCaches() {
+  if (pruneDone) return Promise.resolve();
+  pruneDone = true;
+  return caches.keys().then(keys =>
+    Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+  );
+}
+
 /* Fetch: cache-first for fonts/images, network-first for app shell */
 self.addEventListener('fetch', e => {
+  pruneOldCaches();
   const url = new URL(e.request.url);
 
   // Skip non-GET requests

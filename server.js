@@ -29,7 +29,7 @@ const MIME_TYPES = {
 };
 
 function setCors(res) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    // Same-origin only: a wildcard would let any website drive the local upload API.
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 }
@@ -86,6 +86,14 @@ function downloadImage(url, destPath, maxRedirects = 5) {
 
 const server = http.createServer((req, res) => {
     let cleanUrl = req.url.split('?')[0].split('#')[0];
+
+    // Decode once so encoded traversal (%2e%2e%2f) is caught by the path check below
+    try {
+        cleanUrl = decodeURIComponent(cleanUrl);
+    } catch (_) {
+        res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+        return res.end('400 Bad Request');
+    }
 
     // CORS preflight
     if (req.method === 'OPTIONS') {
@@ -289,10 +297,11 @@ const server = http.createServer((req, res) => {
     // Static file serving
     if (cleanUrl === '/' || cleanUrl === '') cleanUrl = '/index.html';
     
-    // Resolve file path safely
+    // Resolve file path safely (compare against ROOT + separator, not a bare prefix)
     const filePath = path.normalize(path.join(ROOT, cleanUrl));
+    const rootPrefix = ROOT.endsWith(path.sep) ? ROOT : ROOT + path.sep;
 
-    if (!filePath.startsWith(ROOT)) {
+    if (filePath !== ROOT && !filePath.startsWith(rootPrefix)) {
         res.writeHead(403, { 'Content-Type': 'text/plain' });
         return res.end('403 Forbidden');
     }
@@ -312,11 +321,18 @@ const server = http.createServer((req, res) => {
             const ext = path.extname(finalPath).toLowerCase();
             const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
-            res.writeHead(200, {
+            const headers = {
                 'Content-Type': contentType,
-                'Access-Control-Allow-Origin': '*',
+                'X-Content-Type-Options': 'nosniff',
+                'Referrer-Policy': 'strict-origin-when-cross-origin',
                 'Service-Worker-Allowed': '/'
-            });
+            };
+            // Never let a stale service worker or shell HTML pin an old release
+            if (finalPath.endsWith('sw.js') || ext === '.html') {
+                headers['Cache-Control'] = 'no-cache';
+            }
+
+            res.writeHead(200, headers);
 
             fs.createReadStream(finalPath).pipe(res);
         });
